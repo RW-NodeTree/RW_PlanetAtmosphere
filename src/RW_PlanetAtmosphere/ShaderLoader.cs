@@ -98,8 +98,15 @@ namespace RW_PlanetAtmosphere
                 sky.layer = WorldCameraManager.WorldLayer;
                 meshFilter.mesh = mesh;
                 meshRenderer.material = materialSkyLUT;
-                WorldCameraManager.WorldCamera.fieldOfView = 20;
-                WorldCameraManager.WorldSkyboxCamera.fieldOfView = 20;
+
+                float fieldOfView = 20.0f;
+                // branch if Universum is loaded and apply patch
+                if (ModsConfig.IsActive("sindre0830.universum")) {
+                    fieldOfView = 40.0f;
+                }
+
+                WorldCameraManager.WorldCamera.fieldOfView = fieldOfView;
+                WorldCameraManager.WorldSkyboxCamera.fieldOfView = fieldOfView;
                 WorldCameraManager.WorldCamera.depthTextureMode = DepthTextureMode.Depth;
                 WorldCameraManager.WorldSkyboxCamera.depthTextureMode = DepthTextureMode.Depth;
 
