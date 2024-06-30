@@ -23,7 +23,7 @@ namespace RW_PlanetAtmosphere
         public static Vector2 translucentLUTSize = new Vector2(16, 16);
         public static Vector3 SunColor = new Vector3(1,1,1);
         public static Vector3 mie_eccentricity = new Vector3(0.618f,0.618f,0.618f);
-        public static Vector3 reayleighScatterFactor = new Vector3(0.47293f,1.22733f,2.09377f)/scale;
+        public static Vector3 reayleighScatterFactor = new Vector3(0.46278f,1.25945f,3.10319f)/scale;
         public static Vector3 OZoneAbsorbFactor = new Vector3(0.21195f,0.20962f,0.01686f)/scale;
         public static Vector4 scatterLUTSize = new Vector4( 8, 2, 2, 1);
         public static List<string> cloudTexPath = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
@@ -80,7 +80,7 @@ namespace RW_PlanetAtmosphere
             }
             SaveAndLoadValueVec3(ref SunColor, "SunColor", defaultValue: new Vector3(1, 1, 1), forceSave: true);
             SaveAndLoadValueVec3(ref mie_eccentricity, "mie_eccentricity", defaultValue: new Vector3(0.618f,0.618f,0.618f), forceSave: true);
-            SaveAndLoadValueVec3(ref reayleighScatterFactor, "reayleighScatterFactor", defaultValue: new Vector3(0.47293f,1.22733f,2.09377f)/scale, forceSave: true);
+            SaveAndLoadValueVec3(ref reayleighScatterFactor, "reayleighScatterFactor", defaultValue: new Vector3(0.46278f,1.25945f,3.10319f)/scale, forceSave: true);
             SaveAndLoadValueVec3(ref OZoneAbsorbFactor, "OZoneAbsorbFactor", defaultValue: new Vector3(0.21195f,0.20962f,0.01686f)/scale, forceSave: true);
             void SaveAndLoadValueVec4(ref Vector4 value, string label, Vector4 defaultValue = default(Vector4), bool forceSave = false)
             {
@@ -297,7 +297,7 @@ namespace RW_PlanetAtmosphere
                 translucentLUTSize = new Vector2(16, 16);
                 SunColor = new Vector3(1,1,1);
                 mie_eccentricity = new Vector3(0.618f,0.618f,0.618f);
-                reayleighScatterFactor = new Vector3(0.47293f,1.22733f,2.09377f);
+                reayleighScatterFactor = new Vector3(0.46278f,1.25945f,3.10319f)/scale;
                 OZoneAbsorbFactor = new Vector3(0.21195f,0.20962f,0.01686f)/scale;
                 scatterLUTSize = new Vector4( 8, 2, 2, 1);
                 cloudTexPath = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
