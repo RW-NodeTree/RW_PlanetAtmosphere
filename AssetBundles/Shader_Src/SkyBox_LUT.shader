@@ -7,6 +7,8 @@
         ground_light ("ground light", Range(0, 1)) = 0.0
         mie_amount ("mie amount", Range(0, 10)) = 3.996
         mie_absorb ("mie absorb", Range(0, 10)) = 1.11
+        deltaAHLW ("scatterLUT light curve max derivative", Range(1.0,20.0)) = 7.5
+        lengthAHLW ("scatterLUT light curve max range", Range(0.5,1.0)) = 0.9
         minh ("planet ground radius", Float) = 63.71393
         maxh ("planet sky radius", float) = 64.71393
         H_Reayleigh ("reayleigh factor scale", float) = 0.08

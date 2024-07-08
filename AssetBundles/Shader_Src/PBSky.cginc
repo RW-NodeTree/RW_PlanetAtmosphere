@@ -15,6 +15,8 @@ float H_Mie;
 float H_OZone;
 float D_OZone;
 float exposure;
+float deltaAHLW;
+float lengthAHLW;
 
 #define ingCount 2048
 // #define ingLightCount 8
@@ -25,9 +27,7 @@ float exposure;
 float3 hdr(float3 L) 
 {
     L = L * exposure;
-    L.r = L.r < 1.413 ? pow(L.r * 0.38317, 1.0 / 2.2) : 1.0 - exp(-L.r);
-    L.g = L.g < 1.413 ? pow(L.g * 0.38317, 1.0 / 2.2) : 1.0 - exp(-L.g);
-    L.b = L.b < 1.413 ? pow(L.b * 0.38317, 1.0 / 2.2) : 1.0 - exp(-L.b);
+    L = lerp(pow(L * 0.38317, 1.0 / 2.2) , float3(1.0,1.0,1.0) - exp(-L), step(1.413,L));
     return L;
 }
 
@@ -40,21 +40,21 @@ float3 ACESTonemap(float3 color){
     const float p = 1.3;
     const float overlap = 0.2;
     
-    const float rgOverlap = 0.1 * 0.2;
-    const float rbOverlap = 0.01 * 0.2;
-    const float gbOverlap = 0.04 * 0.2;
+    const float rgOverlap = 0.1 * overlap;
+    const float rbOverlap = 0.01 * overlap;
+    const float gbOverlap = 0.04 * overlap;
     
-    const float3x3 coneOverlap = 	float3x3(
-                                    float3(1.0          , 0.1 * 0.2 , 0.01 * 0.2),
-                                    float3(0.1 * 0.2    , 1.0       , 0.04 * 0.2),
-                                    float3(0.01 * 0.2   , 0.1 * 0.2 , 1.0       )
-                                    );
+    const float3x3 coneOverlap = float3x3(
+                                            1.0,        rgOverlap,  rbOverlap,
+                                            rgOverlap,  1.0, 		gbOverlap,
+                                            rbOverlap, 	rgOverlap, 	1.0
+                                        );
     
     const float3x3 coneOverlapInverse = float3x3(
-                                    float3(	1.0 + (0.1 * 0.2 + 0.01 * 0.2)  , 					    -0.1 * 0.2  ,	-0.01 * 0.2			            ),
-                                    float3(	-0.1 * 0.2					    ,   1.0 + (0.1 * 0.2 + 0.04 * 0.2)  ,	-0.04 * 0.2					    ),
-                                    float3(	-0.01 * 0.2					    , 					    -0.1 * 0.2  ,	1.0 + (0.01 * 0.2 + 0.1 * 0.2)  )
-                                    );
+                                                    1.0 + (rgOverlap + rbOverlap),  -rgOverlap, 	                -rbOverlap,
+                                                    -rgOverlap, 		            1.0 + (rgOverlap + gbOverlap),  -gbOverlap,
+                                                    -rbOverlap, 		            -rgOverlap, 	                1.0 + (rbOverlap + rgOverlap)
+                                                    );
     
     color = mul(coneOverlap,color);
     color = pow(color, float3(p,p,p));
@@ -76,28 +76,18 @@ float2 Map2AH(float2 map)
     float horizonAngB = PI - horizonAngA; //p
     float ang = map.x*(1.0+sqrt(horizonAngA/horizonAngB))-1.0;
     map.x = horizonAngB*(1.0+sign(ang)*ang*ang);
-    // map.x *= PI;
-
-    // map.x *= 2.0;
-    // map.x -= 1.0;
-    // map.x = sign(map.x)*map.x*map.x*PI*0.5;
-    // map.x += 0.5*PI;
+    map = clamp(map,float2(0.0,minh),float2(PI,maxh));
     return map;
 }
 
 float2 AH2Map(float2 ah)
 {
-    // ah = clamp(ah,float2(0.0,minh),float2(PI,maxh));
+    ah = clamp(ah,float2(0.0,minh),float2(PI,maxh));
 
     float horizonAngA = asin(clamp(minh/ah.y,-1.0,1.0)); //p
     float horizonAngB = PI - horizonAngA; //p
     float ang = ah.x / horizonAngB - 1.0;
     ah.x = (1.0 + sign(ang) * sqrt(abs(ang)))/(1.0 + sqrt(horizonAngA/horizonAngB));
-    // ah.x /= PI;
-
-    // ah.x -= 0.5*PI;
-    // ah.x = 0.5 + 0.5 * sign(ah.x) * sqrt(2.0*abs(ah.x)/PI);
-
     ah.y -= minh;
     ah.y /= maxh - minh;
     ah.y = sqrt(ah.y);
@@ -110,14 +100,19 @@ float4 Map2AHLW(float2 map)
 {
     map = clamp(map,0.0,1.0);
     map *= scatterLUT_Size.xy*scatterLUT_Size.zw-float2(1.0,1.0);
-    // map -= float2(0.5,0.5);
-    // map *= scatterLUT_Size.xy*scatterLUT_Size.zw;
     float4 result = map.xyxy;
     result.zw = floor(result.zw / scatterLUT_Size.xy);
     result.xy = (result.xy - result.zw * scatterLUT_Size.xy) / (scatterLUT_Size.xy - float2(1.0,1.0));
     result.zw = result.zw / (scatterLUT_Size.zw - float2(1.0,1.0));
+    // result = result.xzyw;
+
     result.xy = Map2AH(result.xy);
-    result.zw *= PI;
+    result.w *= PI;
+    result.z *= lengthAHLW;
+    result.z -= 0.5;
+    result.z *= 2.0 * atan(deltaAHLW);
+    result.z = -tan(result.z) / deltaAHLW;
+    result.z = acos(clamp(result.z,-1.0,1.0));
     return result;
 }
 
@@ -245,19 +240,13 @@ void IngAirDensity(in float x0, in float h, out float reayleigh, out float mie, 
     x0 = max(ml,x0);
     x0 = min(mh,x0);
     IngAirDensityFromTo(x0,mh,h,reayleigh,mie);
-    // oZone = abs(IngOZoneDensity(mh,h) - IngOZoneDensity(x0,h));
     oZone = IngOZoneDensity(mh,h) - IngOZoneDensity(x0,h);
-    // x0 = max(ml,x0);
-    // x0 = min(mh,x0);
-    // IngAirDensityFromTo(x0,mh,h,reayleigh,mie);
-    // // oZone = abs(IngOZoneDensity(mh,h) - IngOZoneDensity(x0,h));
-    // oZone = IngOZoneDensity(mh,h) - IngOZoneDensity(x0,h);
     
 }
 
 float3 translucentFromLUT(float2 ah)
 {
-    if(ah.y < minh) return float3(0.0,0.0,0.0);
+    // if(ah.y < minh) return float3(0.0,0.0,0.0);
     ah = AH2Map(ah);
     ah = (ah * (translucentLUT_TexelSize.zw - float2(1.0,1.0)) + float2(0.5,0.5)) * translucentLUT_TexelSize.xy;
     return clamp(tex2Dlod(translucentLUT,float4(ah.x,ah.y,0.0,0.0)).xyz, 0.0, 1.0);
@@ -265,20 +254,25 @@ float3 translucentFromLUT(float2 ah)
 
 float3 scatterFromLUT(float4 ahlw)
 {
-    ahlw.zw /= PI;
+    ahlw.z = cos(ahlw.z);
+    ahlw.z = atan(-deltaAHLW * ahlw.z);
+    ahlw.z /= 2.0*atan(deltaAHLW);
+    ahlw.z += 0.5;
+    ahlw.z /= lengthAHLW;
+    if(ahlw.z > 1.0) return float3(0.0,0.0,0.0);
+    ahlw.w /= PI;
     ahlw.xy = AH2Map(ahlw.xy);
+    
+    // ahlw = ahlw.xzyw;
+
     ahlw = clamp(ahlw,0.0,1.0) * (scatterLUT_Size - float4(1.0,1.0,1.0,1.0));
     ahlw.xy += float2(0.5,0.5);
     float2 zwFloor = clamp(floor(ahlw.zw),float2(0.0,0.0),scatterLUT_Size.zw - float2(1.0,1.0));
-    float2 zwCeil = clamp(zwFloor + float2(1.0,1.0),float2(0.0,0.0),scatterLUT_Size.zw - float2(1.0,1.0));
+    float2 zwCeil = clamp(ceil(ahlw.zw),float2(0.0,0.0),scatterLUT_Size.zw - float2(1.0,1.0));
     float2 from = (ahlw.xy / scatterLUT_Size.xy + zwFloor) / scatterLUT_Size.zw;
     float2 to = (ahlw.xy / scatterLUT_Size.xy + zwCeil) / scatterLUT_Size.zw;
-    // return to.xyy;
-    // float2 wFrom = clamp(zwCeil - ahlw.zw,0.0,1.0);
     float2 wTo = clamp(ahlw.zw - zwFloor,0.0,1.0);
     float2 wFrom = float2(1.0,1.0) - wTo;
-
-    // return tex2Dlod(scatterLUT,float4(to.x,to.y,0.0,0.0)).xyz;
 
     return  (tex2Dlod(scatterLUT,float4(from.x,from.y,0.0,0.0)).xyz * wFrom.y + tex2Dlod(scatterLUT,float4(from.x,to.y,0.0,0.0)).xyz * wTo.y) * wFrom.x +
             (tex2Dlod(scatterLUT,float4(to.x,from.y,0.0,0.0)).xyz * wFrom.y + tex2Dlod(scatterLUT,float4(to.x,to.y,0.0,0.0)).xyz * wTo.y) * wTo.x;
@@ -286,9 +280,6 @@ float3 scatterFromLUT(float4 ahlw)
 
 float3 GenScatterInfo(float viewAng, float height, float lightAng, float lightToViewAng)
 {
-    // const float3 reayleighScatterFactor = float3(0.58,1.35,3.31);
-    // const float3 OZoneAbsorbFactor = float3(0.21195,0.20962,0.01686);
-    // const float3 OZoneAbsorbFactor = float3(0.065,0.1881,0.0085);
     float3 mieScatterFactor = mie_amount.xxx;
     float3 mieAbsorbFactor = (mie_absorb * mie_amount).xxx;
     float3 result = float3(0.0,0.0,0.0);
@@ -300,10 +291,11 @@ float3 GenScatterInfo(float viewAng, float height, float lightAng, float lightTo
     {
         mh = sqrt(maxh*maxh-h0*h0);
     }
+    float minhOffseted = max(minh - 0.0001, 0.0);
     float ml = -mh;
-    if(h0 < minh)
+    if(h0 < minhOffseted)
     {
-        ml = sqrt(minh*minh-h0*h0);
+        ml = sqrt(minhOffseted*minhOffseted-h0*h0);
     }
     if(x0 >= ml || x0 <= -ml)
     {

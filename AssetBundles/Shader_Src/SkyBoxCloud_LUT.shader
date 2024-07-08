@@ -8,11 +8,13 @@
         opacity ("opacity multiplier", Range(0, 1)) = 1.0
         mie_amount ("mie amount", Range(0, 10)) = 3.996
         mie_absorb ("mie absorb", Range(0, 10)) = 1.11
+        deltaAHLW ("scatterLUT light curve max derivative", Range(1.0,20.0)) = 7.5
+        lengthAHLW ("scatterLUT light curve max range", Range(0.5,1.0)) = 0.9
         minh ("planet ground radius", Float) = 63.71393
         maxh ("planet sky radius", float) = 64.71393
         SunColor ("SunColor", Color) = (1,1,1,1)
         mie_eccentricity ("mie eccentricity", Color) = (0.618,0.618,0.618,1)
-        reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.47293,1.22733,2.09377,0)
+        reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,0)
         scatterLUT_Size ("scatterLUT_Size", Vector) = (0,0,0,0)
         translucentLUT ("translucent LUT", 2D) = "white"{}
         scatterLUT ("scatter LUT", 2D) = "black"{}

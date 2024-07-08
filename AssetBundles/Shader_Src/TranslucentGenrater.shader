@@ -13,7 +13,7 @@
         translucentLUT ("translucent LUT", 2D) = "white"{}
         scatterLUT ("scatter LUT", 2D) = "black"{}
         scatterLUT_Size ("scatterLUT_Size", Vector) = (0,0,0,0)
-        reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.47293,1.22733,2.09377,0)
+        reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,0)
         OZoneAbsorbFactor ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,0)
     }
     SubShader
