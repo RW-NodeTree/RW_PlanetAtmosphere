@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Defs>
-    <AtmosphereDef>
+    <RW_PlanetAtmosphere.AtmosphereDef>
         <defName>default</defName>
-    </AtmosphereDef>
+    </RW_PlanetAtmosphere.AtmosphereDef>
 </Defs>
