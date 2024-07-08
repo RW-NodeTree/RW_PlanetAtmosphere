@@ -353,8 +353,8 @@ namespace RW_PlanetAtmosphere
                         scatterLUTSize.w = (int)Math.Abs(scatterLUTSize.w);
                         updated = false;
                     }));
-                    Find.WindowStack.Add(new FloatMenu(options));
                 }
+                Find.WindowStack.Add(new FloatMenu(options));
             }
 
             ShaderLoader.materialSkyLUT.SetFloat("exposure", exposure);
