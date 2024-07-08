@@ -9,7 +9,6 @@ namespace RW_PlanetAtmosphere
 {
     public class AtmosphereDef : Def
     {
-        public bool updated                     = false;
         public float exposure                   = 4;
         public float ground_refract             = 1;
         public float ground_light               = 0.01f;
