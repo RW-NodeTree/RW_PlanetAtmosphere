@@ -46,9 +46,9 @@ namespace RW_PlanetAtmosphere
             void SaveAndLoadValueFloat(ref float value, string label, float defaultValue = 0, bool forceSave = false)
             {
                 value = Math.Abs(value);
-                value *= 1024;
+                value *= 1000;
                 Scribe_Values.Look(ref value, label, defaultValue, forceSave);
-                value /= 1024;
+                value /= 1000;
                 value = Math.Abs(value);
             }
             SaveAndLoadValueFloat(ref exposure, "exposure", defaultValue: 4, forceSave: true);
@@ -68,9 +68,9 @@ namespace RW_PlanetAtmosphere
             {
                 value.x = Math.Abs(value.x);
                 value.y = Math.Abs(value.y);
-                value *= 1024;
+                value *= 1000;
                 Scribe_Values.Look(ref value, label, defaultValue, forceSave);
-                value /= 1024;
+                value /= 1000;
                 value.x = Math.Abs(value.x);
                 value.y = Math.Abs(value.y);
             }
@@ -93,9 +93,9 @@ namespace RW_PlanetAtmosphere
                 value.y = Math.Abs(value.y);
                 value.z = Math.Abs(value.z);
                 value.w = Math.Abs(value.w);
-                value *= 1024;
+                value *= 1000;
                 Scribe_Values.Look(ref value, label, defaultValue, forceSave);
-                value /= 1024;
+                value /= 1000;
                 value.x = Math.Abs(value.x);
                 value.y = Math.Abs(value.y);
                 value.z = Math.Abs(value.z);
@@ -119,7 +119,7 @@ namespace RW_PlanetAtmosphere
                     i--;
                 }
                 if(i >= cloudTexValue.Count) cloudTexValue.Add(new Vector4(1.0f,0.01f,0.5f,0.05f));
-                cloudTexValue[i] *= 1024f;
+                cloudTexValue[i] *= 1000;
             }
             Scribe_Collections.Look(ref cloudTexPath, "cloudTexPath", LookMode.Value);
             Scribe_Collections.Look(ref cloudTexValue, "cloudTexValue", LookMode.Value);
@@ -134,7 +134,7 @@ namespace RW_PlanetAtmosphere
                     i--;
                 }
                 if(i >= cloudTexValue.Count) cloudTexValue.Add(new Vector4(1.0f,0.01f,0.5f,0.05f) * 1024f);
-                cloudTexValue[i] /= 1024f;
+                cloudTexValue[i] /= 1000;
             }
         }
 
