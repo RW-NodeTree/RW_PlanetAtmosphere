@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
+	<Atmosphere>Atmosphere</Atmosphere>
 	<exposure>Exposure</exposure>
 	<ground_refract>Ground refract</ground_refract>
 	<ground_light>Ground glowing</ground_light>

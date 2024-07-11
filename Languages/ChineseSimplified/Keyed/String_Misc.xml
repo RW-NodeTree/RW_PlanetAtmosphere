@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
+	<Atmosphere>大气层</Atmosphere>
 	<exposure>曝光度</exposure>
 	<ground_refract>地面反射</ground_refract>
 	<ground_light>地面自发光</ground_light>
