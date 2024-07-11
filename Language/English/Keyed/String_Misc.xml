@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<exposure>Exposure</exposure>
+	<ground_refract>Ground refract</ground_refract>
+	<ground_light>Ground glowing</ground_light>
+	<mie_amount>Mie amount</mie_amount>
+	<mie_absorb>Mie absorb multipler</mie_absorb>
+	<deltaAHLW_L>LUT light mapping curve derivative</deltaAHLW_L>
+	<lengthAHLW_L>LUT light mapping curve range</lengthAHLW_L>
+	<deltaAHLW_W>LUT viewing mapping curve derivative</deltaAHLW_W>
+	<lengthAHLW_W>LUT viewing mapping curve range</lengthAHLW_W>
+	<H_Reayleigh>Reayleigh exp(-1) scale</H_Reayleigh>
+	<H_Mie>Mie exp(-1) scale</H_Mie>
+	<H_OZone>OZone Height</H_OZone>
+	<D_OZone>OZone Range</D_OZone>
+	<translucentLUTSize>translucent LUT Size(VAng,Height) x16</translucentLUTSize>
+	<mie_eccentricity>Mie eccentricity(R,G,B,UV)</mie_eccentricity>
+	<reayleighScatterFactor>Reayleigh scatter factor(R,G,B,UV)</reayleighScatterFactor>
+	<OZoneAbsorbFactor>OZone absorb factor(R,G,B,UV)</OZoneAbsorbFactor>
+	<SunColor>Sun color(R,G,B,UV)</SunColor>
+	<scatterLUTSize>Scatter LUT Size(VAng,Height,LightAng,HAng) x16</scatterLUTSize>
+	<cloudTexPath>Cloud Texture(refract,glowing,opacity,height)</cloudTexPath>
+	<reset>Reset</reset>
+</LanguageData>

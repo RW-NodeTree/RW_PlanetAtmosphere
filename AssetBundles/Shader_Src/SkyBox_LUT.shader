@@ -7,19 +7,21 @@
         ground_light ("ground light", Range(0, 1)) = 0.0
         mie_amount ("mie amount", Range(0, 10)) = 3.996
         mie_absorb ("mie absorb", Range(0, 10)) = 1.11
-        deltaAHLW ("scatterLUT light curve max derivative", Range(1.0,20.0)) = 7.5
-        lengthAHLW ("scatterLUT light curve max range", Range(0.5,1.0)) = 0.9
+        deltaAHLW_L ("scatterLUT light curve max derivative(v)", Range(1.0,20.0)) = 8.0
+        deltaAHLW_W ("scatterLUT light curve max derivative(p)", Range(1.0,20.0)) = 4.0
+        lengthAHLW_L ("scatterLUT light curve max range(v)", Range(0.5,1.0)) = 1.0
+        lengthAHLW_W ("scatterLUT light curve max range(p)", Range(0.5,1.0)) = 1.0
         minh ("planet ground radius", Float) = 63.71393
         maxh ("planet sky radius", float) = 64.71393
         H_Reayleigh ("reayleigh factor scale", float) = 0.08
         H_Mie ("min factor scale", float) = 0.02
         H_OZone ("ozone height", float) = 0.25
         D_OZone ("ozone radius", float) = 0.15
-        SunColor ("SunColor", Color) = (1,1,1,1)
-        mie_eccentricity ("mie eccentricity", Color) = (0.618,0.618,0.618,1)
+        SunColor ("SunColor", Color) = (1,1,1,0.24)
+        mie_eccentricity ("mie eccentricity", Color) = (0.618,0.618,0.618,0.618)
         scatterLUT_Size ("scatterLUT_Size", Vector) = (0,0,0,0)
-        reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,0)
-        OZoneAbsorbFactor ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,0)
+        reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
+        OZoneAbsorbFactor ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,6.4)
         translucentLUT ("translucent LUT", 2D) = "white"{}
         scatterLUT ("scatter LUT", 2D) = "black"{}
     }
@@ -82,26 +84,34 @@
             //     return (1 - _ZBufferParams.w * z) / (_ZBufferParams.z * z);
             // }
             
-            void sky(in float3 LIGHT0_COLOR, in float3 LIGHT0_DIRECTION, in float3 EYEDIR, in float3 POSITION, in float2 SCREEN, in float DEPTH, out float3 COLOR) {
+            void sky(in float4 LIGHT0_COLOR, in float3 LIGHT0_DIRECTION, in float3 EYEDIR, in float3 POSITION, in float2 SCREEN, in float DEPTH, out float4 COLOR) {
                 // POSITION /= 100000.0;
                 // POSITION.y += h0 + 0.00005;
                 
-                float3 scatter = float3(0.0,0.0,0.0);
+                float4 scatter = float4(0.0,0.0,0.0,0.0);
                 float3 backGround = tex2D(_GrabTexture,float2(1.0 + SCREEN.x,1.0 - SCREEN.y) / 2.0).xyz;
                 // float3 rgb = max(0.0,ceil(dot(LIGHT0_DIRECTION,EYEDIR) - cos(0.004652439059837008))) * LIGHT0_COLOR + backGround;
-                float3 rgb = backGround;
+                float4 rgb = float4(backGround,0.0);
                 IngAirFogPropInfo infos = getIngAirFogPropInfoByRelPos(POSITION,EYEDIR,LIGHT0_DIRECTION,DEPTH);
     
-                float3 trans;
-                scatter = LightScatter(infos, LIGHT0_COLOR, backGround * ground_refract, backGround * ground_light, trans);
+                float4 trans;
+                scatter = LightScatter(infos, LIGHT0_COLOR, rgb * ground_refract, rgb * ground_light, trans);
                 float3 p = infos.depth * infos.viewDir + float3(0.0,infos.h,0.0);
-                // rgb += max(0.0,ceil(dot(LIGHT0_DIRECTION,EYEDIR) - cos(0.004652439059837008))) * LIGHT0_COLOR * (1.0-step(length(p), maxh));
+                // rgb = lerp(rgb,max(0.0,ceil(dot(LIGHT0_DIRECTION,EYEDIR) - cos(0.004652439059837008))) * LIGHT0_COLOR , (1.0-step(length(p), maxh)));
                 if(infos.h <= maxh) rgb *= trans * (1.0-step(length(p), maxh));
-                scatter = max(float3(0.0,0.0,0.0),scatter);
-                scatter = hdr(scatter);
-                scatter = ACESTonemap(scatter);
+                scatter = max(0.0,scatter);
+                // rgb = max(0.0,rgb);
+
+
+                rgb.xz += float2(0.08,0.2) * rgb.w;
+                scatter.xz += float2(0.08,0.2) * scatter.w;
+                // rgb.z += 0.2 * rgb.w;
+                // scatter.z += 0.2 * scatter.w;
+
+                scatter.xyz = hdr(scatter.xyz);
+                scatter.xyz = ACESTonemap(scatter.xyz);
                 
-                rgb = max(float3(0.0,0.0,0.0),rgb)+scatter;
+                rgb.xyz = rgb.xyz+scatter.xyz;
                 // rgb = float3(1.0,1.0,1.0)-exp(-rgb); 
                 // rgb = ACESTonemap(rgb);
                 // rgb = (float3(1.0,1.0,1.0)-exp(-rgb))/(1.0 - exp(-1.0));
@@ -113,7 +123,7 @@
             {
                 // const float3 OZoneAbsorbFactor = float3(0.21195,0.20962,0.01686);
                 // const float3 OZoneAbsorbFactor = float3(0.065,0.1881,0.0085);
-                float3 color = SunColor;
+                float4 color = SunColor;
                 float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 eye = normalize(i.position - _WorldSpaceCameraPos.xyz);
                 float3 pos = _WorldSpaceCameraPos.xyz - mul(unity_ObjectToWorld, float4(0.0,0.0,0.0,1.0));

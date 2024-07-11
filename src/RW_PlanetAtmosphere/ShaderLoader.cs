@@ -170,8 +170,10 @@ namespace RW_PlanetAtmosphere
                     );
                     materialSkyLUT.SetFloat("mie_amount", AtmosphereSettings.mie_amount);
                     materialSkyLUT.SetFloat("mie_absorb", AtmosphereSettings.mie_absorb);
-                    materialSkyLUT.SetFloat("deltaAHLW", AtmosphereSettings.deltaAHLW);
-                    materialSkyLUT.SetFloat("lengthAHLW", AtmosphereSettings.lengthAHLW);
+                    materialSkyLUT.SetFloat("deltaAHLW_L", AtmosphereSettings.deltaAHLW_L);
+                    materialSkyLUT.SetFloat("lengthAHLW_L", AtmosphereSettings.lengthAHLW_L);
+                    materialSkyLUT.SetFloat("deltaAHLW_W", AtmosphereSettings.deltaAHLW_W);
+                    materialSkyLUT.SetFloat("lengthAHLW_W", AtmosphereSettings.lengthAHLW_W);
                     materialSkyLUT.SetFloat("H_Reayleigh", AtmosphereSettings.H_Reayleigh);
                     materialSkyLUT.SetFloat("H_Mie", AtmosphereSettings.H_Mie);
                     materialSkyLUT.SetFloat("H_OZone", AtmosphereSettings.H_OZone);
@@ -233,8 +235,10 @@ namespace RW_PlanetAtmosphere
                     materialScatterGenrater.SetVector("OZoneAbsorbFactor", AtmosphereSettings.OZoneAbsorbFactor);
                     materialScatterGenrater.SetFloat("mie_amount", AtmosphereSettings.mie_amount);
                     materialScatterGenrater.SetFloat("mie_absorb", AtmosphereSettings.mie_absorb);
-                    materialScatterGenrater.SetFloat("deltaAHLW", AtmosphereSettings.deltaAHLW);
-                    materialScatterGenrater.SetFloat("lengthAHLW", AtmosphereSettings.lengthAHLW);
+                    materialScatterGenrater.SetFloat("deltaAHLW_L", AtmosphereSettings.deltaAHLW_L);
+                    materialScatterGenrater.SetFloat("lengthAHLW_L", AtmosphereSettings.lengthAHLW_L);
+                    materialScatterGenrater.SetFloat("deltaAHLW_W", AtmosphereSettings.deltaAHLW_W);
+                    materialScatterGenrater.SetFloat("lengthAHLW_W", AtmosphereSettings.lengthAHLW_W);
                     materialScatterGenrater.SetFloat("minh", minh);
                     materialScatterGenrater.SetFloat("maxh", maxh);
                     materialScatterGenrater.SetFloat("H_Reayleigh", AtmosphereSettings.H_Reayleigh);
@@ -286,8 +290,10 @@ namespace RW_PlanetAtmosphere
                         Vector4 vector = AtmosphereSettings.cloudTexValue[i];
                         cloud.SetFloat("mie_amount", AtmosphereSettings.mie_amount);
                         cloud.SetFloat("mie_absorb", AtmosphereSettings.mie_absorb);
-                        cloud.SetFloat("deltaAHLW", AtmosphereSettings.deltaAHLW);
-                        cloud.SetFloat("lengthAHLW", AtmosphereSettings.lengthAHLW);
+                        cloud.SetFloat("deltaAHLW_L", AtmosphereSettings.deltaAHLW_L);
+                        cloud.SetFloat("lengthAHLW_L", AtmosphereSettings.lengthAHLW_L);
+                        cloud.SetFloat("deltaAHLW_W", AtmosphereSettings.deltaAHLW_W);
+                        cloud.SetFloat("lengthAHLW_W", AtmosphereSettings.lengthAHLW_W);
                         cloud.SetFloat("H_Reayleigh", AtmosphereSettings.H_Reayleigh);
                         cloud.SetFloat("H_Mie", AtmosphereSettings.H_Mie);
                         cloud.SetFloat("H_OZone", AtmosphereSettings.H_OZone);

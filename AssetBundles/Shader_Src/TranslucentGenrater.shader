@@ -13,13 +13,14 @@
         translucentLUT ("translucent LUT", 2D) = "white"{}
         scatterLUT ("scatter LUT", 2D) = "black"{}
         scatterLUT_Size ("scatterLUT_Size", Vector) = (0,0,0,0)
-        reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,0)
-        OZoneAbsorbFactor ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,0)
+        reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
+        OZoneAbsorbFactor ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,6.4)
     }
     SubShader
     {
         Tags { "Queue"="Geometry" "RenderType"="Opaque" "PreviewType"="Plane" }
         LOD 0
+        // Blend One Zero
         Pass
         {
             CGPROGRAM
@@ -59,8 +60,8 @@
                 // const float3 reayleighScatterFactor = float3(0.58,1.35,3.31);
                 // const float3 OZoneAbsorbFactor = float3(0.21195,0.20962,0.01686);
                 // const float3 OZoneAbsorbFactor = float3(0.065,0.1881,0.0085);
-                float3 mieScatterFactor = mie_amount.xxx;
-                float3 mieAbsorbFactor = (mie_absorb * mie_amount).xxx;
+                float4 mieScatterFactor = mie_amount.xxxx;
+                float4 mieAbsorbFactor = (mie_absorb * mie_amount).xxxx;
                 float2 uv = Map2AH(i.uv);
                 float reayleigh = 0.0;
                 float mie = 0.0;
@@ -69,11 +70,11 @@
                 float x0 = cos(uv.x)*uv.y;
                 float h0 = sin(uv.x)*uv.y;
                 IngAirDensity(x0, h0, reayleigh, mie, oZone);
-                float3 light = translucent(float3(1.0,1.0,1.0), reayleighScatterFactor, reayleigh);
+                float4 light = translucent(float4(1.0,1.0,1.0,1.0), reayleighScatterFactor, reayleigh);
                 light = translucent(light, mieScatterFactor + mieAbsorbFactor, mie);
                 light = translucent(light, OZoneAbsorbFactor, oZone);
                 // light = clamp(light,1.0/4096.0,1.0);
-                return float4(light.x,light.y,light.z,1.0);
+                return light;
             }
 
             ENDCG
