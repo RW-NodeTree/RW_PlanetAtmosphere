@@ -239,49 +239,49 @@ namespace RW_PlanetAtmosphere
 
             Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"mie_eccentricity".Translate());
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.x.ToString("f5")),out newValue);
-            mie_eccentricity.x = (int)newValue;
+            mie_eccentricity.x = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.y.ToString("f5")),out newValue);
-            mie_eccentricity.y = (int)newValue;
+            mie_eccentricity.y = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.z.ToString("f5")),out newValue);
-            mie_eccentricity.z = (int)newValue;
+            mie_eccentricity.z = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.w.ToString("f5")),out newValue);
-            mie_eccentricity.w = (int)newValue;
+            mie_eccentricity.w = newValue;
             sizeY+=32;
 
 
             Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"reayleighScatterFactor".Translate());
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleighScatterFactor.x.ToString("f5")),out newValue);
-            reayleighScatterFactor.x = (int)newValue;
+            reayleighScatterFactor.x = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleighScatterFactor.y.ToString("f5")),out newValue);
-            reayleighScatterFactor.y = (int)newValue;
+            reayleighScatterFactor.y = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleighScatterFactor.z.ToString("f5")),out newValue);
-            reayleighScatterFactor.z = (int)newValue;
+            reayleighScatterFactor.z = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleighScatterFactor.w.ToString("f5")),out newValue);
-            reayleighScatterFactor.w = (int)newValue;
+            reayleighScatterFactor.w = newValue;
             sizeY+=32;
 
 
             Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"OZoneAbsorbFactor".Translate());
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZoneAbsorbFactor.x.ToString("f5")),out newValue);
-            OZoneAbsorbFactor.x = (int)newValue;
+            OZoneAbsorbFactor.x = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZoneAbsorbFactor.y.ToString("f5")),out newValue);
-            OZoneAbsorbFactor.y = (int)newValue;
+            OZoneAbsorbFactor.y = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZoneAbsorbFactor.z.ToString("f5")),out newValue);
-            OZoneAbsorbFactor.z = (int)newValue;
+            OZoneAbsorbFactor.z = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZoneAbsorbFactor.w.ToString("f5")),out newValue);
-            OZoneAbsorbFactor.w = (int)newValue;
+            OZoneAbsorbFactor.w = newValue;
             sizeY+=32;
 
 
             Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"SunColor".Translate());
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),SunColor.x.ToString("f5")),out newValue);
-            SunColor.x = (int)newValue;
+            SunColor.x = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),SunColor.y.ToString("f5")),out newValue);
-            SunColor.y = (int)newValue;
+            SunColor.y = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),SunColor.z.ToString("f5")),out newValue);
-            SunColor.z = (int)newValue;
+            SunColor.z = newValue;
             float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),SunColor.w.ToString("f5")),out newValue);
-            SunColor.w = (int)newValue;
+            SunColor.w = newValue;
             sizeY+=32;
 
 
