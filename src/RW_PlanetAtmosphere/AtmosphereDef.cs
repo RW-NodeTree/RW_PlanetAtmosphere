@@ -9,11 +9,9 @@ namespace RW_PlanetAtmosphere
 {
     public class AtmosphereDef : Def
     {
-        public float exposure                   = 4;
+        public float exposure                   = 15;
         public float ground_refract             = 1;
         public float ground_light               = 0.01f;
-        public float mie_amount                 = 3.996f/AtmosphereSettings.scale;
-        public float mie_absorb                 = 1.11f;
         public float deltaAHLW_L                = 8.0f;
         public float lengthAHLW_L               = 1.0f;
         public float deltaAHLW_W                = 4.0f;
@@ -23,6 +21,8 @@ namespace RW_PlanetAtmosphere
         public float H_OZone                    = 0.25f*AtmosphereSettings.scale;
         public float D_OZone                    = 0.15f*AtmosphereSettings.scale;
         public Vector2 translucentLUTSize       = new Vector2(16, 16);
+        public Vector4 mie_scatter              = Vector4.one * 3.996f / AtmosphereSettings.scale;
+        public Vector4 mie_absorb               = Vector4.one * 4.44f / AtmosphereSettings.scale;
         public Vector4 mie_eccentricity         = new Vector4(0.618f,0.618f,0.618f,0.618f);
         public Vector4 reayleighScatterFactor   = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/AtmosphereSettings.scale;
         public Vector4 OZoneAbsorbFactor        = new Vector4(0.0f,0.0f,0.0f,6.4f)/AtmosphereSettings.scale;

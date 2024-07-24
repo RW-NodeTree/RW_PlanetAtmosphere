@@ -6,8 +6,8 @@ float4 scatterLUT_Size;
 float4 mie_eccentricity;
 float4 reayleighScatterFactor;
 float4 OZoneAbsorbFactor;
-float mie_amount;
-float mie_absorb;
+float4 mie_scatter;
+float4 mie_absorb;
 float minh;
 float maxh;
 float H_Reayleigh;
@@ -29,7 +29,8 @@ float lengthAHLW_W;
 float3 hdr(float3 L) 
 {
     L = L * exposure;
-    L = lerp(pow(L * 0.38317, 1.0 / 2.2) , float3(1.0,1.0,1.0) - exp(-L), step(1.413,L));
+    // L = lerp(pow(L * 0.38317, 1.0 / 2.2) , float3(1.0,1.0,1.0) - exp(-L), step(1.413,L));
+    L = float3(1.0,1.0,1.0) - exp(-L);
     return L;
 }
 
@@ -288,8 +289,8 @@ float4 scatterFromLUT(float4 ahlw)
 
 float4 GenScatterInfo(float viewAng, float height, float lightAng, float lightToViewAng)
 {
-    float4 mieScatterFactor = mie_amount.xxxx;
-    float4 mieAbsorbFactor = (mie_absorb * mie_amount).xxxx;
+    float4 mieScatterFactor = mie_scatter;
+    float4 mieAbsorbFactor = mie_absorb;
     float4 result = float4(0.0,0.0,0.0,0.0);
 
     float x0 = cos(viewAng)*height;
@@ -456,8 +457,8 @@ float4 getScatterInfo(float3 viewDir, float3 lightDir, float4 lightColor, float4
     // const float3 reayleighScatterFactor = float3(0.58,1.35,3.31);
     // const float3 OZoneAbsorbFactor = float3(0.21195,0.20962,0.01686);
     // const float3 OZoneAbsorbFactor = float3(0.065,0.1881,0.0085);
-    float4 mieScatterFactor = mie_amount.xxxx;
-    float4 mieAbsorbFactor = (mie_absorb * mie_amount).xxxx;
+    float4 mieScatterFactor = mie_scatter;
+    float4 mieAbsorbFactor = mie_absorb;
     // float3 offset = float3(0.0);
     h = abs(h);
     float a = acos(clamp(viewDir.y,-1.0,1.0));
@@ -512,8 +513,8 @@ float4 LightScatter(IngAirFogPropInfo infos, float4 lightColor, float4 surfaceCo
     // const float3 OZoneAbsorbFactor = float3(0.065,0.1881,0.0085);
     float viewAngS = acos(clamp(infos.viewDir.y,-1.0,1.0));
     float4 transLight = float4(1.0,1.0,1.0,1.0);
-    float4 mieScatterFactor = mie_amount.xxxx;
-    float4 mieAbsorbFactor = (mie_absorb * mie_amount).xxxx;
+    float4 mieScatterFactor = mie_scatter;
+    float4 mieAbsorbFactor = mie_absorb;
 
     transGround = translucentFromLUT(float2(viewAngS,infos.h));
     float4 result = float4(0.0,0.0,0.0,0.0);

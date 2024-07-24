@@ -2,8 +2,6 @@
 {
     Properties
     {
-        mie_amount ("mie amount", Range(0, 10)) = 3.996
-        mie_absorb ("mie absorb", Range(0, 10)) = 1.11
         deltaAHLW_L ("scatterLUT light curve max derivative(v)", Range(1.0,20.0)) = 8.0
         deltaAHLW_W ("scatterLUT light curve max derivative(p)", Range(1.0,20.0)) = 4.0
         lengthAHLW_L ("scatterLUT light curve max range(v)", Range(0.5,1.0)) = 1.0
@@ -18,6 +16,8 @@
         scatterLUT ("scatter LUT", 2D) = "black"{}
         scatterLUT_Size ("scatterLUT_Size", Vector) = (0,0,0,0)
         reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
+        mie_scatter ("mie scatter", Vector) = (3.996,3.996,3.996,3.996)
+        mie_absorb ("mie absorb", Vector) = (4.44,4.44,4.44,4.44)
         OZoneAbsorbFactor ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,6.4)
     }
     SubShader

@@ -5,8 +5,6 @@
         exposure ("exposure", Range(0, 20)) = 4.0
         ground_refract ("ground refract", Range(0, 1)) = 1.0
         ground_light ("ground light", Range(0, 1)) = 0.0
-        mie_amount ("mie amount", Range(0, 10)) = 3.996
-        mie_absorb ("mie absorb", Range(0, 10)) = 1.11
         deltaAHLW_L ("scatterLUT light curve max derivative(v)", Range(1.0,20.0)) = 8.0
         deltaAHLW_W ("scatterLUT light curve max derivative(p)", Range(1.0,20.0)) = 4.0
         lengthAHLW_L ("scatterLUT light curve max range(v)", Range(0.5,1.0)) = 1.0
@@ -21,6 +19,8 @@
         mie_eccentricity ("mie eccentricity", Color) = (0.618,0.618,0.618,0.618)
         scatterLUT_Size ("scatterLUT_Size", Vector) = (0,0,0,0)
         reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
+        mie_scatter ("mie scatter", Vector) = (3.996,3.996,3.996,3.996)
+        mie_absorb ("mie absorb", Vector) = (4.44,4.44,4.44,4.44)
         OZoneAbsorbFactor ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,6.4)
         translucentLUT ("translucent LUT", 2D) = "white"{}
         scatterLUT ("scatter LUT", 2D) = "black"{}
@@ -110,6 +110,8 @@
 
                 scatter.xyz = hdr(scatter.xyz);
                 scatter.xyz = ACESTonemap(scatter.xyz);
+                // scatter.xyz = ACESTonemap(scatter.xyz * exposure);
+                // scatter.xyz = scatter.xyz * exposure;
                 
                 rgb.xyz = rgb.xyz+scatter.xyz;
                 // rgb = float3(1.0,1.0,1.0)-exp(-rgb); 
@@ -128,15 +130,18 @@
                 float3 eye = normalize(i.position - _WorldSpaceCameraPos.xyz);
                 float3 pos = _WorldSpaceCameraPos.xyz - mul(unity_ObjectToWorld, float4(0.0,0.0,0.0,1.0));
                 float2 scr = i.screen.xy/i.screen.w;
-    
-                float scrDis = abs(normalize(i.screenDir.xyz).z);
-                float depthValue = tex2D(_CameraDepthTexture, float2(1.0 + scr.x,1.0 - scr.y) / 2.0).x;
-                float currentDepth = max(step(length(pos + eye * _ProjectionParams.y / scrDis),maxh), i.screen.z/i.screen.w);
 
-    
+                float scrDis = abs(normalize(i.screenDir.xyz).z);
+
+                pos += eye * _ProjectionParams.y / scrDis;
+
+                float currentDepth = max(step(length(pos),maxh), i.screen.z/i.screen.w);
+
                 depth = currentDepth;
                 // return float4(_ProjectionParams.y,_ProjectionParams.y,_ProjectionParams.y,1.0);
+                float depthValue = tex2D(_CameraDepthTexture, float2(1.0 + scr.x,1.0 - scr.y) / 2.0).x;
                 depthValue = LinearEyeDepth(depthValue);
+                depthValue -= _ProjectionParams.y;
                 depthValue /= scrDis;
                 sky(color,sun,eye,pos,scr,depthValue,color);
     
