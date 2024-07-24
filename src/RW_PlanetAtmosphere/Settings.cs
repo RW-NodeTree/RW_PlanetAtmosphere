@@ -11,9 +11,9 @@ namespace RW_PlanetAtmosphere
     internal class AtmosphereSettings : ModSettings
     {
         public static bool updated                      = false;
-        public static float exposure                    = 15;
-        public static float ground_refract              = 1;
-        public static float ground_light                = 0.01f;
+        public static float exposure                    = 16;
+        public static float ground_refract              = 0.1f;
+        public static float ground_light                = 0.025f;
         public static float deltaAHLW_L                 = 8.0f;
         public static float lengthAHLW_L                = 1.0f;
         public static float deltaAHLW_W                 = 4.0f;
@@ -31,7 +31,7 @@ namespace RW_PlanetAtmosphere
         public static Vector4 SunColor                  = new Vector4(0.8f,0.72f,0.65f,0);
         public static Vector4 scatterLUTSize            = new Vector4( 8, 2, 2, 1);
         public static List<string> cloudTexPath         = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
-        public static List<Vector4> cloudTexValue       = new List<Vector4>(){new Vector4(1.0f,0.01f,0.5f,0.05f)};
+        public static List<Vector4> cloudTexValue       = new List<Vector4>(){new Vector4(1.0f,0.0f,0.5f,0.05f)};
 
 
         private static Vector2 scrollPos = Vector2.zero;

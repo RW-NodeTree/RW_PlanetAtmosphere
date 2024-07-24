@@ -9,9 +9,9 @@ namespace RW_PlanetAtmosphere
 {
     public class AtmosphereDef : Def
     {
-        public float exposure                   = 15;
-        public float ground_refract             = 1;
-        public float ground_light               = 0.01f;
+        public float exposure                   = 16;
+        public float ground_refract             = 0.1f;
+        public float ground_light               = 0.025f;
         public float deltaAHLW_L                = 8.0f;
         public float lengthAHLW_L               = 1.0f;
         public float deltaAHLW_W                = 4.0f;
@@ -29,7 +29,7 @@ namespace RW_PlanetAtmosphere
         public Vector4 SunColor                 = new Vector4(0.8f,0.72f,0.65f,0);
         public Vector4 scatterLUTSize           = new Vector4( 8, 2, 2, 1);
         public List<string> cloudTexPath        = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
-        public List<Vector4> cloudTexValue      = new List<Vector4>(){new Vector4(1.0f,0.01f,0.5f,0.05f)};
+        public List<Vector4> cloudTexValue      = new List<Vector4>(){new Vector4(1.0f,0.0f,0.5f,0.05f)};
 
         public override void ResolveReferences()
         {
