@@ -162,17 +162,17 @@ namespace RW_PlanetAtmosphere
                         AtmosphereSettings.H_OZone + AtmosphereSettings.D_OZone,
                         -Mathf.Log(0.00001f)*(Mathf.Max
                         (
-                            AtmosphereSettings.reayleighScatterFactor.x * AtmosphereSettings.SunColor.x * AtmosphereSettings.exposure,
-                            AtmosphereSettings.reayleighScatterFactor.y * AtmosphereSettings.SunColor.y * AtmosphereSettings.exposure,
-                            AtmosphereSettings.reayleighScatterFactor.z * AtmosphereSettings.SunColor.z * AtmosphereSettings.exposure,
-                            AtmosphereSettings.reayleighScatterFactor.w * AtmosphereSettings.SunColor.w * AtmosphereSettings.exposure
+                            AtmosphereSettings.reayleighScatterFactor.x * AtmosphereSettings.SunColor.x,
+                            AtmosphereSettings.reayleighScatterFactor.y * AtmosphereSettings.SunColor.y,
+                            AtmosphereSettings.reayleighScatterFactor.z * AtmosphereSettings.SunColor.z,
+                            AtmosphereSettings.reayleighScatterFactor.w * AtmosphereSettings.SunColor.w
                         ) * AtmosphereSettings.H_Reayleigh),
                         -Mathf.Log(0.00001f)*(Mathf.Max
                         (
-                            (AtmosphereSettings.mie_scatter.x + AtmosphereSettings.mie_absorb.x) * AtmosphereSettings.SunColor.x * AtmosphereSettings.exposure,
-                            (AtmosphereSettings.mie_scatter.y + AtmosphereSettings.mie_absorb.y) * AtmosphereSettings.SunColor.y * AtmosphereSettings.exposure,
-                            (AtmosphereSettings.mie_scatter.z + AtmosphereSettings.mie_absorb.z) * AtmosphereSettings.SunColor.z * AtmosphereSettings.exposure,
-                            (AtmosphereSettings.mie_scatter.w + AtmosphereSettings.mie_absorb.w) * AtmosphereSettings.SunColor.w * AtmosphereSettings.exposure
+                            (AtmosphereSettings.mie_scatter.x + AtmosphereSettings.mie_absorb.x) * AtmosphereSettings.SunColor.x,
+                            (AtmosphereSettings.mie_scatter.y + AtmosphereSettings.mie_absorb.y) * AtmosphereSettings.SunColor.y,
+                            (AtmosphereSettings.mie_scatter.z + AtmosphereSettings.mie_absorb.z) * AtmosphereSettings.SunColor.z,
+                            (AtmosphereSettings.mie_scatter.w + AtmosphereSettings.mie_absorb.w) * AtmosphereSettings.SunColor.w
                         ) * AtmosphereSettings.H_Mie)
                     );
                     materialSkyLUT.SetFloat("exposure", AtmosphereSettings.exposure);
