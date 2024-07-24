@@ -175,7 +175,6 @@ namespace RW_PlanetAtmosphere
                             (AtmosphereSettings.mie_scatter.w + AtmosphereSettings.mie_absorb.w) * AtmosphereSettings.SunColor.w
                         ) * AtmosphereSettings.H_Mie)
                     );
-                    materialSkyLUT.SetFloat("exposure", AtmosphereSettings.exposure);
                     materialSkyLUT.SetFloat("deltaAHLW_L", AtmosphereSettings.deltaAHLW_L);
                     materialSkyLUT.SetFloat("lengthAHLW_L", AtmosphereSettings.lengthAHLW_L);
                     materialSkyLUT.SetFloat("deltaAHLW_W", AtmosphereSettings.deltaAHLW_W);
@@ -297,7 +296,6 @@ namespace RW_PlanetAtmosphere
                             renderQueue = 3556
                         };
                         Vector4 vector = AtmosphereSettings.cloudTexValue[i];
-                        cloud.SetFloat("exposure", AtmosphereSettings.exposure);
                         cloud.SetFloat("deltaAHLW_L", AtmosphereSettings.deltaAHLW_L);
                         cloud.SetFloat("lengthAHLW_L", AtmosphereSettings.lengthAHLW_L);
                         cloud.SetFloat("deltaAHLW_W", AtmosphereSettings.deltaAHLW_W);
@@ -340,12 +338,14 @@ namespace RW_PlanetAtmosphere
                 if(isEnable && Find.World != null)
                 {
                     parmUpdated();
+                    materialSkyLUT.SetFloat("exposure", AtmosphereSettings.exposure);
                     materialSkyLUT.SetFloat("ground_refract", AtmosphereSettings.ground_refract);
                     materialSkyLUT.SetFloat("ground_light", AtmosphereSettings.ground_light);
                     materialSkyLUT.SetVector("mie_eccentricity", AtmosphereSettings.mie_eccentricity);
                     for(int i = 0; i < materialCloudLUTs.Count; i++)
                     {
                         Material cloud = materialCloudLUTs[i];
+                        cloud.SetFloat("exposure", AtmosphereSettings.exposure);
                         cloud.SetVector("mie_eccentricity", AtmosphereSettings.mie_eccentricity);
                     }
                     Shader.SetGlobalVector("_WorldSpaceLightPos0",GenCelestial.CurSunPositionInWorldSpace());
