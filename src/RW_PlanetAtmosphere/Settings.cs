@@ -15,23 +15,26 @@ namespace RW_PlanetAtmosphere
         public static float ground_refract              = 0.1f;
         public static float ground_light                = 0.025f;
         public static float deltaAHLW_L                 = 8.0f;
-        public static float lengthAHLW_L                = 1.0f;
-        public static float deltaAHLW_W                 = 4.0f;
+        public static float deltaAHLW_W                 = 1.0f;
+        public static float lengthAHLW_L                = 4.0f;
         public static float lengthAHLW_W                = 1.0f;
         public static float H_Reayleigh                 = 0.08f*scale;
         public static float H_Mie                       = 0.02f*scale;
         public static float H_OZone                     = 0.25f*scale;
         public static float D_OZone                     = 0.15f*scale;
         public static Vector2 translucentLUTSize        = new Vector2(16, 16);
-        public static Vector4 mie_scatter               = Vector4.one * 3.996f / scale;
-        public static Vector4 mie_absorb                = Vector4.one * 4.44f / scale;
-        public static Vector4 mie_eccentricity          = new Vector4(0.618f,0.618f,0.618f,0.618f);
-        public static Vector4 reayleighScatterFactor    = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/scale;
-        public static Vector4 OZoneAbsorbFactor         = new Vector4(0.0f,0.0f,0.0f,6.4f)/scale;
-        public static Vector4 SunColor                  = new Vector4(0.8f,0.72f,0.65f,0);
-        public static Vector4 scatterLUTSize            = new Vector4( 8, 2, 2, 1);
+        public static Vector4 SunColor                  = Vector4.one * 3.996f / scale;
+        public static Vector4 mie_eccentricity          = Vector4.one * 4.44f / scale;
+        public static Vector4 scatterLUT_Size           = new Vector4(0.618f,0.618f,0.618f,0.618f);
+        public static Vector4 reayleigh_scatter         = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/scale;
+        public static Vector4 mie_scatter               = new Vector4(0.0f,0.0f,0.0f,6.4f)/scale;
+        public static Vector4 mie_absorb                = new Vector4(0.8f,0.72f,0.65f,0);
+        public static Vector4 OZone_absorb              = new Vector4(0.0f,0.0f,0.0f,6.4f)/scale;
+        public static Vector4 scatterLUTSize            = new Vector4( 8, 2, 1, 2);
         public static List<string> cloudTexPath         = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
         public static List<Vector4> cloudTexValue       = new List<Vector4>(){new Vector4(1.0f,0.0f,0.5f,0.05f)};
+        public static List<string> noiseTexPath         = new List<string>(){"EarthCloudTex/noise"};
+        public static List<Vector2> noiseTexValue      = new List<Vector2>(){new Vector2(0.0f,0.015625f)};
 
 
         private static Vector2 scrollPos = Vector2.zero;
@@ -102,40 +105,58 @@ namespace RW_PlanetAtmosphere
             SaveAndLoadValueVec4(ref mie_eccentricity, "mie_eccentricity", defaultValue: new Vector4(0.618f,0.618f,0.618f,0.618f), forceSave: true);
             SaveAndLoadValueVec4(ref mie_scatter, "mie_scatter", defaultValue: Vector4.one * 3.996f / scale, forceSave: true);
             SaveAndLoadValueVec4(ref mie_absorb, "mie_absorb", defaultValue: Vector4.one * 4.44f / scale, forceSave: true);
-            SaveAndLoadValueVec4(ref reayleighScatterFactor, "reayleighScatterFactor", defaultValue: new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/scale, forceSave: true);
-            SaveAndLoadValueVec4(ref OZoneAbsorbFactor, "OZoneAbsorbFactor", defaultValue: new Vector4(0.0f,0.0f,0.0f,6.4f)/scale, forceSave: true);
+            SaveAndLoadValueVec4(ref reayleigh_scatter, "reayleigh_scatter", defaultValue: new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/scale, forceSave: true);
+            SaveAndLoadValueVec4(ref OZone_absorb, "OZone_absorb", defaultValue: new Vector4(0.0f,0.0f,0.0f,6.4f)/scale, forceSave: true);
             SaveAndLoadValueVec4(ref SunColor, "SunColor", defaultValue: new Vector4(1, 1, 1, 0), forceSave: true);
             SaveAndLoadValueVec4(ref scatterLUTSize, "scatterLUTSize", defaultValue: new Vector4( 8, 2, 2, 1), forceSave: true);
 
 
             cloudTexPath = cloudTexPath ?? new List<string>();
             cloudTexValue = cloudTexValue ?? new List<Vector4>();
-            for(int i = 0; i < cloudTexPath.Count; i++)
+            noiseTexPath= noiseTexPath ?? new List<string>();
+            noiseTexValue = noiseTexValue ?? new List<Vector2>();
+
+            cloudTexPath.RemoveAll(x => x.NullOrEmpty());
+            for(int i = cloudTexValue.Count; i < cloudTexPath.Count; i++)
             {
-                if(cloudTexPath[i].NullOrEmpty())
-                {
-                    cloudTexPath.RemoveAt(i);
-                    if(i < cloudTexValue.Count) cloudTexValue.RemoveAt(i);
-                    i--;
-                }
-                if(i >= cloudTexValue.Count) cloudTexValue.Add(new Vector4(1.0f,0.01f,0.5f,0.05f));
-                cloudTexValue[i] *= 1000;
+                cloudTexValue.Add(new Vector4(1.0f,0.0f,0.5f,0.05f));
             }
+            if(cloudTexValue.Count > cloudTexPath.Count) cloudTexValue.RemoveRange(cloudTexPath.Count, cloudTexValue.Count - cloudTexPath.Count);
+            for(int i = noiseTexPath.Count; i < noiseTexPath.Count; i++)
+            {
+                noiseTexPath.Add("EarthCloudTex/noise");
+            }
+            if(noiseTexPath.Count > cloudTexPath.Count) noiseTexPath.RemoveRange(cloudTexPath.Count, noiseTexPath.Count - cloudTexPath.Count);
+            for(int i = noiseTexValue.Count; i < cloudTexPath.Count; i++)
+            {
+                noiseTexValue.Add(new Vector2(0.0f,0.015625f));
+            }
+            if(noiseTexValue.Count > cloudTexPath.Count) noiseTexValue.RemoveRange(cloudTexPath.Count, noiseTexValue.Count - cloudTexPath.Count);
             Scribe_Collections.Look(ref cloudTexPath, "cloudTexPath", LookMode.Value);
             Scribe_Collections.Look(ref cloudTexValue, "cloudTexValue", LookMode.Value);
+            Scribe_Collections.Look(ref noiseTexPath, "noiseTexPath", LookMode.Value);
+            Scribe_Collections.Look(ref noiseTexValue, "noiseTexValue", LookMode.Value);
             cloudTexPath = cloudTexPath ?? new List<string>();
             cloudTexValue = cloudTexValue ?? new List<Vector4>();
-            for(int i = 0; i < cloudTexPath.Count; i++)
+            noiseTexPath= noiseTexPath ?? new List<string>();
+            noiseTexValue = noiseTexValue ?? new List<Vector2>();
+
+            cloudTexPath.RemoveAll(x => x.NullOrEmpty());
+            for(int i = cloudTexValue.Count; i < cloudTexPath.Count; i++)
             {
-                if(cloudTexPath[i].NullOrEmpty())
-                {
-                    cloudTexPath.RemoveAt(i);
-                    if(i < cloudTexValue.Count) cloudTexValue.RemoveAt(i);
-                    i--;
-                }
-                if(i >= cloudTexValue.Count) cloudTexValue.Add(new Vector4(1.0f,0.01f,0.5f,0.05f) * 1024f);
-                cloudTexValue[i] /= 1000;
+                cloudTexValue.Add(new Vector4(1.0f,0.0f,0.5f,0.05f));
             }
+            if(cloudTexValue.Count > cloudTexPath.Count) cloudTexValue.RemoveRange(cloudTexPath.Count, cloudTexValue.Count - cloudTexPath.Count);
+            for(int i = noiseTexPath.Count; i < noiseTexPath.Count; i++)
+            {
+                noiseTexPath.Add("EarthCloudTex/noise");
+            }
+            if(noiseTexPath.Count > cloudTexPath.Count) noiseTexPath.RemoveRange(cloudTexPath.Count, noiseTexPath.Count - cloudTexPath.Count);
+            for(int i = noiseTexValue.Count; i < cloudTexPath.Count; i++)
+            {
+                noiseTexValue.Add(new Vector2(0.0f,0.015625f));
+            }
+            if(noiseTexValue.Count > cloudTexPath.Count) noiseTexValue.RemoveRange(cloudTexPath.Count, noiseTexValue.Count - cloudTexPath.Count);
         }
 
         public static void DoWindowContents(Rect inRect)
@@ -143,7 +164,7 @@ namespace RW_PlanetAtmosphere
             cloudTexPath = cloudTexPath ?? new List<string>();
             cloudTexPath.RemoveAll(x => x.NullOrEmpty());
             Widgets.DrawLineHorizontal(0,31,inRect.width);
-            Vector2 ScrollViewSize = new Vector2(inRect.width,sizeY + 32 + cloudTexPath.Count * 64);
+            Vector2 ScrollViewSize = new Vector2(inRect.width,sizeY);
             if(ScrollViewSize.y > inRect.height-64) ScrollViewSize.x -= 36;
             Widgets.BeginScrollView(new Rect(0,32,inRect.width,inRect.height-64),ref scrollPos,new Rect(Vector2.zero, ScrollViewSize));
 
@@ -261,27 +282,27 @@ namespace RW_PlanetAtmosphere
             sizeY+=32;
 
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"reayleighScatterFactor".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleighScatterFactor.x.ToString("f5")),out newValue);
-            reayleighScatterFactor.x = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleighScatterFactor.y.ToString("f5")),out newValue);
-            reayleighScatterFactor.y = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleighScatterFactor.z.ToString("f5")),out newValue);
-            reayleighScatterFactor.z = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleighScatterFactor.w.ToString("f5")),out newValue);
-            reayleighScatterFactor.w = newValue;
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"reayleigh_scatter".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.x.ToString("f5")),out newValue);
+            reayleigh_scatter.x = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.y.ToString("f5")),out newValue);
+            reayleigh_scatter.y = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.z.ToString("f5")),out newValue);
+            reayleigh_scatter.z = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.w.ToString("f5")),out newValue);
+            reayleigh_scatter.w = newValue;
             sizeY+=32;
 
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"OZoneAbsorbFactor".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZoneAbsorbFactor.x.ToString("f5")),out newValue);
-            OZoneAbsorbFactor.x = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZoneAbsorbFactor.y.ToString("f5")),out newValue);
-            OZoneAbsorbFactor.y = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZoneAbsorbFactor.z.ToString("f5")),out newValue);
-            OZoneAbsorbFactor.z = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZoneAbsorbFactor.w.ToString("f5")),out newValue);
-            OZoneAbsorbFactor.w = newValue;
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"OZone_absorb".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.x.ToString("f5")),out newValue);
+            OZone_absorb.x = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.y.ToString("f5")),out newValue);
+            OZone_absorb.y = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.z.ToString("f5")),out newValue);
+            OZone_absorb.z = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.w.ToString("f5")),out newValue);
+            OZone_absorb.w = newValue;
             sizeY+=32;
 
 
@@ -308,44 +329,79 @@ namespace RW_PlanetAtmosphere
             scatterLUTSize.w = (int)newValue;
             sizeY+=32;
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"cloudTexPath".Translate());
-            for(int i = 0; i < cloudTexPath.Count; i++)
-            {
-                if(cloudTexPath[i].NullOrEmpty())
-                {
-                    cloudTexPath.RemoveAt(i);
-                    if(i < cloudTexValue.Count) cloudTexValue.RemoveAt(i);
-                    i--;
-                }
-                if(i >= cloudTexValue.Count) cloudTexValue.Add(new Vector4(1.0f,0.01f,0.5f,0.05f));
-            }
 
-            
+            cloudTexPath = cloudTexPath ?? new List<string>();
+            cloudTexValue = cloudTexValue ?? new List<Vector4>();
+            noiseTexPath= noiseTexPath ?? new List<string>();
+            noiseTexValue = noiseTexValue ?? new List<Vector2>();
+            cloudTexPath.RemoveAll(x => x.NullOrEmpty());
+            for(int i = cloudTexValue.Count; i < cloudTexPath.Count; i++)
+            {
+                cloudTexValue.Add(new Vector4(1.0f,0.0f,0.5f,0.05f));
+            }
+            if(cloudTexValue.Count > cloudTexPath.Count) cloudTexValue.RemoveRange(cloudTexPath.Count, cloudTexValue.Count - cloudTexPath.Count);
+            for(int i = noiseTexPath.Count; i < noiseTexPath.Count; i++)
+            {
+                noiseTexPath.Add("EarthCloudTex/noise");
+            }
+            if(noiseTexPath.Count > cloudTexPath.Count) noiseTexPath.RemoveRange(cloudTexPath.Count, noiseTexPath.Count - cloudTexPath.Count);
+            for(int i = noiseTexValue.Count; i < cloudTexPath.Count; i++)
+            {
+                noiseTexValue.Add(new Vector2(0.0f,0.015625f));
+            }
+            if(noiseTexValue.Count > cloudTexPath.Count) noiseTexValue.RemoveRange(cloudTexPath.Count, noiseTexValue.Count - cloudTexPath.Count);
             for(int i = 0; i < cloudTexPath.Count; i++)
             {
-                cloudTexPath[i] = Widgets.TextField(new Rect(ScrollViewSize.x*0.5f, sizeY + 64 * i, ScrollViewSize.x*0.5f, 32), cloudTexPath[i]);
+                Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"cloudTexPath".Translate() + ":" + i.ToString());
+                cloudTexPath[i] = Widgets.TextField(new Rect(ScrollViewSize.x*0.5f, sizeY, ScrollViewSize.x*0.5f, 32), cloudTexPath[i]);
+                sizeY+=32;
+
+                Widgets.Label(new Rect(ScrollViewSize.x*0.1f,sizeY,ScrollViewSize.x*0.4f,32),"cloudTexValue".Translate());
                 Vector4 vector = new Vector4(1.0f,0.01f,0.5f,0.05f);
                 if(i < cloudTexValue.Count) vector = cloudTexValue[i];
                 else cloudTexValue.Add(vector);
-                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f, sizeY + 32 + 64 * i, ScrollViewSize.x*0.5f/4f, 32),vector.x.ToString("f5")),out newValue);
+                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f         , sizeY, ScrollViewSize.x*0.5f/4f, 32),vector.x.ToString("f5")),out newValue);
                 vector.x = Math.Abs(newValue);
-                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f, sizeY + 32 + 64 * i, ScrollViewSize.x*0.5f/4f, 32),vector.y.ToString("f5")),out newValue);
+                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f   , sizeY, ScrollViewSize.x*0.5f/4f, 32),vector.y.ToString("f5")),out newValue);
                 vector.y = Math.Abs(newValue);
-                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f, sizeY + 32 + 64 * i, ScrollViewSize.x*0.5f/4f, 32),vector.z.ToString("f5")),out newValue);
+                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f   , sizeY, ScrollViewSize.x*0.5f/4f, 32),vector.z.ToString("f5")),out newValue);
                 vector.z = Math.Abs(newValue);
-                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f, sizeY + 32 + 64 * i, ScrollViewSize.x*0.5f/4f, 32),vector.w.ToString("f5")),out newValue);
+                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f   , sizeY, ScrollViewSize.x*0.5f/4f, 32),vector.w.ToString("f5")),out newValue);
                 vector.w = Math.Abs(newValue);
                 cloudTexValue[i] = vector;
+                sizeY+=32;
+
+                Widgets.Label(new Rect(ScrollViewSize.x*0.1f,sizeY,ScrollViewSize.x*0.4f,32),"noiseTexPath".Translate());
+                string noise = "EarthCloudTex/noise";
+                if(i < noiseTexPath.Count) noise = noiseTexPath[i];
+                else noiseTexPath.Add(noise);
+                noiseTexPath[i] = Widgets.TextField(new Rect(ScrollViewSize.x*0.5f, sizeY, ScrollViewSize.x*0.5f, 32), noise);
+                sizeY+=32;
+
+                Widgets.Label(new Rect(ScrollViewSize.x*0.1f,sizeY,ScrollViewSize.x*0.4f,32),"noiseTexValue".Translate());
+                vector = new Vector2(0.0f,0.015625f);
+                if(i < noiseTexValue.Count) vector = noiseTexValue[i];
+                else noiseTexValue.Add(vector);
+                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f         , sizeY, ScrollViewSize.x*0.5f/2f, 32),vector.x.ToString("f5")),out newValue);
+                vector.x = newValue;
+                float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*3f/2f   , sizeY, ScrollViewSize.x*0.5f/2f, 32),vector.y.ToString("f5")),out newValue);
+                vector.y = Mathf.Abs(newValue);
+                noiseTexValue[i] = vector;
+                sizeY+=32;
             }
 
             // Log.Message($"new path : {480 + 32 * cloudTexPath.Count}; ScrollViewSize.y : {ScrollViewSize.y}");
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"cloudTexPath".Translate() + ":" + "new".Translate());
             string newPath = "";
-            newPath = Widgets.TextField(new Rect(ScrollViewSize.x*0.5f, sizeY + 64 * cloudTexPath.Count, ScrollViewSize.x*0.5f, 32), newPath);
+            newPath = Widgets.TextField(new Rect(ScrollViewSize.x*0.5f, sizeY, ScrollViewSize.x*0.5f, 32), newPath);
             if(newPath.Length > 0)
             {
                 cloudTexPath.Add(newPath);
                 cloudTexValue.Add(new Vector4(1.0f,0.01f,0.5f,0.05f));
+                noiseTexPath.Add("EarthCloudTex/noise");
+                noiseTexValue.Add(new Vector3(1.0f,0.0f,0.015625f));
             }
+            sizeY+=32;
 
             Widgets.DrawLineVertical(ScrollViewSize.x*0.5f,0,ScrollViewSize.y);
             Widgets.EndScrollView();
@@ -378,11 +434,13 @@ namespace RW_PlanetAtmosphere
                         mie_absorb = def.mie_absorb;
                         SunColor = def.SunColor;
                         mie_eccentricity = def.mie_eccentricity;
-                        reayleighScatterFactor = def.reayleighScatterFactor;
-                        OZoneAbsorbFactor = def.OZoneAbsorbFactor;
+                        reayleigh_scatter = def.reayleigh_scatter;
+                        OZone_absorb = def.OZone_absorb;
                         scatterLUTSize = def.scatterLUTSize;
                         cloudTexPath = def.cloudTexPath;
                         cloudTexValue = def.cloudTexValue;
+                        noiseTexPath = def.noiseTexPath;
+                        noiseTexValue = def.noiseTexValue;
                         translucentLUTSize.x = (int)Math.Abs(translucentLUTSize.x);
                         translucentLUTSize.y = (int)Math.Abs(translucentLUTSize.y);
                         scatterLUTSize.x = (int)Math.Abs(scatterLUTSize.x);
@@ -394,12 +452,6 @@ namespace RW_PlanetAtmosphere
                 }
                 Find.WindowStack.Add(new FloatMenu(options));
             }
-
-            ShaderLoader.materialSkyLUT.SetFloat("exposure", exposure);
-            ShaderLoader.materialSkyLUT.SetFloat("ground_refract", ground_refract);
-            ShaderLoader.materialSkyLUT.SetFloat("ground_light", ground_light);
-            ShaderLoader.materialSkyLUT.SetVector("SunColor", SunColor);
-            ShaderLoader.materialSkyLUT.SetVector("mie_eccentricity", mie_eccentricity);
 
         }
     }

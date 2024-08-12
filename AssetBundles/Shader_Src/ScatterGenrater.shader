@@ -1,4 +1,4 @@
-﻿Shader "Skybox/ScatterGenrater"
+﻿Shader "Planet/ScatterGenrater"
 {
     Properties
     {
@@ -15,10 +15,10 @@
         translucentLUT ("translucent LUT", 2D) = "white"{}
         scatterLUT ("scatter LUT", 2D) = "black"{}
         scatterLUT_Size ("scatterLUT_Size", Vector) = (0,0,0,0)
-        reayleighScatterFactor ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
+        reayleigh_scatter ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
         mie_scatter ("mie scatter", Vector) = (3.996,3.996,3.996,3.996)
         mie_absorb ("mie absorb", Vector) = (4.44,4.44,4.44,4.44)
-        OZoneAbsorbFactor ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,6.4)
+        OZone_absorb ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,6.4)
     }
     SubShader
     {
@@ -47,6 +47,12 @@
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
             };
+
+            struct f2s
+            {
+                float4 reayleighScatter : SV_TARGET0;
+                float4 mieScatter : SV_TARGET1;
+            };
             
             v2f vert (appdata v)
             {
@@ -56,14 +62,15 @@
                 return o;
             }
 
-            float4 frag (v2f i) : SV_Target
+            f2s frag (v2f i)
             {
+                f2s result;
                 i.uv *= scatterLUT_Size.xy*scatterLUT_Size.zw;
                 i.uv /= scatterLUT_Size.xy*scatterLUT_Size.zw-float2(1.0,1.0);
                 float4 ahlw = Map2AHLW(i.uv);
                 // return ahlw.yyyy-float4(minh,minh,minh,minh);
-                float4 res = GenScatterInfo(ahlw.x, ahlw.y, ahlw.z, ahlw.w);
-                return res;
+                GenScatterInfo(ahlw.x, ahlw.y, ahlw.z, ahlw.w,result.reayleighScatter,result.mieScatter);
+                return result;
             }
 
             ENDCG

@@ -24,16 +24,35 @@ namespace RW_PlanetAtmosphere
         public Vector4 mie_scatter              = Vector4.one * 3.996f / AtmosphereSettings.scale;
         public Vector4 mie_absorb               = Vector4.one * 4.44f / AtmosphereSettings.scale;
         public Vector4 mie_eccentricity         = new Vector4(0.618f,0.618f,0.618f,0.618f);
-        public Vector4 reayleighScatterFactor   = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/AtmosphereSettings.scale;
-        public Vector4 OZoneAbsorbFactor        = new Vector4(0.0f,0.0f,0.0f,6.4f)/AtmosphereSettings.scale;
+        public Vector4 reayleigh_scatter        = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/AtmosphereSettings.scale;
+        public Vector4 OZone_absorb             = new Vector4(0.0f,0.0f,0.0f,6.4f)/AtmosphereSettings.scale;
         public Vector4 SunColor                 = new Vector4(0.8f,0.72f,0.65f,0);
-        public Vector4 scatterLUTSize           = new Vector4( 8, 2, 2, 1);
+        public Vector4 scatterLUTSize           = new Vector4( 8, 2, 1, 2);
         public List<string> cloudTexPath        = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
         public List<Vector4> cloudTexValue      = new List<Vector4>(){new Vector4(1.0f,0.0f,0.5f,0.05f)};
+        public List<string> noiseTexPath        = new List<string>(){"EarthCloudTex/noise"};
+        public List<Vector2> noiseTexValue      = new List<Vector2>(){new Vector2(0.0f,0.015625f)};
 
         public override void ResolveReferences()
         {
             base.ResolveReferences();
+            cloudTexPath.RemoveAll(x => x.NullOrEmpty());
+            for(int i = cloudTexValue.Count; i < cloudTexPath.Count; i++)
+            {
+                cloudTexValue.Add(new Vector4(1.0f,0.0f,0.5f,0.05f));
+            }
+            if(cloudTexValue.Count > cloudTexPath.Count) cloudTexValue.RemoveRange(cloudTexPath.Count, cloudTexValue.Count - cloudTexPath.Count);
+            for(int i = noiseTexPath.Count; i < noiseTexPath.Count; i++)
+            {
+                noiseTexPath.Add("EarthCloudTex/noise");
+            }
+            if(noiseTexPath.Count > cloudTexPath.Count) noiseTexPath.RemoveRange(cloudTexPath.Count, noiseTexPath.Count - cloudTexPath.Count);
+            for(int i = noiseTexValue.Count; i < cloudTexPath.Count; i++)
+            {
+                noiseTexValue.Add(new Vector2(0.0f,0.015625f));
+            }
+            if(noiseTexValue.Count > cloudTexPath.Count) noiseTexValue.RemoveRange(cloudTexPath.Count, noiseTexValue.Count - cloudTexPath.Count);
+
             translucentLUTSize.x = (int)Math.Abs(translucentLUTSize.x);
             translucentLUTSize.y = (int)Math.Abs(translucentLUTSize.y);
             scatterLUTSize.x = (int)Math.Abs(scatterLUTSize.x);

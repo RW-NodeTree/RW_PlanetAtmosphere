@@ -1,11 +1,12 @@
 
 sampler2D translucentLUT;
-sampler2D scatterLUT;
+sampler2D scatterLUT_Reayleigh;
+sampler2D scatterLUT_Mie;
 float4 translucentLUT_TexelSize;
 float4 scatterLUT_Size;
 float4 mie_eccentricity;
-float4 reayleighScatterFactor;
-float4 OZoneAbsorbFactor;
+float4 reayleigh_scatter;
+float4 OZone_absorb;
 float4 mie_scatter;
 float4 mie_absorb;
 float minh;
@@ -25,40 +26,44 @@ float lengthAHLW_W;
 
 #define PI 3.1415926535897932384626433832795
 
-            
+float bright(float3 L)
+{
+    return L.x * 0.299 + L.y * 0.587 + L.z * 0.114;
+}
+
 float3 hdr(float3 L) 
 {
-    L = L * exposure;
+    L *= exposure;
     // L = lerp(pow(L * 0.38317, 1.0 / 2.2) , float3(1.0,1.0,1.0) - exp(-L), step(1.413,L));
     L = float3(1.0,1.0,1.0) - exp(-L);
     return L;
 }
 
-float3 ACESTonemap(float3 color){
-    const float a = 2.51;  // Default: 2.51f
-    const float b = 0.03;  // Default: 0.03f
-    const float c = 2.43;  // Default: 2.43f
-    const float d = 0.59;  // Default: 0.59f
-    const float e = 0.14;  // Default: 0.14f
-    const float p = 1.3;
-    const float overlap = 0.2;
-    
-    const float rgOverlap = 0.1 * overlap;
-    const float rbOverlap = 0.01 * overlap;
-    const float gbOverlap = 0.04 * overlap;
-    
-    const float3x3 coneOverlap = float3x3(
-                                            1.0,        rgOverlap,  rbOverlap,
-                                            rgOverlap,  1.0, 		gbOverlap,
-                                            rbOverlap, 	rgOverlap, 	1.0
-                                        );
-    
-    const float3x3 coneOverlapInverse = float3x3(
-                                                    1.0 + (rgOverlap + rbOverlap),  -rgOverlap, 	                -rbOverlap,
-                                                    -rgOverlap, 		            1.0 + (rgOverlap + gbOverlap),  -gbOverlap,
-                                                    -rbOverlap, 		            -rgOverlap, 	                1.0 + (rbOverlap + rgOverlap)
+static const float a = 2.51;  // Default: 2.51f
+static const float b = 0.03;  // Default: 0.03f
+static const float c = 2.43;  // Default: 2.43f
+static const float d = 0.59;  // Default: 0.59f
+static const float e = 0.14;  // Default: 0.14f
+static const float p = 1.3;
+static const float overlap = 0.2;
+
+static const float rgOverlap = 0.1 * overlap;
+static const float rbOverlap = 0.01 * overlap;
+static const float gbOverlap = 0.04 * overlap;
+
+static const float3x3 coneOverlap = float3x3(
+                                                1.0,        rgOverlap,  rbOverlap,
+                                                rgOverlap,  1.0, 		gbOverlap,
+                                                rbOverlap, 	rgOverlap, 	1.0
+                                            );
+
+static const float3x3 coneOverlapInverse = float3x3(
+                                                        1.0 + (rgOverlap + rbOverlap),  -rgOverlap, 	                -rbOverlap,
+                                                        -rgOverlap, 		            1.0 + (rgOverlap + gbOverlap),  -gbOverlap,
+                                                        -rbOverlap, 		            -rgOverlap, 	                1.0 + (rbOverlap + rgOverlap)
                                                     );
-    
+
+float3 ACESTonemap(float3 color){
     color = mul(coneOverlap,color);
     color = pow(color, float3(p,p,p));
     color = (color * (a * color + b)) / (color * (c * color + d) + e);
@@ -74,28 +79,16 @@ float2 Map2AH(float2 map)
     map.y *= map.y;
     map.y *= maxh - minh;
     map.y += minh;
+    float angRange = PI - asin(clamp(minh/map.y,-1.0,1.0)); //p
     
-    float horizonAngA = asin(clamp(minh/map.y,-1.0,1.0)); //p
-    float horizonAngB = PI - horizonAngA; //p
-    float ang = map.x*(1.0+sqrt(horizonAngA/horizonAngB))-1.0;
-    map.x = horizonAngB*(1.0+sign(ang)*ang*ang);
-    map = clamp(map,float2(0.0,minh),float2(PI,maxh));
+
+    // float ang = 2.0*map.x-1.0;
+    // map.x = 0.5*PI*(1.0+sign(ang)*ang*ang);
+    map.x *= map.x;
+    map.x = 1.0 - map.x;
+    map.x *= angRange;
+    map = clamp(map,float2(0.0,minh),float2(angRange,maxh));
     return map;
-}
-
-float2 AH2Map(float2 ah)
-{
-    ah = clamp(ah,float2(0.0,minh),float2(PI,maxh));
-
-    float horizonAngA = asin(clamp(minh/ah.y,-1.0,1.0)); //p
-    float horizonAngB = PI - horizonAngA; //p
-    float ang = ah.x / horizonAngB - 1.0;
-    ah.x = (1.0 + sign(ang) * sqrt(abs(ang)))/(1.0 + sqrt(horizonAngA/horizonAngB));
-    ah.y -= minh;
-    ah.y /= maxh - minh;
-    ah.y = sqrt(ah.y);
-    ah = clamp(ah,float2(0.0,0.0),float2(1.0,1.0));
-    return ah;
 }
 
 
@@ -107,14 +100,31 @@ float4 Map2AHLW(float2 map)
     result.zw = floor(result.zw / scatterLUT_Size.xy);
     result.xy = (result.xy - result.zw * scatterLUT_Size.xy) / (scatterLUT_Size.xy - float2(1.0,1.0));
     result.zw = result.zw / (scatterLUT_Size.zw - float2(1.0,1.0));
-    // result = result.xzyw;
+    // result = result.ywzx;
+    //xyzw=wxzy
+    //yxwz=xwyz
+    //ywzx=xyzw
+    result = result.xwyz;
 
-    result.xy = Map2AH(result.xy);
+    result.xy = clamp(result.xy,float2(0.0,0.0),float2(1.0,1.0));
+    result.y *= result.y;
+    result.y *= maxh - minh;
+    result.y += minh;
+    
+    float horizonAngA = asin(clamp(minh/result.y,-1.0,1.0)); //p
+    float horizonAngB = PI - horizonAngA; //p
+    float ang = result.x*(1.0+sqrt(horizonAngA/horizonAngB))-1.0;
+    result.x = horizonAngB*(1.0+sign(ang)*ang*ang);
+
+    // float ang = 2.0*map.x-1.0;
+    // map.x = 0.5*PI*(1.0+sign(ang)*ang*ang);
+    result.xy = clamp(result.xy,float2(0.0,minh),float2(PI,maxh));
+    // result.xy = Map2AH(result.xy);
     // result.w *= PI;
     float2 deltaAHLW_Div_PI = 2.0 * float2(deltaAHLW_L, deltaAHLW_W) / PI;
     result.zw *= float2(lengthAHLW_L, lengthAHLW_W);
-    result.zw -= 0.5;
     result.zw *= 2.0;
+    result.zw -= 1.0;
     result.zw *= sign(deltaAHLW_Div_PI) * (1.0 - exp(-abs(deltaAHLW_Div_PI)));
     result.zw = -sign(result.zw)*log(max(0.0,1.0-abs(result.zw)));
     result.zw /= -deltaAHLW_Div_PI;
@@ -123,12 +133,11 @@ float4 Map2AHLW(float2 map)
 }
 
 
-float4 translucent(float4 light, float4 scatterAndAbsorb, float dens)
+float4 translucent(float4 densSum)
 {
-    float4 result = dens * scatterAndAbsorb;
-    result = max(float4(0.0,0.0,0.0,0.0),result);
-    result = exp(-result);
-    return light * result;
+    densSum = max(float4(0.0,0.0,0.0,0.0),densSum);
+    densSum = exp(-densSum);
+    return densSum;
 }
 
 float IngOZoneDensity(float x, float h)
@@ -196,8 +205,6 @@ float IngOZoneDensity(float x, float h)
     return result * sign(x);
 }
 
-
-
 void IngAirDensityFromTo(in float x0,in float end,in float h, out float reayleigh, out float mie)
 {
     reayleigh = 0.0;
@@ -206,26 +213,12 @@ void IngAirDensityFromTo(in float x0,in float end,in float h, out float reayleig
     float prve_H = sqrt(x0*x0+h*h)-minh;
     float prve_reayleigh = exp(-prve_H/H_Reayleigh);
     float prve_mie = exp(-prve_H/H_Mie);
-    // float prve_mie = prve_reayleigh * prve_reayleigh;
-    // prve_mie *= prve_mie * prve_mie * prve_reayleigh;
     for(int i = 1; i < ingCount; i++)
     {
         float pos = x0+d*float(i);
         float current_H = sqrt(pos*pos+h*h)-minh;
         float current_reayleigh = exp(-current_H/H_Reayleigh);
         float current_mie = exp(-current_H/H_Mie);
-        // float current_mie = current_reayleigh * current_reayleigh;
-        // current_mie *= current_mie * current_mie * current_reayleigh;
-        // if(abs(pos) > d)
-        // {
-        //     reayleigh += H_Reayleigh * (prve_reayleigh - current_reayleigh) * d / (current_H - prve_H);
-        //     mie += H_Mie * (prve_mie - current_mie) * d / (current_H - prve_H);
-        // }
-        // else
-        // {
-        //     reayleigh += (prve_reayleigh + current_reayleigh) * d * 0.5;
-        //     mie += (prve_mie + current_mie) * d * 0.5;
-        // }
         reayleigh += (prve_reayleigh + current_reayleigh) * d * 0.5;
         mie += (prve_mie + current_mie) * d * 0.5;
         prve_H = current_H;
@@ -252,27 +245,61 @@ void IngAirDensity(in float x0, in float h, out float reayleigh, out float mie, 
 
 float4 translucentFromLUT(float2 ah)
 {
-    // if(ah.y < minh) return float3(0.0,0.0,0.0);
-    ah = AH2Map(ah);
+    float angRange = PI - asin(clamp(minh/ah.y,-1.0,1.0)); //p
+    ah.x /= angRange;
+    ah.x = 1.0 - ah.x;
+    ah.x = min(ah.x,1.0);
+    if(ah.x < 0.0) return 0.0;
+    ah.x = sqrt(ah.x);
+
+    // float ang = 2.0 * ah.x / PI - 1.0;
+    // ah.x = (1.0 + sign(ang) * sqrt(abs(ang)))/2.0;
+
+
+    ah.y -= minh;
+    ah.y /= maxh - minh;
+    ah.y = min(ah.y,1.0);
+    if(ah.y < 0.0) return 0.0;
+    ah.y = sqrt(ah.y);
+
     ah = (ah * (translucentLUT_TexelSize.zw - float2(1.0,1.0)) + float2(0.5,0.5)) * translucentLUT_TexelSize.xy;
     return clamp(tex2Dlod(translucentLUT,float4(ah.x,ah.y,0.0,0.0)), 0.0, 1.0);
 }
 
-float4 scatterFromLUT(float4 ahlw)
+void scatterFromLUT(float4 ahlw, out float4 reayleigh, out float4 mie)
 {
     float2 deltaAHLW_Div_PI = 2.0 * float2(deltaAHLW_L, deltaAHLW_W) / PI;
     ahlw.zw = cos(ahlw.zw);
     ahlw.zw *= -deltaAHLW_Div_PI;
     ahlw.zw = sign(ahlw.zw) * (1.0 - exp(-abs(ahlw.zw)));
     ahlw.zw /= sign(deltaAHLW_Div_PI) * (1.0 - exp(-abs(deltaAHLW_Div_PI)));
-    ahlw.zw *= 0.5;
-    ahlw.zw += 0.5;
+    ahlw.zw += 1.0;
+    ahlw.zw /= 2.0;
     ahlw.zw /= float2(lengthAHLW_L, lengthAHLW_W);
-    if(ahlw.z > 1.0) return float4(0.0,0.0,0.0,0.0);
+    if(ahlw.z > 1.0)
+    {
+        reayleigh = 0.0;
+        mie = 0.0;
+        return;
+    }
     // ahlw.w /= PI;
-    ahlw.xy = AH2Map(ahlw.xy);
+    // ahlw.xy = AH2Map(ahlw.xy);
     
-    // ahlw = ahlw.xzyw;
+    ahlw.xy = clamp(ahlw.xy,float2(0.0,minh),float2(PI,maxh));
+
+    float horizonAngA = asin(clamp(minh/ahlw.y,-1.0,1.0)); //p
+    float horizonAngB = PI - horizonAngA; //p
+    float ang = ahlw.x / horizonAngB - 1.0;
+    ahlw.x = (1.0 + sign(ang) * sqrt(abs(ang)))/(1.0 + sqrt(horizonAngA/horizonAngB));
+
+
+    ahlw.y -= minh;
+    ahlw.y /= maxh - minh;
+    ahlw.y = sqrt(ahlw.y);
+    ahlw.xy = clamp(ahlw.xy,float2(0.0,0.0),float2(1.0,1.0));
+
+    // ahlw = ahlw.wxzy;
+    ahlw = ahlw.xzwy;
 
     ahlw = clamp(ahlw,0.0,1.0) * (scatterLUT_Size - float4(1.0,1.0,1.0,1.0));
     ahlw.xy += float2(0.5,0.5);
@@ -283,15 +310,16 @@ float4 scatterFromLUT(float4 ahlw)
     float2 wTo = clamp(ahlw.zw - zwFloor,0.0,1.0);
     float2 wFrom = float2(1.0,1.0) - wTo;
 
-    return  (tex2Dlod(scatterLUT,float4(from.x,from.y,0.0,0.0)) * wFrom.y + tex2Dlod(scatterLUT,float4(from.x,to.y,0.0,0.0)) * wTo.y) * wFrom.x +
-            (tex2Dlod(scatterLUT,float4(to.x,from.y,0.0,0.0)) * wFrom.y + tex2Dlod(scatterLUT,float4(to.x,to.y,0.0,0.0)) * wTo.y) * wTo.x;
+    reayleigh   =   (tex2Dlod(scatterLUT_Reayleigh,float4(from.x,from.y,0.0,0.0)) * wFrom.y + tex2Dlod(scatterLUT_Reayleigh,float4(from.x,to.y,0.0,0.0)) * wTo.y) * wFrom.x +
+                    (tex2Dlod(scatterLUT_Reayleigh,float4(to.x,from.y,0.0,0.0)) * wFrom.y + tex2Dlod(scatterLUT_Reayleigh,float4(to.x,to.y,0.0,0.0)) * wTo.y) * wTo.x;
+    mie         =   (tex2Dlod(scatterLUT_Reayleigh,float4(from.x,from.y,0.0,0.0)) * wFrom.y + tex2Dlod(scatterLUT_Reayleigh,float4(from.x,to.y,0.0,0.0)) * wTo.y) * wFrom.x +
+                    (tex2Dlod(scatterLUT_Reayleigh,float4(to.x,from.y,0.0,0.0)) * wFrom.y + tex2Dlod(scatterLUT_Reayleigh,float4(to.x,to.y,0.0,0.0)) * wTo.y) * wTo.x;
 }
 
-float4 GenScatterInfo(float viewAng, float height, float lightAng, float lightToViewAng)
+void GenScatterInfo(float viewAng, float height, float lightAng, float lightToViewAng, out float4 reayleighScatter, out float4 mieScatter)
 {
-    float4 mieScatterFactor = mie_scatter;
-    float4 mieAbsorbFactor = mie_absorb;
-    float4 result = float4(0.0,0.0,0.0,0.0);
+    reayleighScatter = float4(0.0,0.0,0.0,0.0);
+    mieScatter = float4(0.0,0.0,0.0,0.0);
 
     float x0 = cos(viewAng)*height;
     float h0 = sin(viewAng)*height;
@@ -348,16 +376,11 @@ float4 GenScatterInfo(float viewAng, float height, float lightAng, float lightTo
             float mieScatterAmount = (prve_mie + current_mie) * d * 0.5;
 
 
-            float4 reayleighScatterLight = (prve_light + current_light) * 0.5 * reayleighScatterAmount * reayleighScatterFactor;
-            float4 mieScatterLight = (prve_light + current_light) * 0.5 * mieScatterAmount * mieScatterFactor;
-            reayleighScatterLight = translucent(reayleighScatterLight, reayleighScatterFactor, reayleigh);
-            reayleighScatterLight = translucent(reayleighScatterLight, mieScatterFactor + mieAbsorbFactor, mie);
-            reayleighScatterLight = translucent(reayleighScatterLight, OZoneAbsorbFactor, prve_oZone - oZone);
-            mieScatterLight = translucent(mieScatterLight, reayleighScatterFactor, reayleigh);
-            mieScatterLight = translucent(mieScatterLight, mieScatterFactor + mieAbsorbFactor, mie);
-            mieScatterLight = translucent(mieScatterLight, OZoneAbsorbFactor, prve_oZone - oZone);
-            result += reayleighScatterLight;
-            result += mieScatterLight;
+            float4 reayleighScatterLight = (prve_light + current_light) * 0.5 * reayleighScatterAmount * reayleigh_scatter;
+            float4 mieScatterLight = (prve_light + current_light) * 0.5 * mieScatterAmount * mie_scatter;
+            float4 trans = translucent(reayleigh_scatter * reayleigh) * translucent((mie_scatter + mie_absorb) * mie) * translucent(OZone_absorb * (prve_oZone - oZone));
+            reayleighScatter += reayleighScatterLight * trans;
+            mieScatter += mieScatterLight * trans;
 
 
             reayleigh += reayleighScatterAmount;
@@ -369,7 +392,8 @@ float4 GenScatterInfo(float viewAng, float height, float lightAng, float lightTo
             prve_light = current_light;
         }
     }
-    return max(result, float4(0.0,0.0,0.0,0.0));
+    reayleighScatter = max(reayleighScatter, float4(0.0,0.0,0.0,0.0));
+    mieScatter = max(mieScatter, float4(0.0,0.0,0.0,0.0));
 }
 
 
@@ -452,95 +476,68 @@ float4 mieStrong(float cosw)
     return 0.07957747154594766788444188168626*(float4(1.0,1.0,1.0,1.0)-g)*(1.0+cosw*cosw)/((float4(2.0,2.0,2.0,2.0)+g)*pow(float4(1.0,1.0,1.0,1.0)+g-2.0*mie*cosw,float4(1.5,1.5,1.5,1.5)));
 }
 
-float4 getScatterInfo(float3 viewDir, float3 lightDir, float4 lightColor, float4 transGround, float h, float depth)
+void getTranslucents(IngAirFogPropInfo infos, out float4 translucentLight, out float4 translucentGround)
 {
-    // const float3 reayleighScatterFactor = float3(0.58,1.35,3.31);
-    // const float3 OZoneAbsorbFactor = float3(0.21195,0.20962,0.01686);
-    // const float3 OZoneAbsorbFactor = float3(0.065,0.1881,0.0085);
-    float4 mieScatterFactor = mie_scatter;
-    float4 mieAbsorbFactor = mie_absorb;
-    // float3 offset = float3(0.0);
-    h = abs(h);
-    float a = acos(clamp(viewDir.y,-1.0,1.0));
-    float l = acos(clamp(lightDir.y,-1.0,1.0));
-    float w = acos(clamp(dot(normalize(viewDir.xz),normalize(lightDir.xz)),-1.0,1.0));
-    // float h0 = h * length(viewDir.xz);
-    if (h < minh) return float4(0.0,0.0,0.0,0.0);
-
-    // float d = SAMPLE
-
-    lightColor = abs(lightColor);
-    float cosw = dot(viewDir,lightDir);
-    float4 all = scatterFromLUT(float4(a,h,l,w)) * lightColor;
-    all = max(all,0.0);
-
-    // return all;
-
-    float3 p = depth * viewDir + float3(0.0,h,0.0);
-    h = length(p);
-
-    // return transGround;
-    
+    float3 p = infos.depth * infos.viewDir + float3(0.0,infos.h,0.0);
+    float viewAngS = acos(clamp(infos.viewDir.y,-1.0,1.0));
+    float h = length(p);
+    translucentLight = step(minh, infos.h);
+    translucentGround = translucentLight * translucentFromLUT(float2(viewAngS,infos.h));
+    p /= h;
+    h = max(minh,h);
     if(h < maxh)
     {
-        a = acos(clamp(dot(viewDir,p / h),-1.0,1.0));
-        l = acos(clamp(dot(lightDir,p / h),-1.0,1.0));
-        h = max(h,minh);
-        // return scatterFromLUT(float4(a,h,l,w));
-        // w = acos(clamp(dot(normalize(viewDir.xz),normalize(lightDir.xz)),-1.0,1.0));
-        all -= scatterFromLUT(float4(a,h,l,w)) * lightColor * transGround;
-        all = max(all,0.0);
+        float lightAng = acos(clamp(dot(infos.lightDir,p),-1.0,1.0));
+        float viewAngG = acos(clamp(dot(infos.viewDir,p),-1.0,1.0));
+        if(2.0 * viewAngG < PI) translucentGround = clamp(translucentGround / translucentFromLUT(float2(viewAngG,h)),0.0,1.0);
+        else translucentGround = clamp(translucentFromLUT(float2(PI - viewAngG,h)) / translucentFromLUT(float2(PI - viewAngS,infos.h)),0.0,1.0);
+        translucentGround *= translucentLight;
+        translucentLight *= translucentFromLUT(float2(lightAng,h));
     }
-
-    // return float4(a,h,l,w).yyy;
-    float4 r = all * reayleighScatterFactor / (reayleighScatterFactor + mieScatterFactor);
-    float4 m = all * mieScatterFactor / (reayleighScatterFactor + mieScatterFactor);
-    
-    float reayleigh = reayleighStrong(cosw);
-    // float reayleigh = 0.620350490899400016668;
-    float4 mie = mieStrong(cosw);
-    // float3 mie = (mie_eccentricity * 2.0 - float3(1.0)) * 0.310175245449700008334;
-    r *= reayleigh * reayleighScatterFactor;
-    m *= mie * mieScatterFactor;
-    return r + m;
 }
 
 //blocked light
-float4 LightScatter(IngAirFogPropInfo infos, float4 lightColor, float4 surfaceColor, float4 surfaceLight, out float4 transGround)
+float4 LightScatter(IngAirFogPropInfo infos, float4 lightColor, float4 surfaceColor, float4 surfaceLight, out float4 translucentLight, out float4 translucentGround, out float4 reayleighScatter, out float4 mieScatter)
 {
-    // const float3 reayleighScatterFactor = float3(0.58,1.35,3.31);
-    // const float3 OZoneAbsorbFactor = float3(0.21195,0.20962,0.01686);
-    // const float3 OZoneAbsorbFactor = float3(0.065,0.1881,0.0085);
+    float4 result = 0.0;
     float viewAngS = acos(clamp(infos.viewDir.y,-1.0,1.0));
-    float4 transLight = float4(1.0,1.0,1.0,1.0);
-    float4 mieScatterFactor = mie_scatter;
-    float4 mieAbsorbFactor = mie_absorb;
-
-    transGround = translucentFromLUT(float2(viewAngS,infos.h));
-    float4 result = float4(0.0,0.0,0.0,0.0);
-
-    // float h0 = infos.h * length(infos.viewDir.xz);
-    // float x0 = infos.h * infos.viewDir.y;
+    float a = acos(clamp(infos.viewDir.y,-1.0,1.0));
+    float l = acos(clamp(infos.lightDir.y,-1.0,1.0));
+    float w = acos(clamp(dot(normalize(infos.viewDir.xz),normalize(infos.lightDir.xz)),-1.0,1.0));
+    translucentLight = step(minh, infos.h);
+    translucentGround = translucentLight * translucentFromLUT(float2(viewAngS,infos.h));
+    scatterFromLUT(float4(a,infos.h,l,w),reayleighScatter,mieScatter);
+    reayleighScatter = max(reayleighScatter * translucentLight,0.0);
+    mieScatter = max(mieScatter * translucentLight,0.0);
     float3 p = infos.depth * infos.viewDir + float3(0.0,infos.h,0.0);
-    if(infos.h <= maxh)
+    float h = length(p);
+    p /= h;
+    h = max(minh,h);
+    if(h < maxh)
     {
-        float h = length(p);
-        if(h < maxh)
-        {
-            float lightAng = acos(clamp(dot(infos.lightDir,p / h),-1.0,1.0));
-            float viewAngG = acos(clamp(dot(infos.viewDir,p / h),-1.0,1.0));
-            h = max(h,minh);
-            transLight = translucentFromLUT(float2(lightAng,h));
-            if(2.0 * viewAngG < PI) transGround = clamp(transGround / translucentFromLUT(float2(viewAngG,h)),0.0,1.0);
-            else transGround = clamp(translucentFromLUT(float2(PI - viewAngG,h)) / translucentFromLUT(float2(PI - viewAngS,infos.h)),0.0,1.0);
-            
-            surfaceLight += surfaceColor * lightColor * transLight;
-            surfaceLight *= transGround;
-            result += max(surfaceLight,0.0);
-            // return surfaceColor;
-        }
-        result += getScatterInfo(infos.viewDir,infos.lightDir,lightColor,transGround,infos.h,infos.depth);
+        float lightAng = acos(clamp(dot(infos.lightDir,p),-1.0,1.0));
+        float viewAngG = acos(clamp(dot(infos.viewDir,p),-1.0,1.0));
+        if(2.0 * viewAngG < PI) translucentGround = clamp(translucentGround / translucentFromLUT(float2(viewAngG,h)),0.0,1.0);
+        else translucentGround = clamp(translucentFromLUT(float2(PI - viewAngG,h)) / translucentFromLUT(float2(PI - viewAngS,infos.h)),0.0,1.0);
+        translucentGround *= translucentLight;
+        translucentLight *= translucentFromLUT(float2(lightAng,h));
+        result = (surfaceColor * translucentLight * lightColor + surfaceLight) * translucentGround;
+        result = max(result,0.0);
+
+        a = acos(clamp(dot(infos.viewDir,p),-1.0,1.0));
+        l = acos(clamp(dot(infos.lightDir,p),-1.0,1.0));
+        float4 reayleighScatter_out;
+        float4 mieScatter_out;
+        scatterFromLUT(float4(a,h,l,w),reayleighScatter_out,mieScatter_out);
+        reayleighScatter -= max(reayleighScatter_out * translucentGround,0.0);
+        mieScatter -= max(mieScatter_out * translucentGround,0.0);
     }
-    // return transGround;
-    return max(float4(0.0,0.0,0.0,0.0),result);
+    // reayleighScatter = scatter * reayleigh_scatter / (reayleigh_scatter + mie_scatter);
+    // mieScatter = scatter * mie_scatter / (reayleigh_scatter + mie_scatter);
+    
+    float cosw = dot(infos.viewDir,infos.lightDir);
+    reayleighScatter *= reayleighStrong(cosw);
+    mieScatter *= mieStrong(cosw);
+    result += (reayleighScatter + mieScatter) * lightColor;
+    return max(result,0.0);
 }
