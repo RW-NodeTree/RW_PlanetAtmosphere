@@ -315,21 +315,21 @@ namespace RW_PlanetAtmosphere
                         };
                         scatterLUT_Mie.Create();
                     }
-                    UpdateMaterialLUT(materialSkyLUT);
-                    UpdateMaterialStatic(materialSkyLUT);
 
                     materialTranslucentGenrater = materialTranslucentGenrater ?? new Material(TranslucentGenrater);
                     materialScatterGenrater = materialScatterGenrater ?? new Material(ScatterGenrater);
 
-                    UpdateMaterialLUT(materialTranslucentGenrater);
                     UpdateMaterialStatic(materialTranslucentGenrater);
+                    UpdateMaterialLUT(materialTranslucentGenrater);
                     Graphics.Blit(null, translucentLUT, materialTranslucentGenrater);
                     
-                    UpdateMaterialLUT(materialScatterGenrater);
                     UpdateMaterialStatic(materialScatterGenrater);
+                    UpdateMaterialLUT(materialScatterGenrater);
                     Graphics.SetRenderTarget(new RenderBuffer[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, scatterLUT_Reayleigh.depthBuffer);
                     Graphics.Blit(null, materialScatterGenrater);
                     RenderTexture.active = null;
+                    UpdateMaterialStatic(materialSkyLUT);
+                    UpdateMaterialLUT(materialSkyLUT);
 
                     
                     
