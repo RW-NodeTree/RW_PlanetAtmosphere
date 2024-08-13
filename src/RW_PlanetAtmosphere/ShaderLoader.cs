@@ -34,29 +34,29 @@ namespace RW_PlanetAtmosphere
 
 
 #region propsIDs
-        private static int propId_exposure              ;
-        private static int propId_ground_refract        ;
-        private static int propId_ground_light          ;
-        private static int propId_deltaAHLW_L           ;
-        private static int propId_deltaAHLW_W           ;
-        private static int propId_lengthAHLW_L          ;
-        private static int propId_lengthAHLW_W          ;
-        private static int propId_minh                  ;
-        private static int propId_maxh                  ;
-        private static int propId_H_Reayleigh           ;
-        private static int propId_H_Mie                 ;
-        private static int propId_H_OZone               ;
-        private static int propId_D_OZone               ;
-        private static int propId_SunColor              ;
-        private static int propId_mie_eccentricity      ;
-        private static int propId_scatterLUT_Size       ;
-        private static int propId_reayleigh_scatter     ;
-        private static int propId_mie_scatter           ;
-        private static int propId_mie_absorb            ;
-        private static int propId_OZone_absorb          ;
-        private static int propId_translucentLUT        ;
-        private static int propId_scatterLUT_Reayleigh  ;
-        private static int propId_scatterLUT_Mie        ;
+        private static int propId_exposure              = Shader.PropertyToID("exposure");
+        private static int propId_ground_refract        = Shader.PropertyToID("ground_refract");
+        private static int propId_ground_light          = Shader.PropertyToID("ground_light");
+        private static int propId_deltaAHLW_L           = Shader.PropertyToID("deltaAHLW_L");
+        private static int propId_deltaAHLW_W           = Shader.PropertyToID("deltaAHLW_W");
+        private static int propId_lengthAHLW_L          = Shader.PropertyToID("lengthAHLW_L");
+        private static int propId_lengthAHLW_W          = Shader.PropertyToID("lengthAHLW_W");
+        private static int propId_minh                  = Shader.PropertyToID("minh");
+        private static int propId_maxh                  = Shader.PropertyToID("maxh");
+        private static int propId_H_Reayleigh           = Shader.PropertyToID("H_Reayleigh");
+        private static int propId_H_Mie                 = Shader.PropertyToID("H_Mie");
+        private static int propId_H_OZone               = Shader.PropertyToID("H_OZone");
+        private static int propId_D_OZone               = Shader.PropertyToID("D_OZone");
+        private static int propId_SunColor              = Shader.PropertyToID("SunColor");
+        private static int propId_mie_eccentricity      = Shader.PropertyToID("mie_eccentricity");
+        private static int propId_scatterLUT_Size       = Shader.PropertyToID("scatterLUT_Size");
+        private static int propId_reayleigh_scatter     = Shader.PropertyToID("reayleigh_scatter");
+        private static int propId_mie_scatter           = Shader.PropertyToID("mie_scatter");
+        private static int propId_mie_absorb            = Shader.PropertyToID("mie_absorb");
+        private static int propId_OZone_absorb          = Shader.PropertyToID("OZone_absorb");
+        private static int propId_translucentLUT        = Shader.PropertyToID("translucentLUT");
+        private static int propId_scatterLUT_Reayleigh  = Shader.PropertyToID("scatterLUT_Reayleigh");
+        private static int propId_scatterLUT_Mie        = Shader.PropertyToID("scatterLUT_Mie");
         
 #endregion
 
@@ -116,29 +116,6 @@ namespace RW_PlanetAtmosphere
             }
             if (loadedCount >= 4)
             {
-                propId_exposure              = Shader.PropertyToID("exposure");
-                propId_ground_refract        = Shader.PropertyToID("ground_refract");
-                propId_ground_light          = Shader.PropertyToID("ground_light");
-                propId_deltaAHLW_L           = Shader.PropertyToID("deltaAHLW_L");
-                propId_deltaAHLW_W           = Shader.PropertyToID("deltaAHLW_W");
-                propId_lengthAHLW_L          = Shader.PropertyToID("lengthAHLW_L");
-                propId_lengthAHLW_W          = Shader.PropertyToID("lengthAHLW_W");
-                propId_minh                  = Shader.PropertyToID("minh");
-                propId_maxh                  = Shader.PropertyToID("maxh");
-                propId_H_Reayleigh           = Shader.PropertyToID("H_Reayleigh");
-                propId_H_Mie                 = Shader.PropertyToID("H_Mie");
-                propId_H_OZone               = Shader.PropertyToID("H_OZone");
-                propId_D_OZone               = Shader.PropertyToID("D_OZone");
-                propId_SunColor              = Shader.PropertyToID("SunColor");
-                propId_mie_eccentricity      = Shader.PropertyToID("mie_eccentricity");
-                propId_scatterLUT_Size       = Shader.PropertyToID("scatterLUT_Size");
-                propId_reayleigh_scatter     = Shader.PropertyToID("reayleigh_scatter");
-                propId_mie_scatter           = Shader.PropertyToID("mie_scatter");
-                propId_mie_absorb            = Shader.PropertyToID("mie_absorb");
-                propId_OZone_absorb          = Shader.PropertyToID("OZone_absorb");
-                propId_translucentLUT        = Shader.PropertyToID("translucentLUT");
-                propId_scatterLUT_Reayleigh  = Shader.PropertyToID("scatterLUT_Reayleigh");
-                propId_scatterLUT_Mie        = Shader.PropertyToID("scatterLUT_Mie");
                 materialSkyLUT = new Material(SkyBox_LUT)
                 {
                     renderQueue = 3555
@@ -229,7 +206,8 @@ namespace RW_PlanetAtmosphere
         
         static void UpdateMaterialLUT(Material material)
         {
-            material.SetVector(propId_scatterLUT_Size, AtmosphereSettings.scatterLUT_Size);
+            Vector4 scatterLUTSize = AtmosphereSettings.scatterLUTSize * 16;
+            material.SetVector(propId_scatterLUT_Size, new Vector4((int)scatterLUTSize.x, (int)scatterLUTSize.y, (int)scatterLUTSize.z, (int)scatterLUTSize.w));
             material.SetTexture(propId_translucentLUT, translucentLUT);
             material.SetTexture(propId_scatterLUT_Reayleigh, scatterLUT_Reayleigh);
             material.SetTexture(propId_scatterLUT_Mie, scatterLUT_Mie);

@@ -15,26 +15,25 @@ namespace RW_PlanetAtmosphere
         public static float ground_refract              = 0.1f;
         public static float ground_light                = 0.025f;
         public static float deltaAHLW_L                 = 8.0f;
-        public static float deltaAHLW_W                 = 1.0f;
-        public static float lengthAHLW_L                = 4.0f;
+        public static float lengthAHLW_L                = 1.0f;
+        public static float deltaAHLW_W                 = 4.0f;
         public static float lengthAHLW_W                = 1.0f;
-        public static float H_Reayleigh                 = 0.08f*scale;
-        public static float H_Mie                       = 0.02f*scale;
-        public static float H_OZone                     = 0.25f*scale;
-        public static float D_OZone                     = 0.15f*scale;
+        public static float H_Reayleigh                 = 0.08f*AtmosphereSettings.scale;
+        public static float H_Mie                       = 0.02f*AtmosphereSettings.scale;
+        public static float H_OZone                     = 0.25f*AtmosphereSettings.scale;
+        public static float D_OZone                     = 0.15f*AtmosphereSettings.scale;
         public static Vector2 translucentLUTSize        = new Vector2(16, 16);
-        public static Vector4 SunColor                  = Vector4.one * 3.996f / scale;
-        public static Vector4 mie_eccentricity          = Vector4.one * 4.44f / scale;
-        public static Vector4 scatterLUT_Size           = new Vector4(0.618f,0.618f,0.618f,0.618f);
-        public static Vector4 reayleigh_scatter         = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/scale;
-        public static Vector4 mie_scatter               = new Vector4(0.0f,0.0f,0.0f,6.4f)/scale;
-        public static Vector4 mie_absorb                = new Vector4(0.8f,0.72f,0.65f,0);
-        public static Vector4 OZone_absorb              = new Vector4(0.0f,0.0f,0.0f,6.4f)/scale;
+        public static Vector4 mie_scatter               = Vector4.one * 3.996f / AtmosphereSettings.scale;
+        public static Vector4 mie_absorb                = Vector4.one * 4.44f / AtmosphereSettings.scale;
+        public static Vector4 mie_eccentricity          = new Vector4(0.618f,0.618f,0.618f,0.618f);
+        public static Vector4 reayleigh_scatter         = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/AtmosphereSettings.scale;
+        public static Vector4 OZone_absorb              = new Vector4(0.0f,0.0f,0.0f,6.4f)/AtmosphereSettings.scale;
+        public static Vector4 SunColor                  = new Vector4(0.8f,0.72f,0.65f,0);
         public static Vector4 scatterLUTSize            = new Vector4( 8, 2, 1, 2);
         public static List<string> cloudTexPath         = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
         public static List<Vector4> cloudTexValue       = new List<Vector4>(){new Vector4(1.0f,0.0f,0.5f,0.05f)};
         public static List<string> noiseTexPath         = new List<string>(){"EarthCloudTex/noise"};
-        public static List<Vector2> noiseTexValue      = new List<Vector2>(){new Vector2(0.0f,0.015625f)};
+        public static List<Vector2> noiseTexValue       = new List<Vector2>(){new Vector2(0.0f,0.015625f)};
 
 
         private static Vector2 scrollPos = Vector2.zero;
@@ -404,7 +403,7 @@ namespace RW_PlanetAtmosphere
             }
             sizeY+=32;
 
-            Widgets.DrawLineVertical(ScrollViewSize.x*0.5f,0,ScrollViewSize.y);
+            Widgets.DrawLineVertical(ScrollViewSize.x*0.5f,0,sizeY);
 
             if(Prefs.DevMode)
             {
