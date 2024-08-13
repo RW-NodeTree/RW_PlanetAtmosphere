@@ -145,12 +145,12 @@ namespace RW_PlanetAtmosphere
 
                 WorldMaterials.Rivers.shader = WorldMaterials.WorldTerrain.shader;
                 WorldMaterials.WorldOcean.shader = WorldMaterials.WorldTerrain.shader;
-                // WorldMaterials.RiversBorder.shader = WorldMaterials.WorldTerrain.shader;
+                WorldMaterials.RiversBorder.shader = WorldMaterials.WorldTerrain.shader;
                 WorldMaterials.UngeneratedPlanetParts.shader = WorldMaterials.WorldTerrain.shader;
 
                 WorldMaterials.Rivers.renderQueue = 3530;
                 WorldMaterials.WorldOcean.renderQueue = 3500;
-                // WorldMaterials.RiversBorder.renderQueue = 3520;
+                WorldMaterials.RiversBorder.renderQueue = 3520;
                 WorldMaterials.UngeneratedPlanetParts.renderQueue = 3500;
 
                 // WorldMaterials.Rivers.color = new Color(-65536,-65536,-65536,1);
@@ -159,7 +159,7 @@ namespace RW_PlanetAtmosphere
 
                 WorldMaterials.Rivers.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
                 WorldMaterials.WorldOcean.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
-                // WorldMaterials.RiversBorder.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
+                WorldMaterials.RiversBorder.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
                 WorldMaterials.UngeneratedPlanetParts.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
 
                 // planetAtmosphere.materialsTest.Add(WorldMaterials.WorldOcean);
@@ -265,7 +265,7 @@ namespace RW_PlanetAtmosphere
                         if (translucentLUT != null) Destroy(translucentLUT);
                         translucentLUT = new RenderTexture(translucentLUTSize.x, translucentLUTSize.y, 0)
                         {
-                            enableRandomWrite = true,
+                            // enableRandomWrite = true,
                             useMipMap = false,
                             format = RenderTextureFormat.ARGBFloat,
                             wrapMode = TextureWrapMode.Clamp
