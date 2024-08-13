@@ -376,21 +376,19 @@ namespace RW_PlanetAtmosphere
                 cachedTransform = cachedTransform ?? transform;
                 if(isEnable)
                 {
-                    Log.Message("0");
                     parmUpdated();
-                    Log.Message("1");
                     UpdateMaterialDyn(materialSkyLUT,AtmosphereSettings.ground_refract,AtmosphereSettings.ground_light);
-                    Log.Message("2");
                     for(int i = 0; i < materialCloudLUTs.Count; i++)
                     {
                         Material cloud = materialCloudLUTs[i];
                         cloud.SetFloat(propId_exposure, AtmosphereSettings.exposure);
                         cloud.SetVector(propId_mie_eccentricity, AtmosphereSettings.mie_eccentricity);
                     }
-                    Log.Message("3");
-                    if(Find.World != null) Shader.SetGlobalVector("_WorldSpaceLightPos0",GenCelestial.CurSunPositionInWorldSpace());
-                    Log.Message("4");
-                    cachedTransform.localScale = Vector3.one * (Find.PlaySettings.usePlanetDayNightSystem ? (maxh / minh) : 0f);
+                    if(Find.World != null)
+                    {
+                        Shader.SetGlobalVector("_WorldSpaceLightPos0",GenCelestial.CurSunPositionInWorldSpace());
+                        cachedTransform.localScale = Vector3.one * (Find.PlaySettings.usePlanetDayNightSystem ? (maxh / minh) : 0f);
+                    }
                 }
             }
 
