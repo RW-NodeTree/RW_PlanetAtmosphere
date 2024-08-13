@@ -16,10 +16,13 @@
 	<mie_scatter>Mie scatter amount(R,G,B,UV)</mie_scatter>
 	<mie_absorb>Mie absorb amount(R,G,B,UV)</mie_absorb>
 	<mie_eccentricity>Mie eccentricity(R,G,B,UV)</mie_eccentricity>
-	<reayleighScatterFactor>Reayleigh scatter factor(R,G,B,UV)</reayleighScatterFactor>
-	<OZoneAbsorbFactor>OZone absorb factor(R,G,B,UV)</OZoneAbsorbFactor>
+	<reayleigh_scatter>Reayleigh scatter factor(R,G,B,UV)</reayleigh_scatter>
+	<OZone_absorb>OZone absorb factor(R,G,B,UV)</OZone_absorb>
 	<SunColor>Sun color(R,G,B,UV)</SunColor>
-	<scatterLUTSize>Scatter LUT Size(VAng,Height,LightAng,HAng) x16</scatterLUTSize>
-	<cloudTexPath>Cloud Texture(refract,glowing,opacity,height)</cloudTexPath>
+	<scatterLUTSize>Scatter LUT Size(VAng,LightAng,HAng,Height) x16</scatterLUTSize>
+	<cloudTexPath>Cloud Texture</cloudTexPath>
+	<cloudTexValue>(refract,glowing,opacity,height)</cloudTexValue>
+	<noiseTexPath>Noise Texture</noiseTexPath>
+	<noiseTexValue>(flowing direction angle,flowing speed)</noiseTexValue>
 	<reset>Reset</reset>
 </LanguageData>
