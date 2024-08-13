@@ -179,6 +179,7 @@ namespace RW_PlanetAtmosphere
 
         static void UpdateMaterialDyn(Material material, float ground_refract, float ground_light)
         {
+            if(material == null) return;
             material.SetFloat(propId_exposure, AtmosphereSettings.exposure);
             material.SetFloat(propId_ground_refract, ground_refract);
             material.SetFloat(propId_ground_light, ground_light);
@@ -188,6 +189,7 @@ namespace RW_PlanetAtmosphere
         
         static void UpdateMaterialStatic(Material material)
         {
+            if(material == null) return;
             material.SetFloat(propId_deltaAHLW_L, AtmosphereSettings.deltaAHLW_L);
             material.SetFloat(propId_deltaAHLW_W, AtmosphereSettings.lengthAHLW_L);
             material.SetFloat(propId_lengthAHLW_L, AtmosphereSettings.deltaAHLW_W);
@@ -206,6 +208,7 @@ namespace RW_PlanetAtmosphere
         
         static void UpdateMaterialLUT(Material material)
         {
+            if(material == null) return;
             Vector4 scatterLUTSize = AtmosphereSettings.scatterLUTSize * 16;
             material.SetVector(propId_scatterLUT_Size, new Vector4((int)scatterLUTSize.x, (int)scatterLUTSize.y, (int)scatterLUTSize.z, (int)scatterLUTSize.w));
             material.SetTexture(propId_translucentLUT, translucentLUT);
@@ -306,6 +309,7 @@ namespace RW_PlanetAtmosphere
                     Graphics.SetRenderTarget(new RenderBuffer[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, scatterLUT_Reayleigh.depthBuffer);
                     Graphics.Blit(null, materialScatterGenrater);
                     RenderTexture.active = null;
+
                     UpdateMaterialStatic(materialSkyLUT);
                     UpdateMaterialLUT(materialSkyLUT);
 
@@ -380,7 +384,7 @@ namespace RW_PlanetAtmosphere
                         cloud.SetFloat(propId_exposure, AtmosphereSettings.exposure);
                         cloud.SetVector(propId_mie_eccentricity, AtmosphereSettings.mie_eccentricity);
                     }
-                    Shader.SetGlobalVector("_WorldSpaceLightPos0",GenCelestial.CurSunPositionInWorldSpace());
+                    if(Find.World != null) Shader.SetGlobalVector("_WorldSpaceLightPos0",GenCelestial.CurSunPositionInWorldSpace());
                     cachedTransform.localScale = Vector3.one * (Find.PlaySettings.usePlanetDayNightSystem ? (maxh / minh) : 0f);
                 }
             }
