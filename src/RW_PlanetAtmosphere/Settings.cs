@@ -132,10 +132,25 @@ namespace RW_PlanetAtmosphere
                 noiseTexValue.Add(new Vector2(0.0f,0.015625f));
             }
             if(noiseTexValue.Count > cloudTexPath.Count) noiseTexValue.RemoveRange(cloudTexPath.Count, noiseTexValue.Count - cloudTexPath.Count);
+
+            for(int i = 0; i < cloudTexPath.Count; i++)
+            {
+                cloudTexValue[i] *= 1000;
+                noiseTexValue[i] *= 1000;
+            }
+
             Scribe_Collections.Look(ref cloudTexPath, "cloudTexPath", LookMode.Value);
             Scribe_Collections.Look(ref cloudTexValue, "cloudTexValue", LookMode.Value);
             Scribe_Collections.Look(ref noiseTexPath, "noiseTexPath", LookMode.Value);
             Scribe_Collections.Look(ref noiseTexValue, "noiseTexValue", LookMode.Value);
+
+            for(int i = 0; i < cloudTexPath.Count; i++)
+            {
+                cloudTexValue[i] /= 1000;
+                noiseTexValue[i] /= 1000;
+            }
+
+
             cloudTexPath = cloudTexPath ?? new List<string>();
             cloudTexValue = cloudTexValue ?? new List<Vector4>();
             noiseTexPath= noiseTexPath ?? new List<string>();
