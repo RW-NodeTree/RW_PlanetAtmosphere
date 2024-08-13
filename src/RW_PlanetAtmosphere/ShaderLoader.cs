@@ -274,7 +274,7 @@ namespace RW_PlanetAtmosphere
                         if (scatterLUT_Reayleigh != null) Destroy(scatterLUT_Reayleigh);
                         scatterLUT_Reayleigh = new RenderTexture(scatterLUTSize2D.x, scatterLUTSize2D.y, 0)
                         {
-                            enableRandomWrite = true,
+                            // enableRandomWrite = true,
                             useMipMap = false,
                             format = RenderTextureFormat.ARGBHalf,
                             wrapMode = TextureWrapMode.Clamp
@@ -286,7 +286,7 @@ namespace RW_PlanetAtmosphere
                         if (scatterLUT_Mie != null) Destroy(scatterLUT_Mie);
                         scatterLUT_Mie = new RenderTexture(scatterLUTSize2D.x, scatterLUTSize2D.y, 0)
                         {
-                            enableRandomWrite = true,
+                            // enableRandomWrite = true,
                             useMipMap = false,
                             format = RenderTextureFormat.ARGBHalf,
                             wrapMode = TextureWrapMode.Clamp
@@ -370,7 +370,7 @@ namespace RW_PlanetAtmosphere
             void Update()
             {
                 cachedTransform = cachedTransform ?? transform;
-                if(isEnable && Find.World != null)
+                if(isEnable)
                 {
                     parmUpdated();
                     UpdateMaterialDyn(materialSkyLUT,AtmosphereSettings.ground_refract,AtmosphereSettings.ground_light);
