@@ -38,6 +38,7 @@ namespace RW_PlanetAtmosphere
 
 
         private static Vector2 scrollPos = Vector2.zero;
+        private static Vector2 scrollPosDev = Vector2.zero;
         private static float sizeY = 0;
 
 
@@ -404,6 +405,21 @@ namespace RW_PlanetAtmosphere
             sizeY+=32;
 
             Widgets.DrawLineVertical(ScrollViewSize.x*0.5f,0,ScrollViewSize.y);
+
+            if(Prefs.DevMode)
+            {
+                int scatterLUT_Mie_Pos = ShaderLoader.scatterLUT_Reayleigh.height;
+                int translucentLUT_Pos = scatterLUT_Mie_Pos << 1;
+                int height = translucentLUT_Pos + ShaderLoader.translucentLUT.height;
+                int width = Mathf.Max(ShaderLoader.scatterLUT_Reayleigh.width,ShaderLoader.translucentLUT.width);
+                Widgets.BeginScrollView(new Rect(0,sizeY,inRect.width,height),ref scrollPosDev,new Rect(Vector2.zero, new Vector2(width,height)));
+                // Widgets.DrawTextureFitted()
+                Widgets.DrawTextureFitted(new Rect(0, 0, ShaderLoader.scatterLUT_Reayleigh.width, ShaderLoader.scatterLUT_Reayleigh.height), ShaderLoader.scatterLUT_Reayleigh,1);
+                Widgets.DrawTextureFitted(new Rect(0, scatterLUT_Mie_Pos, ShaderLoader.scatterLUT_Mie.width, ShaderLoader.scatterLUT_Mie.height), ShaderLoader.scatterLUT_Mie,1);
+                Widgets.DrawTextureFitted(new Rect(0, translucentLUT_Pos, ShaderLoader.translucentLUT.width, ShaderLoader.translucentLUT.height), ShaderLoader.translucentLUT,1);
+                Widgets.EndScrollView();
+                sizeY += height;
+            }
             Widgets.EndScrollView();
 
             if(Widgets.ButtonText(new Rect(0,inRect.height-32,inRect.width*0.5f,32), "apply".Translate()))

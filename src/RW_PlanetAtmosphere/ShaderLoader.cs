@@ -23,10 +23,10 @@ namespace RW_PlanetAtmosphere
         private static GameObject sky = null;
         private static MeshFilter meshFilter = null;
         private static MeshRenderer meshRenderer = null;
-        private static RenderTexture translucentLUT = null;
-        private static RenderTexture scatterLUT_Reayleigh = null;
-        private static RenderTexture scatterLUT_Mie = null;
         private readonly static List<Material> materialCloudLUTs = new List<Material>();
+        internal static RenderTexture translucentLUT = null;
+        internal static RenderTexture scatterLUT_Reayleigh = null;
+        internal static RenderTexture scatterLUT_Mie = null;
 
 
         private static float maxh = minh;
@@ -365,12 +365,16 @@ namespace RW_PlanetAtmosphere
                         {
                             renderQueue = 3556
                         };
-                        Vector4 vector = AtmosphereSettings.cloudTexValue[i];
+                        Vector4 cloudParm = AtmosphereSettings.cloudTexValue[i];
+                        Vector2 noideParm = AtmosphereSettings.noiseTexValue[i];
                         UpdateMaterialStatic(cloud);
-                        UpdateMaterialDyn(cloud, vector.x, vector.y);
+                        UpdateMaterialDyn(cloud, cloudParm.x, cloudParm.y);
                         UpdateMaterialLUT(cloud);
-                        cloud.SetFloat("opacity", vector.z);
+                        cloud.SetFloat("opacity", cloudParm.z);
+                        cloud.SetFloat("flowDir", noideParm.x);
+                        cloud.SetFloat("playRange", (noiseTex != null) ? noideParm.y : 0);
                         cloud.SetTexture("cloudTexture", cloudTex);
+                        if(noiseTex != null) cloud.SetTexture("noiseTexture", noiseTex);
                         GameObject gameObject = new GameObject();
                         MeshFilter filter = gameObject.AddComponent<MeshFilter>();
                         MeshRenderer renderer = gameObject.AddComponent<MeshRenderer>();
@@ -378,7 +382,7 @@ namespace RW_PlanetAtmosphere
                         filter.mesh = mesh;
                         renderer.material = cloud;
                         transform.parent = this.transform;
-                        transform.localScale = Vector3.one * (vector.w * (maxh - minh) + minh) / maxh; 
+                        transform.localScale = Vector3.one * (cloudParm.w * (maxh - minh) + minh) / maxh; 
                         gameObject.layer = WorldCameraManager.WorldLayer;
                         materialCloudLUTs.Add(cloud);
                     }
@@ -402,6 +406,7 @@ namespace RW_PlanetAtmosphere
                     cachedTransform.localScale = Vector3.one * (Find.PlaySettings.usePlanetDayNightSystem ? (maxh / minh) : 0f);
                 }
             }
+
         }
     }
 }
