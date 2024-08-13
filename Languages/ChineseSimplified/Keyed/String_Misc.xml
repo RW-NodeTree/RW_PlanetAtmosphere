@@ -24,5 +24,6 @@
 	<cloudTexValue>(反射,自发光,不透明度,高度)</cloudTexValue>
 	<noiseTexPath>噪声贴图</noiseTexPath>
 	<noiseTexValue>(流动方向角度,流动速度)</noiseTexValue>
+	<new>新建</new>
 	<reset>重置</reset>
 </LanguageData>

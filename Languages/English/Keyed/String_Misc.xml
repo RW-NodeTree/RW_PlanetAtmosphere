@@ -24,5 +24,6 @@
 	<cloudTexValue>(refract,glowing,opacity,height)</cloudTexValue>
 	<noiseTexPath>Noise Texture</noiseTexPath>
 	<noiseTexValue>(flowing direction angle,flowing speed)</noiseTexValue>
+	<new>new</new>
 	<reset>Reset</reset>
 </LanguageData>
