@@ -60,7 +60,10 @@ namespace RW_PlanetAtmosphere
         
 #endregion
 
-        public static bool isEnable => materialSkyLUT != null && (materialSkyLUT.shader?.isSupported ?? false);
+        public static bool isEnable =>  materialSkyLUT              != null && (materialSkyLUT.shader?.isSupported ?? false)                && 
+                                        materialTranslucentGenrater != null && (materialTranslucentGenrater.shader?.isSupported ?? false)   && 
+                                        materialScatterGenrater     != null && (materialScatterGenrater.shader?.isSupported ?? false)       && 
+                                        SkyBoxCloud_LUT             != null && SkyBoxCloud_LUT.isSupported;
         static ShaderLoader()
         {
             uint loadedCount = 0;
@@ -120,6 +123,8 @@ namespace RW_PlanetAtmosphere
                 {
                     renderQueue = 3555
                 };
+                materialTranslucentGenrater = new Material(TranslucentGenrater);
+                materialScatterGenrater = new Material(ScatterGenrater);
 
                 mesh = new Mesh();
                 SphereGenerator.Generate(6, minh, Vector3.forward, 360f, out var outVerts, out var outIndices);
@@ -297,8 +302,6 @@ namespace RW_PlanetAtmosphere
                         scatterLUT_Mie.Create();
                     }
 
-                    materialTranslucentGenrater = materialTranslucentGenrater ?? new Material(TranslucentGenrater);
-                    materialScatterGenrater = materialScatterGenrater ?? new Material(ScatterGenrater);
 
                     UpdateMaterialStatic(materialTranslucentGenrater);
                     UpdateMaterialLUT(materialTranslucentGenrater);
