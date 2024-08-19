@@ -15,21 +15,21 @@ namespace RW_PlanetAtmosphere
         public static float         ground_refract              = 0.1f;
         public static float         ground_light                = 0.025f;
         public static float         deltaAHLW_L                 = 8.0f;
-        public static float         lengthAHLW_L                = 1.0f;
         public static float         deltaAHLW_W                 = 4.0f;
+        public static float         lengthAHLW_L                = 1.0f;
         public static float         lengthAHLW_W                = 1.0f;
         public static float         H_Reayleigh                 = 0.08f*AtmosphereSettings.scale;
         public static float         H_Mie                       = 0.02f*AtmosphereSettings.scale;
         public static float         H_OZone                     = 0.25f*AtmosphereSettings.scale;
         public static float         D_OZone                     = 0.15f*AtmosphereSettings.scale;
-        public static Vector2       translucentLUTSize          = new Vector2(16, 16);
+        public static Vector2       translucentLUT_Size         = new Vector2(16, 16);
         public static Vector4       mie_scatter                 = Vector4.one * 3.996f / AtmosphereSettings.scale;
         public static Vector4       mie_absorb                  = Vector4.one * 4.44f / AtmosphereSettings.scale;
         public static Vector4       mie_eccentricity            = new Vector4(0.618f,0.618f,0.618f,0.618f);
         public static Vector4       reayleigh_scatter           = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/AtmosphereSettings.scale;
         public static Vector4       OZone_absorb                = new Vector4(0.0f,0.0f,0.0f,6.4f)/AtmosphereSettings.scale;
         public static Vector4       SunColor                    = new Vector4(0.8f,0.72f,0.65f,0);
-        public static Vector4       scatterLUTSize              = new Vector4( 8, 2, 1, 2);
+        public static Vector4       scatterLUT_Size             = new Vector4( 8, 2, 1, 2);
         public static List<string>  cloudTexPath                = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
         public static List<Vector4> cloudTexValue               = new List<Vector4>(){new Vector4(1.0f,0.0f,0.5f,0.05f)};
         public static List<string>  noiseTexPath                = new List<string>(){"EarthCloudTex/noise"};
@@ -75,7 +75,7 @@ namespace RW_PlanetAtmosphere
                 value.x = Math.Abs(value.x);
                 value.y = Math.Abs(value.y);
             }
-            SaveAndLoadValueVec2(ref translucentLUTSize, "translucentLUTSize", defaultValue: new Vector2(16, 16), forceSave: true);
+            SaveAndLoadValueVec2(ref translucentLUT_Size, "translucentLUT_Size", defaultValue: new Vector2(16, 16), forceSave: true);
             // void SaveAndLoadValueVec3(ref Vector3 value, string label, Vector3 defaultValue = default(Vector3), bool forceSave = false)
             // {
             //     value.x = Math.Abs(value.x);
@@ -108,7 +108,7 @@ namespace RW_PlanetAtmosphere
             SaveAndLoadValueVec4(ref reayleigh_scatter, "reayleigh_scatter", defaultValue: new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/scale, forceSave: true);
             SaveAndLoadValueVec4(ref OZone_absorb, "OZone_absorb", defaultValue: new Vector4(0.0f,0.0f,0.0f,6.4f)/scale, forceSave: true);
             SaveAndLoadValueVec4(ref SunColor, "SunColor", defaultValue: new Vector4(1, 1, 1, 0), forceSave: true);
-            SaveAndLoadValueVec4(ref scatterLUTSize, "scatterLUTSize", defaultValue: new Vector4( 8, 2, 2, 1), forceSave: true);
+            SaveAndLoadValueVec4(ref scatterLUT_Size, "scatterLUT_Size", defaultValue: new Vector4( 8, 2, 2, 1), forceSave: true);
 
 
             cloudTexPath = cloudTexPath ?? new List<string>();
@@ -254,10 +254,10 @@ namespace RW_PlanetAtmosphere
 
 
             Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"translucentLUTSize".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/2f,32),translucentLUTSize.x.ToString("f5")),out newValue);
-            translucentLUTSize.x = (int)newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*3f/2f,sizeY,ScrollViewSize.x*0.5f/2f,32),translucentLUTSize.y.ToString("f5")),out newValue);
-            translucentLUTSize.y = (int)newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/2f,32),translucentLUT_Size.x.ToString("f5")),out newValue);
+            translucentLUT_Size.x = (int)newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*3f/2f,sizeY,ScrollViewSize.x*0.5f/2f,32),translucentLUT_Size.y.ToString("f5")),out newValue);
+            translucentLUT_Size.y = (int)newValue;
             sizeY+=32;
 
 
@@ -334,14 +334,14 @@ namespace RW_PlanetAtmosphere
 
 
             Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"scatterLUTSize".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),scatterLUTSize.x.ToString("f5")),out newValue);
-            scatterLUTSize.x = (int)newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),scatterLUTSize.y.ToString("f5")),out newValue);
-            scatterLUTSize.y = (int)newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),scatterLUTSize.z.ToString("f5")),out newValue);
-            scatterLUTSize.z = (int)newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),scatterLUTSize.w.ToString("f5")),out newValue);
-            scatterLUTSize.w = (int)newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),scatterLUT_Size.x.ToString("f5")),out newValue);
+            scatterLUT_Size.x = (int)newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),scatterLUT_Size.y.ToString("f5")),out newValue);
+            scatterLUT_Size.y = (int)newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),scatterLUT_Size.z.ToString("f5")),out newValue);
+            scatterLUT_Size.z = (int)newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),scatterLUT_Size.w.ToString("f5")),out newValue);
+            scatterLUT_Size.w = (int)newValue;
             sizeY+=32;
 
 
@@ -463,24 +463,24 @@ namespace RW_PlanetAtmosphere
                         H_Mie = def.H_Mie;
                         H_OZone = def.H_OZone;
                         D_OZone = def.D_OZone;
-                        translucentLUTSize = def.translucentLUTSize;
+                        translucentLUT_Size = def.translucentLUT_Size;
                         mie_scatter = def.mie_scatter;
                         mie_absorb = def.mie_absorb;
                         SunColor = def.SunColor;
                         mie_eccentricity = def.mie_eccentricity;
                         reayleigh_scatter = def.reayleigh_scatter;
                         OZone_absorb = def.OZone_absorb;
-                        scatterLUTSize = def.scatterLUTSize;
+                        scatterLUT_Size = def.scatterLUT_Size;
                         cloudTexPath = def.cloudTexPath;
                         cloudTexValue = def.cloudTexValue;
                         noiseTexPath = def.noiseTexPath;
                         noiseTexValue = def.noiseTexValue;
-                        translucentLUTSize.x = (int)Math.Abs(translucentLUTSize.x);
-                        translucentLUTSize.y = (int)Math.Abs(translucentLUTSize.y);
-                        scatterLUTSize.x = (int)Math.Abs(scatterLUTSize.x);
-                        scatterLUTSize.y = (int)Math.Abs(scatterLUTSize.y);
-                        scatterLUTSize.z = (int)Math.Abs(scatterLUTSize.z);
-                        scatterLUTSize.w = (int)Math.Abs(scatterLUTSize.w);
+                        translucentLUT_Size.x = (int)Math.Abs(translucentLUT_Size.x);
+                        translucentLUT_Size.y = (int)Math.Abs(translucentLUT_Size.y);
+                        scatterLUT_Size.x = (int)Math.Abs(scatterLUT_Size.x);
+                        scatterLUT_Size.y = (int)Math.Abs(scatterLUT_Size.y);
+                        scatterLUT_Size.z = (int)Math.Abs(scatterLUT_Size.z);
+                        scatterLUT_Size.w = (int)Math.Abs(scatterLUT_Size.w);
                         updated = false;
                     }));
                 }

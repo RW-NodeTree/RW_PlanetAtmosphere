@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using UnityEngine.PlayerLoop;
 using Verse.Noise;
 using Verse.AI.Group;
+using System.Runtime.InteropServices;
+using System;
 
 namespace RW_PlanetAtmosphere
 {
@@ -34,6 +36,7 @@ namespace RW_PlanetAtmosphere
 
 
 #region propsIDs
+
         private static int propId_exposure              = Shader.PropertyToID("exposure");
         private static int propId_ground_refract        = Shader.PropertyToID("ground_refract");
         private static int propId_ground_light          = Shader.PropertyToID("ground_light");
@@ -47,13 +50,13 @@ namespace RW_PlanetAtmosphere
         private static int propId_H_Mie                 = Shader.PropertyToID("H_Mie");
         private static int propId_H_OZone               = Shader.PropertyToID("H_OZone");
         private static int propId_D_OZone               = Shader.PropertyToID("D_OZone");
-        private static int propId_SunColor              = Shader.PropertyToID("SunColor");
-        private static int propId_mie_eccentricity      = Shader.PropertyToID("mie_eccentricity");
-        private static int propId_scatterLUT_Size       = Shader.PropertyToID("scatterLUT_Size");
-        private static int propId_reayleigh_scatter     = Shader.PropertyToID("reayleigh_scatter");
         private static int propId_mie_scatter           = Shader.PropertyToID("mie_scatter");
         private static int propId_mie_absorb            = Shader.PropertyToID("mie_absorb");
+        private static int propId_mie_eccentricity      = Shader.PropertyToID("mie_eccentricity");
+        private static int propId_reayleigh_scatter     = Shader.PropertyToID("reayleigh_scatter");
         private static int propId_OZone_absorb          = Shader.PropertyToID("OZone_absorb");
+        private static int propId_SunColor              = Shader.PropertyToID("SunColor");
+        private static int propId_scatterLUT_Size       = Shader.PropertyToID("scatterLUT_Size");
         private static int propId_translucentLUT        = Shader.PropertyToID("translucentLUT");
         private static int propId_scatterLUT_Reayleigh  = Shader.PropertyToID("scatterLUT_Reayleigh");
         private static int propId_scatterLUT_Mie        = Shader.PropertyToID("scatterLUT_Mie");
@@ -139,7 +142,7 @@ namespace RW_PlanetAtmosphere
                 meshFilter = sky.AddComponent<MeshFilter>();
                 meshRenderer = sky.AddComponent<MeshRenderer>();
                 sky.AddComponent<PlanetAtmosphere>();
-                Object.DontDestroyOnLoad(sky);
+                GameObject.DontDestroyOnLoad(sky);
                 sky.layer = WorldCameraManager.WorldLayer;
                 meshFilter.mesh = mesh;
                 meshRenderer.material = materialSkyLUT;
@@ -185,40 +188,98 @@ namespace RW_PlanetAtmosphere
         static void UpdateMaterialDyn(Material material, float ground_refract, float ground_light)
         {
             if(material == null) return;
-            material.SetFloat(propId_exposure, AtmosphereSettings.exposure);
-            material.SetFloat(propId_ground_refract, ground_refract);
-            material.SetFloat(propId_ground_light, ground_light);
-            material.SetVector(propId_SunColor, AtmosphereSettings.SunColor);
-            material.SetVector(propId_mie_eccentricity, AtmosphereSettings.mie_eccentricity);
+            
+            try
+            {
+                material.SetFloat(propId_exposure, AtmosphereSettings.exposure);
+                material.SetFloat(propId_ground_refract, ground_refract);
+                material.SetFloat(propId_ground_light, ground_light);
+                material.SetVector(propId_SunColor, AtmosphereSettings.SunColor);
+                material.SetVector(propId_mie_eccentricity, AtmosphereSettings.mie_eccentricity);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(
+$@"error report : UpdateMaterialDyn error
+material : {material}
+exposure : {AtmosphereSettings.exposure}
+ground_refract : {ground_refract}
+ground_light : {ground_light}
+SunColor : {AtmosphereSettings.SunColor}
+mie_eccentricity : {AtmosphereSettings.mie_eccentricity}
+Exception : {ex}"
+                );
+            }
         }
         
         static void UpdateMaterialStatic(Material material)
         {
             if(material == null) return;
-            material.SetFloat(propId_deltaAHLW_L, AtmosphereSettings.deltaAHLW_L);
-            material.SetFloat(propId_deltaAHLW_W, AtmosphereSettings.lengthAHLW_L);
-            material.SetFloat(propId_lengthAHLW_L, AtmosphereSettings.deltaAHLW_W);
-            material.SetFloat(propId_lengthAHLW_W, AtmosphereSettings.lengthAHLW_W);
-            material.SetFloat(propId_minh, minh);
-            material.SetFloat(propId_maxh, maxh);
-            material.SetFloat(propId_H_Reayleigh, AtmosphereSettings.H_Reayleigh);
-            material.SetFloat(propId_H_Mie, AtmosphereSettings.H_Mie);
-            material.SetFloat(propId_H_OZone, AtmosphereSettings.H_OZone);
-            material.SetFloat(propId_D_OZone, AtmosphereSettings.D_OZone);
-            material.SetVector(propId_reayleigh_scatter, AtmosphereSettings.reayleigh_scatter);
-            material.SetVector(propId_mie_scatter, AtmosphereSettings.mie_scatter);
-            material.SetVector(propId_mie_absorb, AtmosphereSettings.mie_absorb);
-            material.SetVector(propId_OZone_absorb, AtmosphereSettings.OZone_absorb);
+
+            try
+            {
+                material.SetFloat(propId_deltaAHLW_L, AtmosphereSettings.deltaAHLW_L);
+                material.SetFloat(propId_deltaAHLW_W, AtmosphereSettings.deltaAHLW_W);
+                material.SetFloat(propId_lengthAHLW_L, AtmosphereSettings.lengthAHLW_L);
+                material.SetFloat(propId_lengthAHLW_W, AtmosphereSettings.lengthAHLW_W);
+                material.SetFloat(propId_minh, minh);
+                material.SetFloat(propId_maxh, maxh);
+                material.SetFloat(propId_H_Reayleigh, AtmosphereSettings.H_Reayleigh);
+                material.SetFloat(propId_H_Mie, AtmosphereSettings.H_Mie);
+                material.SetFloat(propId_H_OZone, AtmosphereSettings.H_OZone);
+                material.SetFloat(propId_D_OZone, AtmosphereSettings.D_OZone);
+                material.SetVector(propId_reayleigh_scatter, AtmosphereSettings.reayleigh_scatter);
+                material.SetVector(propId_mie_scatter, AtmosphereSettings.mie_scatter);
+                material.SetVector(propId_mie_absorb, AtmosphereSettings.mie_absorb);
+                material.SetVector(propId_OZone_absorb, AtmosphereSettings.OZone_absorb);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(
+$@"error report : UpdateMaterialStatic error
+material : {material}
+deltaAHLW_L : {AtmosphereSettings.deltaAHLW_L}
+deltaAHLW_W : {AtmosphereSettings.deltaAHLW_W}
+lengthAHLW_L : {AtmosphereSettings.lengthAHLW_L}
+lengthAHLW_W : {AtmosphereSettings.lengthAHLW_W}
+minh : {minh}
+maxh : {maxh}
+H_Reayleigh : {AtmosphereSettings.H_Reayleigh}
+H_Mie : {AtmosphereSettings.H_Mie}
+H_OZone : {AtmosphereSettings.H_OZone}
+D_OZone : {AtmosphereSettings.D_OZone}
+reayleigh_scatter : {AtmosphereSettings.reayleigh_scatter}
+mie_scatter : {AtmosphereSettings.mie_scatter}
+mie_absorb : {AtmosphereSettings.mie_absorb}
+OZone_absorb : {AtmosphereSettings.OZone_absorb}
+Exception : {ex}"
+                );
+            }
         }
         
         static void UpdateMaterialLUT(Material material)
         {
             if(material == null) return;
-            Vector4 scatterLUTSize = AtmosphereSettings.scatterLUTSize * 16;
-            material.SetVector(propId_scatterLUT_Size, new Vector4((int)scatterLUTSize.x, (int)scatterLUTSize.y, (int)scatterLUTSize.z, (int)scatterLUTSize.w));
-            material.SetTexture(propId_translucentLUT, translucentLUT);
-            material.SetTexture(propId_scatterLUT_Reayleigh, scatterLUT_Reayleigh);
-            material.SetTexture(propId_scatterLUT_Mie, scatterLUT_Mie);
+            Vector4 scatterLUT_Size = AtmosphereSettings.scatterLUT_Size * 16;
+            try
+            {
+                material.SetVector(propId_scatterLUT_Size, new Vector4((int)scatterLUT_Size.x, (int)scatterLUT_Size.y, (int)scatterLUT_Size.z, (int)scatterLUT_Size.w));
+                material.SetTexture(propId_translucentLUT, translucentLUT);
+                material.SetTexture(propId_scatterLUT_Reayleigh, scatterLUT_Reayleigh);
+                material.SetTexture(propId_scatterLUT_Mie, scatterLUT_Mie);
+            }
+            catch(Exception ex)
+            {
+                Log.Error(
+$@"error report : UpdateMaterialLUT error
+material : {material}
+propId_scatterLUT_Size : {scatterLUT_Size}
+translucentLUT : {translucentLUT}
+scatterLUT_Reayleigh : {scatterLUT_Reayleigh}
+scatterLUT_Mie : {scatterLUT_Mie}
+Exception : {ex}"
+                );
+            }
         }
 
         private class PlanetAtmosphere : MonoBehaviour
@@ -261,8 +322,8 @@ namespace RW_PlanetAtmosphere
                     cachedTransform = cachedTransform ?? transform;
                     cachedTransform.localScale = Vector3.one * maxh / minh;
 
-                    Vector4 scatterLUTSize = AtmosphereSettings.scatterLUTSize * 16;
-                    Vector2Int translucentLUTSize = Vector2Int.FloorToInt(AtmosphereSettings.translucentLUTSize) * 16;
+                    Vector4 scatterLUTSize = AtmosphereSettings.scatterLUT_Size * 16;
+                    Vector2Int translucentLUTSize = Vector2Int.FloorToInt(AtmosphereSettings.translucentLUT_Size) * 16;
                     Vector2Int scatterLUTSize2D = new Vector2Int((int)scatterLUTSize.x * (int)scatterLUTSize.z, (int)scatterLUTSize.y * (int)scatterLUTSize.w);
                     
                     if(translucentLUT == null || translucentLUT.width != translucentLUTSize.x || translucentLUT.height != translucentLUTSize.y)
@@ -303,15 +364,45 @@ namespace RW_PlanetAtmosphere
                     }
 
 
-                    UpdateMaterialStatic(materialTranslucentGenrater);
-                    UpdateMaterialLUT(materialTranslucentGenrater);
-                    Graphics.Blit(null, translucentLUT, materialTranslucentGenrater);
+                    try
+                    {
+                        UpdateMaterialStatic(materialTranslucentGenrater);
+                        UpdateMaterialLUT(materialTranslucentGenrater);
+                        Graphics.Blit(null, translucentLUT, materialTranslucentGenrater);
                     
-                    UpdateMaterialStatic(materialScatterGenrater);
-                    UpdateMaterialLUT(materialScatterGenrater);
-                    Graphics.SetRenderTarget(new RenderBuffer[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, scatterLUT_Reayleigh.depthBuffer);
-                    Graphics.Blit(null, materialScatterGenrater);
-                    RenderTexture.active = null;
+                    }
+                    catch(Exception ex)
+                    {
+                        Log.Error(
+$@"error report : translucent LUT generate error
+materialTranslucentGenrater : {materialTranslucentGenrater}
+translucentLUT : {translucentLUT}
+Exception : {ex}"
+                        );
+                    }
+
+
+                    RenderTexture cached = RenderTexture.active;
+                    try
+                    {
+                        UpdateMaterialStatic(materialScatterGenrater);
+                        UpdateMaterialLUT(materialScatterGenrater);
+                        Graphics.SetRenderTarget(new RenderBuffer[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, scatterLUT_Reayleigh.depthBuffer);
+                        Graphics.Blit(null, materialScatterGenrater);
+                    }
+                    catch(Exception ex)
+                    {
+                        Log.Error(
+$@"error report : scatter LUT generate error
+materialScatterGenrater : {materialScatterGenrater}
+scatterLUT_Reayleigh : {scatterLUT_Reayleigh}
+scatterLUT_Mie : {scatterLUT_Mie}
+scatterLUT_Reayleigh.colorBuffer : {scatterLUT_Reayleigh.colorBuffer}
+scatterLUT_Mie.colorBuffer : {scatterLUT_Mie.colorBuffer}
+Exception : {ex}"
+                        );
+                    }
+                    RenderTexture.active = cached;
 
                     UpdateMaterialStatic(materialSkyLUT);
                     UpdateMaterialLUT(materialSkyLUT);
