@@ -150,6 +150,7 @@ namespace RW_PlanetAtmosphere
                 // WorldCameraManager.WorldSkyboxCamera.fieldOfView = 20;
                 WorldCameraManager.WorldCamera.depthTextureMode = DepthTextureMode.Depth;
                 WorldCameraManager.WorldSkyboxCamera.depthTextureMode = DepthTextureMode.Depth;
+                WorldCameraManager.WorldSkyboxCamera.backgroundColor = Color.black;
 
                 WorldMaterials.Rivers.shader = WorldMaterials.WorldTerrain.shader;
                 WorldMaterials.WorldOcean.shader = WorldMaterials.WorldTerrain.shader;
@@ -387,7 +388,7 @@ Exception : {ex}"
                     {
                         UpdateMaterialStatic(materialScatterGenrater);
                         UpdateMaterialLUT(materialScatterGenrater);
-                        Graphics.SetRenderTarget(new RenderBuffer[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, scatterLUT_Reayleigh.depthBuffer);
+                        Graphics.SetRenderTarget(new RenderBuffer[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, Graphics.activeDepthBuffer);
                         Graphics.Blit(null, materialScatterGenrater);
                     }
                     catch(Exception ex)
