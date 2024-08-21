@@ -410,58 +410,72 @@ Exception : {ex}"
 
                     
                     
-                    AtmosphereSettings.cloudTexPath = AtmosphereSettings.cloudTexPath ?? new List<string>();
-                    AtmosphereSettings.cloudTexValue = AtmosphereSettings.cloudTexValue ?? new List<Vector4>();
-                    AtmosphereSettings.noiseTexPath= AtmosphereSettings.noiseTexPath ?? new List<string>();
-                    AtmosphereSettings.noiseTexValue = AtmosphereSettings.noiseTexValue ?? new List<Vector2>();
-                    AtmosphereSettings.cloudTexPath.RemoveAll(x => x.NullOrEmpty());
-                    for(int i = AtmosphereSettings.cloudTexValue.Count; i < AtmosphereSettings.cloudTexPath.Count; i++)
+                    try
                     {
-                        AtmosphereSettings.cloudTexValue.Add(new Vector4(1.0f,0.0f,0.5f,0.05f));
-                    }
-                    if(AtmosphereSettings.cloudTexValue.Count > AtmosphereSettings.cloudTexPath.Count) AtmosphereSettings.cloudTexValue.RemoveRange(AtmosphereSettings.cloudTexPath.Count, AtmosphereSettings.cloudTexValue.Count - AtmosphereSettings.cloudTexPath.Count);
-                    for(int i = AtmosphereSettings.noiseTexPath.Count; i < AtmosphereSettings.noiseTexPath.Count; i++)
-                    {
-                        AtmosphereSettings.noiseTexPath.Add("EarthCloudTex/noise");
-                    }
-                    if(AtmosphereSettings.noiseTexPath.Count > AtmosphereSettings.cloudTexPath.Count) AtmosphereSettings.noiseTexPath.RemoveRange(AtmosphereSettings.cloudTexPath.Count, AtmosphereSettings.noiseTexPath.Count - AtmosphereSettings.cloudTexPath.Count);
-                    for(int i = AtmosphereSettings.noiseTexValue.Count; i < AtmosphereSettings.cloudTexPath.Count; i++)
-                    {
-                        AtmosphereSettings.noiseTexValue.Add(new Vector2(0.0f,0.015625f));
-                    }
-                    if(AtmosphereSettings.noiseTexValue.Count > AtmosphereSettings.cloudTexPath.Count) AtmosphereSettings.noiseTexValue.RemoveRange(AtmosphereSettings.cloudTexPath.Count, AtmosphereSettings.noiseTexValue.Count - AtmosphereSettings.cloudTexPath.Count);
-
-                    materialCloudLUTs.Capacity = AtmosphereSettings.cloudTexPath.Count;
-                    for(int i = 0; i < AtmosphereSettings.cloudTexPath.Count; i++)
-                    {
-                        if(AtmosphereSettings.cloudTexPath[i] == null) continue;
-                        Texture2D cloudTex = ContentFinder<Texture2D>.Get(AtmosphereSettings.cloudTexPath[i]);
-                        if(cloudTex == null) continue;
-                        Texture2D noiseTex = ContentFinder<Texture2D>.Get(AtmosphereSettings.noiseTexPath[i]);
-                        Material cloud = new Material(SkyBoxCloud_LUT)
+                        AtmosphereSettings.cloudTexPath     = AtmosphereSettings.cloudTexPath   ??  new List<string>();
+                        AtmosphereSettings.cloudTexValue    = AtmosphereSettings.cloudTexValue  ??  new List<Vector4>();
+                        AtmosphereSettings.noiseTexPath     = AtmosphereSettings.noiseTexPath   ??  new List<string>();
+                        AtmosphereSettings.noiseTexValue    = AtmosphereSettings.noiseTexValue  ??  new List<Vector2>();
+                        AtmosphereSettings.cloudTexPath.RemoveAll(x => x.NullOrEmpty());
+                        for(int i = AtmosphereSettings.cloudTexValue.Count; i < AtmosphereSettings.cloudTexPath.Count; i++)
                         {
-                            renderQueue = 3556
-                        };
-                        Vector4 cloudParm = AtmosphereSettings.cloudTexValue[i];
-                        Vector2 noideParm = AtmosphereSettings.noiseTexValue[i];
-                        UpdateMaterialStatic(cloud);
-                        UpdateMaterialDyn(cloud, cloudParm.x, cloudParm.y);
-                        UpdateMaterialLUT(cloud);
-                        cloud.SetFloat("opacity", cloudParm.z);
-                        cloud.SetFloat("flowDir", noideParm.x);
-                        cloud.SetFloat("playRange", (noiseTex != null) ? noideParm.y : 0);
-                        cloud.SetTexture("cloudTexture", cloudTex);
-                        if(noiseTex != null) cloud.SetTexture("noiseTexture", noiseTex);
-                        GameObject gameObject = new GameObject();
-                        MeshFilter filter = gameObject.AddComponent<MeshFilter>();
-                        MeshRenderer renderer = gameObject.AddComponent<MeshRenderer>();
-                        Transform transform = gameObject.transform;
-                        filter.mesh = mesh;
-                        renderer.material = cloud;
-                        transform.parent = this.transform;
-                        transform.localScale = Vector3.one * (cloudParm.w * (maxh - minh) + minh) / maxh; 
-                        gameObject.layer = WorldCameraManager.WorldLayer;
-                        materialCloudLUTs.Add(cloud);
+                            AtmosphereSettings.cloudTexValue.Add(new Vector4(1.0f,0.0f,0.5f,0.05f));
+                        }
+                        if(AtmosphereSettings.cloudTexValue.Count > AtmosphereSettings.cloudTexPath.Count) AtmosphereSettings.cloudTexValue.RemoveRange(AtmosphereSettings.cloudTexPath.Count, AtmosphereSettings.cloudTexValue.Count - AtmosphereSettings.cloudTexPath.Count);
+                        for(int i = AtmosphereSettings.noiseTexPath.Count; i < AtmosphereSettings.noiseTexPath.Count; i++)
+                        {
+                            AtmosphereSettings.noiseTexPath.Add("EarthCloudTex/noise");
+                        }
+                        if(AtmosphereSettings.noiseTexPath.Count > AtmosphereSettings.cloudTexPath.Count) AtmosphereSettings.noiseTexPath.RemoveRange(AtmosphereSettings.cloudTexPath.Count, AtmosphereSettings.noiseTexPath.Count - AtmosphereSettings.cloudTexPath.Count);
+                        for(int i = AtmosphereSettings.noiseTexValue.Count; i < AtmosphereSettings.cloudTexPath.Count; i++)
+                        {
+                            AtmosphereSettings.noiseTexValue.Add(new Vector2(0.0f,0.015625f));
+                        }
+                        if(AtmosphereSettings.noiseTexValue.Count > AtmosphereSettings.cloudTexPath.Count) AtmosphereSettings.noiseTexValue.RemoveRange(AtmosphereSettings.cloudTexPath.Count, AtmosphereSettings.noiseTexValue.Count - AtmosphereSettings.cloudTexPath.Count);
+
+                        materialCloudLUTs.Capacity = AtmosphereSettings.cloudTexPath.Count;
+                        for(int i = 0; i < AtmosphereSettings.cloudTexPath.Count; i++)
+                        {
+                            if(AtmosphereSettings.cloudTexPath[i] == null) continue;
+                            Texture2D cloudTex = ContentFinder<Texture2D>.Get(AtmosphereSettings.cloudTexPath[i]);
+                            if(cloudTex == null) continue;
+                            Texture2D noiseTex = ContentFinder<Texture2D>.Get(AtmosphereSettings.noiseTexPath[i]);
+                            Material cloud = new Material(SkyBoxCloud_LUT)
+                            {
+                                renderQueue = 3556
+                            };
+                            Vector4 cloudParm = AtmosphereSettings.cloudTexValue[i];
+                            Vector2 noideParm = AtmosphereSettings.noiseTexValue[i];
+                            UpdateMaterialStatic(cloud);
+                            UpdateMaterialDyn(cloud, cloudParm.x, cloudParm.y);
+                            UpdateMaterialLUT(cloud);
+                            cloud.SetFloat("opacity", cloudParm.z);
+                            cloud.SetFloat("flowDir", noideParm.x);
+                            cloud.SetFloat("playRange", (noiseTex != null) ? noideParm.y : 0);
+                            cloud.SetTexture("cloudTexture", cloudTex);
+                            if(noiseTex != null) cloud.SetTexture("noiseTexture", noiseTex);
+                            GameObject gameObject = new GameObject();
+                            MeshFilter filter = gameObject.AddComponent<MeshFilter>();
+                            MeshRenderer renderer = gameObject.AddComponent<MeshRenderer>();
+                            Transform transform = gameObject.transform;
+                            filter.mesh = mesh;
+                            renderer.material = cloud;
+                            transform.parent = this.transform;
+                            transform.localScale = Vector3.one * (cloudParm.w * (maxh - minh) + minh) / maxh; 
+                            gameObject.layer = WorldCameraManager.WorldLayer;
+                            materialCloudLUTs.Add(cloud);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        Log.Error(
+$@"error report : cloud update error
+AtmosphereSettings.cloudTexPath.Count   :   {AtmosphereSettings.cloudTexPath.Count }
+AtmosphereSettings.cloudTexValue.Count  :   {AtmosphereSettings.cloudTexValue.Count}
+AtmosphereSettings.noiseTexPath.Count   :   {AtmosphereSettings.noiseTexPath.Count }
+AtmosphereSettings.noiseTexValue.Count  :   {AtmosphereSettings.noiseTexValue.Count}
+Exception : {ex}"
+                        );
                     }
                     AtmosphereSettings.updated = true;
                 }
