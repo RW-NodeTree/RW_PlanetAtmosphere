@@ -12,10 +12,10 @@ namespace RW_PlanetAtmosphere
         public float            exposure                = 16;
         public float            ground_refract          = 0.1f;
         public float            ground_light            = 0.025f;
-        public float            deltaAHLW_L             = 8.0f;
-        public float            deltaAHLW_W             = 4.0f;
-        public float            lengthAHLW_L            = 1.0f;
-        public float            lengthAHLW_W            = 1.0f;
+        public float            deltaL             = 8.0f;
+        public float            deltaW             = 4.0f;
+        public float            lengthL            = 1.0f;
+        public float            lengthW            = 1.0f;
         public float            H_Reayleigh             = 0.08f*AtmosphereSettings.scale;
         public float            H_Mie                   = 0.02f*AtmosphereSettings.scale;
         public float            H_OZone                 = 0.25f*AtmosphereSettings.scale;

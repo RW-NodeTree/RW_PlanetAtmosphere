@@ -4,10 +4,10 @@
 	<exposure>Exposure</exposure>
 	<ground_refract>Ground refract</ground_refract>
 	<ground_light>Ground glowing</ground_light>
-	<deltaAHLW_L>LUT light mapping curve derivative</deltaAHLW_L>
-	<lengthAHLW_L>LUT light mapping curve range</lengthAHLW_L>
-	<deltaAHLW_W>LUT viewing mapping curve derivative</deltaAHLW_W>
-	<lengthAHLW_W>LUT viewing mapping curve range</lengthAHLW_W>
+	<deltaL>LUT light mapping curve derivative</deltaL>
+	<lengthL>LUT light mapping curve range</lengthL>
+	<deltaW>LUT viewing mapping curve derivative</deltaW>
+	<lengthW>LUT viewing mapping curve range</lengthW>
 	<H_Reayleigh>Reayleigh exp(-1) scale</H_Reayleigh>
 	<H_Mie>Mie exp(-1) scale</H_Mie>
 	<H_OZone>OZone Height</H_OZone>

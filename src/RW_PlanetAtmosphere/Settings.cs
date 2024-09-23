@@ -14,20 +14,21 @@ namespace RW_PlanetAtmosphere
         public static float         exposure                    = 16;
         public static float         ground_refract              = 0.1f;
         public static float         ground_light                = 0.025f;
-        public static float         deltaAHLW_L                 = 8.0f;
-        public static float         deltaAHLW_W                 = 4.0f;
-        public static float         lengthAHLW_L                = 1.0f;
-        public static float         lengthAHLW_W                = 1.0f;
+        public static float         deltaL                 = 8.0f;
+        public static float         deltaW                 = 4.0f;
+        public static float         lengthL                = 1.0f;
+        public static float         lengthW                = 1.0f;
         public static float         H_Reayleigh                 = 0.08f*AtmosphereSettings.scale;
         public static float         H_Mie                       = 0.02f*AtmosphereSettings.scale;
         public static float         H_OZone                     = 0.25f*AtmosphereSettings.scale;
         public static float         D_OZone                     = 0.15f*AtmosphereSettings.scale;
         public static Vector2       translucentLUT_Size         = new Vector2(16, 16);
+        public static Vector4       reayleigh_scatter           = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/AtmosphereSettings.scale;
+        public static Vector4       molecule_absorb             = Vector4.zero;
+        public static Vector4       OZone_absorb                = new Vector4(0.0f,0.0f,0.0f,6.4f)/AtmosphereSettings.scale;
         public static Vector4       mie_scatter                 = Vector4.one * 3.996f / AtmosphereSettings.scale;
         public static Vector4       mie_absorb                  = Vector4.one * 4.44f / AtmosphereSettings.scale;
         public static Vector4       mie_eccentricity            = new Vector4(0.618f,0.618f,0.618f,0.618f);
-        public static Vector4       reayleigh_scatter           = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/AtmosphereSettings.scale;
-        public static Vector4       OZone_absorb                = new Vector4(0.0f,0.0f,0.0f,6.4f)/AtmosphereSettings.scale;
         public static Vector4       SunColor                    = new Vector4(0.8f,0.72f,0.65f,0);
         public static Vector4       scatterLUT_Size             = new Vector4( 8, 2, 1, 2);
         public static List<string>  cloudTexPath                = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
@@ -57,10 +58,10 @@ namespace RW_PlanetAtmosphere
             SaveAndLoadValueFloat(ref exposure, "exposure", defaultValue: 4, forceSave: true);
             SaveAndLoadValueFloat(ref ground_refract, "ground_refract", defaultValue: 1, forceSave: true);
             SaveAndLoadValueFloat(ref ground_light, "ground_light", defaultValue: 0.01f, forceSave: true);
-            SaveAndLoadValueFloat(ref deltaAHLW_L, "deltaAHLW_L", defaultValue: 8.0f, forceSave: true);
-            SaveAndLoadValueFloat(ref lengthAHLW_L, "lengthAHLW_L", defaultValue: 1.0f, forceSave: true);
-            SaveAndLoadValueFloat(ref deltaAHLW_W, "deltaAHLW_W", defaultValue: 4.0f, forceSave: true);
-            SaveAndLoadValueFloat(ref lengthAHLW_W, "lengthAHLW_W", defaultValue: 1.0f, forceSave: true);
+            SaveAndLoadValueFloat(ref deltaL, "deltaL", defaultValue: 8.0f, forceSave: true);
+            SaveAndLoadValueFloat(ref lengthL, "lengthL", defaultValue: 1.0f, forceSave: true);
+            SaveAndLoadValueFloat(ref deltaW, "deltaW", defaultValue: 4.0f, forceSave: true);
+            SaveAndLoadValueFloat(ref lengthW, "lengthW", defaultValue: 1.0f, forceSave: true);
             SaveAndLoadValueFloat(ref H_Reayleigh, "H_Reayleigh", defaultValue: 0.08f*scale, forceSave: true);
             SaveAndLoadValueFloat(ref H_Mie, "H_Mie", defaultValue: 0.02f*scale, forceSave: true);
             SaveAndLoadValueFloat(ref H_OZone, "H_OZone", defaultValue: 0.25f*scale, forceSave: true);
@@ -102,11 +103,12 @@ namespace RW_PlanetAtmosphere
                 value.z = Math.Abs(value.z);
                 value.w = Math.Abs(value.w);
             }
-            SaveAndLoadValueVec4(ref mie_eccentricity, "mie_eccentricity", defaultValue: new Vector4(0.618f,0.618f,0.618f,0.618f), forceSave: true);
+            SaveAndLoadValueVec4(ref reayleigh_scatter, "reayleigh_scatter", defaultValue: new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/scale, forceSave: true);
+            SaveAndLoadValueVec4(ref molecule_absorb, "molecule_absorb", defaultValue: Vector4.zero, forceSave: true);
+            SaveAndLoadValueVec4(ref OZone_absorb, "OZone_absorb", defaultValue: new Vector4(0.0f,0.0f,0.0f,6.4f)/scale, forceSave: true);
             SaveAndLoadValueVec4(ref mie_scatter, "mie_scatter", defaultValue: Vector4.one * 3.996f / scale, forceSave: true);
             SaveAndLoadValueVec4(ref mie_absorb, "mie_absorb", defaultValue: Vector4.one * 4.44f / scale, forceSave: true);
-            SaveAndLoadValueVec4(ref reayleigh_scatter, "reayleigh_scatter", defaultValue: new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/scale, forceSave: true);
-            SaveAndLoadValueVec4(ref OZone_absorb, "OZone_absorb", defaultValue: new Vector4(0.0f,0.0f,0.0f,6.4f)/scale, forceSave: true);
+            SaveAndLoadValueVec4(ref mie_eccentricity, "mie_eccentricity", defaultValue: new Vector4(0.618f,0.618f,0.618f,0.618f), forceSave: true);
             SaveAndLoadValueVec4(ref SunColor, "SunColor", defaultValue: new Vector4(1, 1, 1, 0), forceSave: true);
             SaveAndLoadValueVec4(ref scatterLUT_Size, "scatterLUT_Size", defaultValue: new Vector4( 8, 2, 2, 1), forceSave: true);
 
@@ -211,27 +213,27 @@ namespace RW_PlanetAtmosphere
             sizeY+=32;
 
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"deltaAHLW_L".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f,32),deltaAHLW_L.ToString("f5")),out newValue);
-            deltaAHLW_L = Math.Abs(newValue);
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"deltaL".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f,32),deltaL.ToString("f5")),out newValue);
+            deltaL = Math.Abs(newValue);
             sizeY+=32;
 
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"lengthAHLW_L".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f,32),lengthAHLW_L.ToString("f5")),out newValue);
-            lengthAHLW_L = Math.Abs(newValue);
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"lengthL".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f,32),lengthL.ToString("f5")),out newValue);
+            lengthL = Math.Abs(newValue);
             sizeY+=32;
 
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"deltaAHLW_W".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f,32),deltaAHLW_W.ToString("f5")),out newValue);
-            deltaAHLW_W = Math.Abs(newValue);
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"deltaW".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f,32),deltaW.ToString("f5")),out newValue);
+            deltaW = Math.Abs(newValue);
             sizeY+=32;
 
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"lengthAHLW_W".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f,32),lengthAHLW_W.ToString("f5")),out newValue);
-            lengthAHLW_W = Math.Abs(newValue);
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"lengthW".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f,32),lengthW.ToString("f5")),out newValue);
+            lengthW = Math.Abs(newValue);
             sizeY+=32;
 
 
@@ -261,15 +263,39 @@ namespace RW_PlanetAtmosphere
             sizeY+=32;
 
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"mie_eccentricity".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.x.ToString("f5")),out newValue);
-            mie_eccentricity.x = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.y.ToString("f5")),out newValue);
-            mie_eccentricity.y = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.z.ToString("f5")),out newValue);
-            mie_eccentricity.z = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.w.ToString("f5")),out newValue);
-            mie_eccentricity.w = newValue;
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"reayleigh_scatter".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.x.ToString("f5")),out newValue);
+            reayleigh_scatter.x = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.y.ToString("f5")),out newValue);
+            reayleigh_scatter.y = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.z.ToString("f5")),out newValue);
+            reayleigh_scatter.z = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.w.ToString("f5")),out newValue);
+            reayleigh_scatter.w = newValue;
+            sizeY+=32;
+
+
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"molecule_absorb".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),molecule_absorb.x.ToString("f5")),out newValue);
+            molecule_absorb.x = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),molecule_absorb.y.ToString("f5")),out newValue);
+            molecule_absorb.y = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),molecule_absorb.z.ToString("f5")),out newValue);
+            molecule_absorb.z = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),molecule_absorb.w.ToString("f5")),out newValue);
+            molecule_absorb.w = newValue;
+            sizeY+=32;
+
+
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"OZone_absorb".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.x.ToString("f5")),out newValue);
+            OZone_absorb.x = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.y.ToString("f5")),out newValue);
+            OZone_absorb.y = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.z.ToString("f5")),out newValue);
+            OZone_absorb.z = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.w.ToString("f5")),out newValue);
+            OZone_absorb.w = newValue;
             sizeY+=32;
 
 
@@ -297,27 +323,15 @@ namespace RW_PlanetAtmosphere
             sizeY+=32;
 
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"reayleigh_scatter".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.x.ToString("f5")),out newValue);
-            reayleigh_scatter.x = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.y.ToString("f5")),out newValue);
-            reayleigh_scatter.y = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.z.ToString("f5")),out newValue);
-            reayleigh_scatter.z = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),reayleigh_scatter.w.ToString("f5")),out newValue);
-            reayleigh_scatter.w = newValue;
-            sizeY+=32;
-
-
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"OZone_absorb".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.x.ToString("f5")),out newValue);
-            OZone_absorb.x = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.y.ToString("f5")),out newValue);
-            OZone_absorb.y = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.z.ToString("f5")),out newValue);
-            OZone_absorb.z = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),OZone_absorb.w.ToString("f5")),out newValue);
-            OZone_absorb.w = newValue;
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"mie_eccentricity".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.x.ToString("f5")),out newValue);
+            mie_eccentricity.x = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.y.ToString("f5")),out newValue);
+            mie_eccentricity.y = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.z.ToString("f5")),out newValue);
+            mie_eccentricity.z = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),mie_eccentricity.w.ToString("f5")),out newValue);
+            mie_eccentricity.w = newValue;
             sizeY+=32;
 
 
@@ -455,10 +469,10 @@ namespace RW_PlanetAtmosphere
                         exposure = def.exposure;
                         ground_refract = def.ground_refract;
                         ground_light = def.ground_light;
-                        deltaAHLW_L = def.deltaAHLW_L;
-                        lengthAHLW_L = def.lengthAHLW_L;
-                        deltaAHLW_W = def.deltaAHLW_W;
-                        lengthAHLW_W = def.lengthAHLW_W;
+                        deltaL = def.deltaL;
+                        lengthL = def.lengthL;
+                        deltaW = def.deltaW;
+                        lengthW = def.lengthW;
                         H_Reayleigh = def.H_Reayleigh;
                         H_Mie = def.H_Mie;
                         H_OZone = def.H_OZone;

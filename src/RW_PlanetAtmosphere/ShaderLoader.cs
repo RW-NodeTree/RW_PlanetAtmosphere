@@ -15,20 +15,21 @@ namespace RW_PlanetAtmosphere
     internal static class ShaderLoader
     {
         public readonly static Material materialSkyLUT = null;
-        private static Mesh mesh = null;
-        private static Shader SkyBox_LUT = null;
-        private static Shader SkyBoxCloud_LUT = null;
-        private static Shader TranslucentGenrater = null;
-        private static Shader ScatterGenrater = null;
-        private static Material materialTranslucentGenrater = null;
-        private static Material materialScatterGenrater = null;
-        private static GameObject sky = null;
-        private static MeshFilter meshFilter = null;
-        private static MeshRenderer meshRenderer = null;
-        private readonly static List<Material> materialCloudLUTs = new List<Material>();
+        public readonly static Material materialTranslucentGenrater = null;
+        public readonly static Material materialScatterGenrater = null;
+        public readonly static List<Material> materialCloudLUTs = new List<Material>();
+        internal static Mesh mesh = null;
+        internal static Shader SkyBox_LUT = null;
+        internal static Shader SkyBoxCloud_LUT = null;
+        internal static Shader TranslucentGenrater = null;
+        internal static Shader ScatterGenrater = null;
+        internal static GameObject sky = null;
+        internal static MeshFilter meshFilter = null;
+        internal static MeshRenderer meshRenderer = null;
         internal static RenderTexture translucentLUT = null;
         internal static RenderTexture scatterLUT_Reayleigh = null;
         internal static RenderTexture scatterLUT_Mie = null;
+        internal static ModContentPack modAsset = null;
 
 
         private static float maxh = minh;
@@ -40,21 +41,22 @@ namespace RW_PlanetAtmosphere
         private static int propId_exposure              = Shader.PropertyToID("exposure");
         private static int propId_ground_refract        = Shader.PropertyToID("ground_refract");
         private static int propId_ground_light          = Shader.PropertyToID("ground_light");
-        private static int propId_deltaAHLW_L           = Shader.PropertyToID("deltaAHLW_L");
-        private static int propId_deltaAHLW_W           = Shader.PropertyToID("deltaAHLW_W");
-        private static int propId_lengthAHLW_L          = Shader.PropertyToID("lengthAHLW_L");
-        private static int propId_lengthAHLW_W          = Shader.PropertyToID("lengthAHLW_W");
+        private static int propId_deltaL           = Shader.PropertyToID("deltaL");
+        private static int propId_deltaW           = Shader.PropertyToID("deltaW");
+        private static int propId_lengthL          = Shader.PropertyToID("lengthL");
+        private static int propId_lengthW          = Shader.PropertyToID("lengthW");
         private static int propId_minh                  = Shader.PropertyToID("minh");
         private static int propId_maxh                  = Shader.PropertyToID("maxh");
         private static int propId_H_Reayleigh           = Shader.PropertyToID("H_Reayleigh");
         private static int propId_H_Mie                 = Shader.PropertyToID("H_Mie");
         private static int propId_H_OZone               = Shader.PropertyToID("H_OZone");
         private static int propId_D_OZone               = Shader.PropertyToID("D_OZone");
+        private static int propId_reayleigh_scatter     = Shader.PropertyToID("reayleigh_scatter");
+        private static int propId_molecule_absorb       = Shader.PropertyToID("molecule_absorb");
+        private static int propId_OZone_absorb          = Shader.PropertyToID("OZone_absorb");
         private static int propId_mie_scatter           = Shader.PropertyToID("mie_scatter");
         private static int propId_mie_absorb            = Shader.PropertyToID("mie_absorb");
         private static int propId_mie_eccentricity      = Shader.PropertyToID("mie_eccentricity");
-        private static int propId_reayleigh_scatter     = Shader.PropertyToID("reayleigh_scatter");
-        private static int propId_OZone_absorb          = Shader.PropertyToID("OZone_absorb");
         private static int propId_SunColor              = Shader.PropertyToID("SunColor");
         private static int propId_scatterLUT_Size       = Shader.PropertyToID("scatterLUT_Size");
         private static int propId_translucentLUT        = Shader.PropertyToID("translucentLUT");
@@ -67,59 +69,20 @@ namespace RW_PlanetAtmosphere
                                         materialTranslucentGenrater != null && (materialTranslucentGenrater.shader?.isSupported ?? false)   && 
                                         materialScatterGenrater     != null && (materialScatterGenrater.shader?.isSupported ?? false)       && 
                                         SkyBoxCloud_LUT             != null && SkyBoxCloud_LUT.isSupported;
+
+
+
         static ShaderLoader()
         {
             uint loadedCount = 0;
-            List<ModContentPack> runningModsListForReading = LoadedModManager.RunningModsListForReading;
-            foreach (ModContentPack pack in runningModsListForReading)
-            {
-                //Log.Message($"{pack.PackageId},{pack.assetBundles.loadedAssetBundles?.Count}");
-                if (pack.PackageId.Equals("rwnodetree.rwplanetatmosphere") && !pack.assetBundles.loadedAssetBundles.NullOrEmpty())
-                {
-                    //Log.Message($"{pack.PackageId} found, try to load shader");
-                    foreach (AssetBundle assetBundle in pack.assetBundles.loadedAssetBundles)
-                    {
-                        // Log.Message($"Loading shader in {assetBundle.name}");
-                        SkyBox_LUT = assetBundle.LoadAsset<Shader>(@"Assets\Data\RWNodeTree.RWPlanetAtmosphere\SkyBoxLUT.shader");
-                        if (SkyBox_LUT != null && SkyBox_LUT.isSupported)
-                        {
-                            loadedCount++;
-                            break;
-                        }
-                    }
-                    foreach (AssetBundle assetBundle in pack.assetBundles.loadedAssetBundles)
-                    {
-                        // Log.Message($"Loading shader in {assetBundle.name}");
-                        SkyBoxCloud_LUT = assetBundle.LoadAsset<Shader>(@"Assets\Data\RWNodeTree.RWPlanetAtmosphere\SkyBoxCloudLUT.shader");
-                        if (SkyBoxCloud_LUT != null && SkyBoxCloud_LUT.isSupported)
-                        {
-                            loadedCount++;
-                            break;
-                        }
-                    }
-                    foreach (AssetBundle assetBundle in pack.assetBundles.loadedAssetBundles)
-                    {
-                        // Log.Message($"Loading shader in {assetBundle.name}");
-                        TranslucentGenrater = assetBundle.LoadAsset<Shader>(@"Assets\Data\RWNodeTree.RWPlanetAtmosphere\TranslucentGenrater.shader");
-                        if (TranslucentGenrater != null && TranslucentGenrater.isSupported)
-                        {
-                            loadedCount++;
-                            break;
-                        }
-                    }
-                    foreach (AssetBundle assetBundle in pack.assetBundles.loadedAssetBundles)
-                    {
-                        // Log.Message($"Loading shader in {assetBundle.name}");
-                        ScatterGenrater = assetBundle.LoadAsset<Shader>(@"Assets\Data\RWNodeTree.RWPlanetAtmosphere\ScatterGenrater.shader");
-                        if (ScatterGenrater != null && ScatterGenrater.isSupported)
-                        {
-                            loadedCount++;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
+            SkyBox_LUT = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/SkyBoxLUT.shader");
+            if(SkyBox_LUT != null) loadedCount++;
+            SkyBoxCloud_LUT = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/SkyBoxCloudLUT.shader");
+            if(SkyBoxCloud_LUT != null) loadedCount++;
+            TranslucentGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/TranslucentGenrater.shader");
+            if(TranslucentGenrater != null) loadedCount++;
+            ScatterGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/ScatterGenrater.shader");
+            if(ScatterGenrater != null) loadedCount++;
             if (loadedCount >= 4)
             {
                 materialSkyLUT = new Material(SkyBox_LUT)
@@ -141,11 +104,13 @@ namespace RW_PlanetAtmosphere
                 sky = new GameObject("RW_PlanetAtmosphere");
                 meshFilter = sky.AddComponent<MeshFilter>();
                 meshRenderer = sky.AddComponent<MeshRenderer>();
-                sky.AddComponent<PlanetAtmosphere>();
+                var planetAtmosphere = sky.AddComponent<PlanetAtmosphere>();
                 GameObject.DontDestroyOnLoad(sky);
                 sky.layer = WorldCameraManager.WorldLayer;
                 meshFilter.mesh = mesh;
                 meshRenderer.material = materialSkyLUT;
+                // meshRenderer.sortingOrder
+                // Graphics.DrawMesh
                 // WorldCameraManager.WorldCamera.fieldOfView = 20;
                 // WorldCameraManager.WorldSkyboxCamera.fieldOfView = 20;
                 WorldCameraManager.WorldCamera.depthTextureMode = DepthTextureMode.Depth;
@@ -171,18 +136,42 @@ namespace RW_PlanetAtmosphere
                 WorldMaterials.RiversBorder.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
                 WorldMaterials.UngeneratedPlanetParts.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
 
-                // planetAtmosphere.materialsTest.Add(WorldMaterials.WorldOcean);
-                // planetAtmosphere.materialsTest.Add(WorldMaterials.UngeneratedPlanetParts);
-                // planetAtmosphere.materialsTest.Add(WorldMaterials.Stars);
-                // planetAtmosphere.materialsTest.Add(WorldMaterials.Rivers);
-                // planetAtmosphere.materialsTest.Add(WorldMaterials.RiversBorder);
-                // planetAtmosphere.materialsTest.Add(WorldMaterials.WorldTerrain);
-                // planetAtmosphere.materialsTest.Add(WorldMaterials.WorldIce);
+                planetAtmosphere.materialsTest.Add(WorldMaterials.WorldOcean);
+                planetAtmosphere.materialsTest.Add(WorldMaterials.UngeneratedPlanetParts);
+                planetAtmosphere.materialsTest.Add(WorldMaterials.Stars);
+                planetAtmosphere.materialsTest.Add(WorldMaterials.Rivers);
+                planetAtmosphere.materialsTest.Add(WorldMaterials.RiversBorder);
+                planetAtmosphere.materialsTest.Add(WorldMaterials.WorldTerrain);
+                planetAtmosphere.materialsTest.Add(WorldMaterials.WorldIce);
 
                 // WorldMaterials.WorldOcean.color = new Color32(1,2,4,255);
                 // WorldMaterials.UngeneratedPlanetParts.color = new Color32(1,2,4,255);
                 // WorldMaterials.Rivers.color = new Color32(1,2,4,255);
             }
+        }
+
+        public static Shader GetShader(string path)
+        {
+            if(modAsset == null)
+            {
+                foreach (ModContentPack pack in LoadedModManager.RunningModsListForReading)
+                {
+                    if (pack.PackageId.Equals("rwnodetree.rwplanetatmosphere") && !pack.assetBundles.loadedAssetBundles.NullOrEmpty())
+                    {
+                        modAsset = pack;
+                    }
+                }
+            }
+            if(modAsset != null)
+            {
+                foreach (AssetBundle assetBundle in modAsset.assetBundles.loadedAssetBundles)
+                {
+                    // Log.Message($"Loading shader in {assetBundle.name}");
+                    Shader shader = assetBundle.LoadAsset<Shader>(path);
+                    if (shader != null && shader.isSupported) return shader;
+                }
+            }
+            return null;
         }
 
 
@@ -219,10 +208,10 @@ Exception : {ex}"
 
             try
             {
-                material.SetFloat(propId_deltaAHLW_L, AtmosphereSettings.deltaAHLW_L);
-                material.SetFloat(propId_deltaAHLW_W, AtmosphereSettings.deltaAHLW_W);
-                material.SetFloat(propId_lengthAHLW_L, AtmosphereSettings.lengthAHLW_L);
-                material.SetFloat(propId_lengthAHLW_W, AtmosphereSettings.lengthAHLW_W);
+                material.SetFloat(propId_deltaL, AtmosphereSettings.deltaL);
+                material.SetFloat(propId_deltaW, AtmosphereSettings.deltaW);
+                material.SetFloat(propId_lengthL, AtmosphereSettings.lengthL);
+                material.SetFloat(propId_lengthW, AtmosphereSettings.lengthW);
                 material.SetFloat(propId_minh, minh);
                 material.SetFloat(propId_maxh, maxh);
                 material.SetFloat(propId_H_Reayleigh, AtmosphereSettings.H_Reayleigh);
@@ -230,19 +219,20 @@ Exception : {ex}"
                 material.SetFloat(propId_H_OZone, AtmosphereSettings.H_OZone);
                 material.SetFloat(propId_D_OZone, AtmosphereSettings.D_OZone);
                 material.SetVector(propId_reayleigh_scatter, AtmosphereSettings.reayleigh_scatter);
+                material.SetVector(propId_molecule_absorb, AtmosphereSettings.molecule_absorb);
+                material.SetVector(propId_OZone_absorb, AtmosphereSettings.OZone_absorb);
                 material.SetVector(propId_mie_scatter, AtmosphereSettings.mie_scatter);
                 material.SetVector(propId_mie_absorb, AtmosphereSettings.mie_absorb);
-                material.SetVector(propId_OZone_absorb, AtmosphereSettings.OZone_absorb);
             }
             catch(Exception ex)
             {
                 Log.Error(
 $@"error report : UpdateMaterialStatic error
 material : {material}
-deltaAHLW_L : {AtmosphereSettings.deltaAHLW_L}
-deltaAHLW_W : {AtmosphereSettings.deltaAHLW_W}
-lengthAHLW_L : {AtmosphereSettings.lengthAHLW_L}
-lengthAHLW_W : {AtmosphereSettings.lengthAHLW_W}
+deltaL : {AtmosphereSettings.deltaL}
+deltaW : {AtmosphereSettings.deltaW}
+lengthL : {AtmosphereSettings.lengthL}
+lengthW : {AtmosphereSettings.lengthW}
 minh : {minh}
 maxh : {maxh}
 H_Reayleigh : {AtmosphereSettings.H_Reayleigh}
@@ -285,7 +275,7 @@ Exception : {ex}"
 
         private class PlanetAtmosphere : MonoBehaviour
         {
-            // public readonly List<Material> materialsTest = new List<Material>();
+            public readonly List<Material> materialsTest = new List<Material>();
             private Transform cachedTransform = null;
             void parmUpdated()
             {
@@ -388,7 +378,7 @@ Exception : {ex}"
                     {
                         UpdateMaterialStatic(materialScatterGenrater);
                         UpdateMaterialLUT(materialScatterGenrater);
-                        Graphics.SetRenderTarget(new RenderBuffer[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, Graphics.activeDepthBuffer);
+                        Graphics.SetRenderTarget(new RenderBuffer[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, scatterLUT_Reayleigh.depthBuffer);
                         Graphics.Blit(null, materialScatterGenrater);
                     }
                     catch(Exception ex)

@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 4102730369
+CRC: 3045123570
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: a1da346d2130e4a19032b16d39808816
+    Hash: 56696931dbdc2c437862766f30757c9b
   TypeTreeHash:
     serializedVersion: 2
     Hash: 55d48f4ad9c3b13330b9eb5ee5686477
@@ -13,9 +13,11 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/Data/RWNodeTree.RWPlanetAtmosphere/CityLight.shader
-- Assets/Data/RWNodeTree.RWPlanetAtmosphere/SkyBoxLUT.shader
-- Assets/Data/RWNodeTree.RWPlanetAtmosphere/TranslucentGenrater.shader
-- Assets/Data/RWNodeTree.RWPlanetAtmosphere/SkyBoxCloudLUT.shader
-- Assets/Data/RWNodeTree.RWPlanetAtmosphere/ScatterGenrater.shader
+- Assets/RW_PlanetAtmosphere/Shader/CityLight.shader
+- Assets/RW_PlanetAtmosphere/Shader/SkyBoxLUT.shader
+- Assets/RW_PlanetAtmosphere/Shader/BasicShape.shader
+- Assets/RW_PlanetAtmosphere/Shader/TranslucentGenrater.shader
+- Assets/RW_PlanetAtmosphere/Shader/SkyBoxCloudLUT.shader
+- Assets/RW_PlanetAtmosphere/Shader/ScatterGenrater.shader
+- Assets/RW_PlanetAtmosphere/Shader/BasicRing.shader
 Dependencies: []
