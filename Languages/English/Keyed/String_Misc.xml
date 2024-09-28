@@ -18,7 +18,7 @@
 	<mie_eccentricity>Mie eccentricity(R,G,B,UV)</mie_eccentricity>
 	<reayleigh_scatter>Reayleigh scatter factor(R,G,B,UV)</reayleigh_scatter>
 	<OZone_absorb>OZone absorb factor(R,G,B,UV)</OZone_absorb>
-	<SunColor>Sun color(R,G,B,UV)</SunColor>
+	<sunColor>Sun color(R,G,B,UV)</sunColor>
 	<scatterLUTSize>Scatter LUT Size(VAng,LightAng,HAng,Height) x16</scatterLUTSize>
 	<cloudTexPath>Cloud Texture</cloudTexPath>
 	<cloudTexValue>(refract,glowing,opacity,height)</cloudTexValue>

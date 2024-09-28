@@ -62,11 +62,13 @@
     <None Include="Assets\RW_PlanetAtmosphere\Shader\TranslucentGenrater.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\Ring\BasicRing.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\PBSky.cginc" />
+    <None Include="Assets\RW_PlanetAtmosphere\Shader\OutSunLightLUTGenrater.shader" />
     <None Include="Assets\ShaderlabVSCode\ScriptTemplates\HLSL Shader-New HLSL Shader.hlsl.txt" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\PlanetLight\PlanetLight.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\PostFX.cginc" />
     <None Include="Assets\RW_PlanetAtmosphere.Test\Material\Test.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\PBAttach.cginc" />
+    <None Include="Assets\RW_PlanetAtmosphere\Shader\InSunLightLUTGenrater.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\ScatterGenrater.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\Atmosohere\SkyBoxLUT.shader" />
   </ItemGroup>

@@ -3,17 +3,19 @@
         ringMap ("Map", 2D) = "gary" {}
         ringFromTo ("Ring From To", Vector) = (110,130,0,0)
         normal ("Ring Normal", Vector) = (0,1,0,0)
-        ground_refract ("ground refract", Range(0, 1)) = 0.0625
+        ground_refract ("ground refract", Range(0, 1)) = 1.0
         ground_light ("ground light", Range(0, 1)) = 0.0
         opacity ("opacity multiplier", Range(0, 1)) = 1.0
         deltaL ("scatterLUT light curve max derivative(v)", Range(1.0,20.0)) = 8.0
         deltaW ("scatterLUT light curve max derivative(p)", Range(1.0,20.0)) = 4.0
         lengthL ("scatterLUT light curve max range(v)", Range(0.5,1.0)) = 1.0
         lengthW ("scatterLUT light curve max range(p)", Range(0.5,1.0)) = 1.0
+        sunRadius("sun Radius", Float) = 6960
+        sunDistance("sun Distance", Float) = 1495978.92
         exposure ("exposure", Float) = 16.0
         minh ("planet ground radius", Float) = 63.71393
         maxh ("planet sky radius", Float) = 64.71393
-        SunColor ("SunColor", Color) = (1,1,1,0.24)
+        sunColor ("Sun Color", Color) = (1,1,1,0.24)
         mie_eccentricity ("mie eccentricity", Color) = (0.618,0.618,0.618,0.618)
         reayleigh_scatter ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
         molecule_absorb ("Molecule Absorb Factor", Vector) = (0,0,0,0)
@@ -22,6 +24,8 @@
         mie_absorb ("Mie absorb Factor", Vector) = (4.44,4.44,4.44,4.44)
         scatterLUT_Size ("scatterLUT Size", Vector) = (0,0,0,0)
         translucentLUT ("translucent LUT", 2D) = "white"{}
+        outSunLightLUT ("out sun light LUT", 2D) = "white"{}
+        inSunLightLUT ("in sun light LUT", 2D) = "white"{}
         scatterLUT_Reayleigh ("scatter LUT Reayleigh", 2D) = "black"{}
         scatterLUT_Mie ("scatter LUT Mie", 2D) = "black"{}
     }
@@ -56,7 +60,7 @@
             };
             
             // uniform float4 _PlanetSunLightDirection;
-            float4 SunColor;
+            float4 sunColor;
             
             float ground_refract;
             float ground_light;
@@ -89,16 +93,23 @@
                 float t;
                 float4 pixel = getColorFromRing(pos,worldPos - pos,worldPos,t);
 
+                
                 AtmospherePropInfo infos = getAtmospherePropInfoByRelPos(pos,worldPos,lightDir);
-
-                float4 translucentLight;
-                float4 translucentGround;
+                float4 translucentLight = getLightTranslucent(infos.ahlwE.zy);
+                float4 translucentGround = getGroundTranslucent(infos);
+                
+                
                 float4 reayleighScatter;
                 float4 mieScatter;
-                float4 scatter = LightScatter(infos, SunColor, float4(pixel.xyz,0.0) * ground_refract, float4(pixel.xyz,0.0) * ground_light, translucentLight, translucentGround, reayleighScatter, mieScatter);
+                float4 scatter = getSkyScatter(infos,translucentGround,reayleighScatter,mieScatter);
                 
+        
+        
+                scatter = max(scatter, 0.0);
+                scatter.xz += float2(0.08,0.2) * scatter.w;
                 scatter.xyz = hdr(scatter.xyz);
-                pixel.xyz = pixel.xyz * translucentGround * translucentLight * step(infos.ahlwE.x, -1) + scatter.xyz;
+                pixel.xyz *= translucentGround * (translucentLight * ground_refract + ground_light);
+                pixel.xyz += scatter;
                 // pixel.xyz = ACESTonemap(pixel.xyz);
 
                 return pixel;

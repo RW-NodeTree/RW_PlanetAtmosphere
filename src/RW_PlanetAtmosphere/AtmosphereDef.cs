@@ -26,7 +26,7 @@ namespace RW_PlanetAtmosphere
         public Vector4          mie_eccentricity        = new Vector4(0.618f,0.618f,0.618f,0.618f);
         public Vector4          reayleigh_scatter       = new Vector4(0.46278f,1.25945f,3.10319f,11.69904f)/AtmosphereSettings.scale;
         public Vector4          OZone_absorb            = new Vector4(0.0f,0.0f,0.0f,6.4f)/AtmosphereSettings.scale;
-        public Vector4          SunColor                = new Vector4(0.8f,0.72f,0.65f,0);
+        public Vector4          sunColor                = new Vector4(0.8f,0.72f,0.65f,0);
         public Vector4          scatterLUT_Size         = new Vector4( 8, 2, 1, 2);
         public List<string>     cloudTexPath            = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
         public List<Vector4>    cloudTexValue           = new List<Vector4>(){new Vector4(1.0f,0.0f,0.5f,0.05f)};

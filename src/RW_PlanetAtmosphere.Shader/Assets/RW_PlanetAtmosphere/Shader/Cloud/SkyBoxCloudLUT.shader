@@ -3,19 +3,20 @@
     Properties
     {
         playRange ("play speed", Range(0, 1)) = 0.015625
-        ground_refract ("ground refract", Range(0, 1)) = 0.0625
+        ground_refract ("ground refract", Range(0, 1)) = 1.0
         ground_light ("ground light", Range(0, 1)) = 0.0
         opacity ("opacity multiplier", Range(0, 1)) = 1.0
         deltaL ("scatterLUT light curve max derivative(v)", Range(1.0,20.0)) = 8.0
         deltaW ("scatterLUT light curve max derivative(p)", Range(1.0,20.0)) = 4.0
         lengthL ("scatterLUT light curve max range(v)", Range(0.5,1.0)) = 1.0
         lengthW ("scatterLUT light curve max range(p)", Range(0.5,1.0)) = 1.0
-        sunPerspective("sun Perspective", Range(0, 1)) = 0.99998970394887936920575070222273
+        sunRadius("sun Radius", Float) = 6960
+        sunDistance("sun Distance", Float) = 1495978.92
         exposure ("exposure", Float) = 16.0
         flowDir ("flow dir", Float) = 0.0
         minh ("planet ground radius", Float) = 63.71393
         maxh ("planet sky radius", Float) = 64.71393
-        SunColor ("SunColor", Color) = (1,1,1,0.24)
+        sunColor ("Sun Color", Color) = (1,1,1,0.24)
         reayleigh_scatter ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
         molecule_absorb ("Molecule Absorb Factor", Vector) = (0,0,0,0)
         OZone_absorb ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,6.4)
@@ -24,6 +25,8 @@
         mie_eccentricity ("mie eccentricity", Color) = (0.618,0.618,0.618,0.618)
         scatterLUT_Size ("scatterLUT Size", Vector) = (0,0,0,0)
         translucentLUT ("translucent LUT", 2D) = "white"{}
+        outSunLightLUT ("out sun light LUT", 2D) = "white"{}
+        inSunLightLUT ("in sun light LUT", 2D) = "white"{}
         scatterLUT_Reayleigh ("scatter LUT Reayleigh", 2D) = "black"{}
         scatterLUT_Mie ("scatter LUT Mie", 2D) = "black"{}
         cloudTexture ("cloud texture", 2D) = "transparent"{}
@@ -57,7 +60,7 @@
     sampler2D cloudTexture;
     float4 cloudTexture_TexelSize;
     sampler2D noiseTexture;
-    float4 SunColor;
+    float4 sunColor;
     
     float ground_refract;
     float ground_light;
@@ -126,16 +129,23 @@
         // col.xyz = (dot(sun,normalize(cloudPos)) + minh/maxh) / (1.0 + minh/maxh);
         // col.xyz = sqrt(col.xyz);
         // col.xyz *= col.xyz;
+        float3 cachedCloudPos = cloudPos;
         AtmospherePropInfo infos = getAtmospherePropInfoByRelPos(pos,cloudPos,sun);
-        float4 translucentLight;
-        float4 translucentGround;
+        float4 translucentLight = getLightTranslucent(infos.ahlwE.zy);
+        float4 translucentGround = getGroundTranslucent(infos);
+        
         float4 reayleighScatter;
         float4 mieScatter;
-        float4 scatter = LightScatter(infos, SunColor, float4(col.xyz * max(dot(sun,normalize(cloudPos)), 0.0),0.0) * ground_refract, float4(col.xyz,0.0) * ground_light, translucentLight, translucentGround, reayleighScatter, mieScatter);
+        float4 scatter = getSkyScatter(infos,translucentGround,reayleighScatter,mieScatter);
+        
+
+
         scatter = max(scatter, 0.0);
         scatter.xz += float2(0.08,0.2) * scatter.w;
-        col.xyz = scatter.xyz;
-        col.xyz = hdr(col.xyz);
+        scatter.xyz = hdr(scatter.xyz);
+        col.xyz *= translucentGround * (translucentLight * ground_refract * saturate(hdr(dot(normalize(cloudPos),sun))) + ground_light);
+        col.xyz += scatter;
+
         // col.xyz = ACESTonemap(col.xyz);
         col.w *= opacity;
         // // float2 SCREEN = i.screen.xy/i.screen.z;

@@ -838,6 +838,7 @@ GameObject:
   - component: {fileID: 1959794536}
   - component: {fileID: 1959794535}
   - component: {fileID: 1959794534}
+  - component: {fileID: 1959794537}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -903,13 +904,27 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959794533}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 63.781, z: -63.781}
+  m_LocalRotation: {x: -0.092493154, y: -0.24284203, z: 0.02886954, w: -0.96521467}
+  m_LocalPosition: {x: -19.418678, y: 28.985634, z: -59.58763}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1959794537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1959794533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db853102666c076408eb71df5aebc5fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cam: {fileID: 1959794535}
+  pos: {x: 0, y: 0, z: 0}
 --- !u!1 &1991945538
 GameObject:
   m_ObjectHideFlags: 0
@@ -957,15 +972,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scatterIteratorCount: 2
   translucentLUTSize: {x: 256, y: 256}
+  outSunLightLUTSize: {x: 256, y: 512}
+  inSunLightLUTSize: {x: 256, y: 256}
   scatterLUTSize: {x: 128, y: 32, z: 8, w: 32}
   TranslucentGenrater: {fileID: 4800000, guid: 01f46df734a8ba54ba4f5b4b2c443013, type: 3}
+  OutSunLightLUTGenrater: {fileID: 4800000, guid: 63c7e00c57bd55142ab4d848bcac8acb,
+    type: 3}
+  InSunLightLUTGenrater: {fileID: 4800000, guid: c7cfc9e8177312546ab7216b674c9edc,
+    type: 3}
   ScatterGenrater: {fileID: 4800000, guid: ebf0f75afe86e31479b7b2bd2e5960e0, type: 3}
   materialSkyLUT: {fileID: 2100000, guid: c2710e09f0c63214988ca99111fb48cb, type: 2}
-  materialCityLight: {fileID: 2100000, guid: bdec7907c68139f4e9702cbb099b9a3e, type: 2}
   materialCloudLUT:
   - {fileID: 2100000, guid: 7766e093813b0514e889f41f97d2a090, type: 2}
   - {fileID: 2100000, guid: 9cc46f57259aa2c479f7eb28d6b94e41, type: 2}
   - {fileID: 2100000, guid: d435045507512974995b10eb044ea87c, type: 2}
+  - {fileID: 2100000, guid: bdec7907c68139f4e9702cbb099b9a3e, type: 2}
 --- !u!23 &1991945541
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1012,7 +1033,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1991945538}
-  m_Mesh: {fileID: -2432090755550338912, guid: 6d4a4ed7d39ac294b8f3470b2f164266, type: 3}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &2033593937
 GameObject:
   m_ObjectHideFlags: 0

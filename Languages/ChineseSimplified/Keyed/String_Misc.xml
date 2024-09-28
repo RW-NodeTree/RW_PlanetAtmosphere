@@ -18,7 +18,7 @@
 	<mie_eccentricity>米尔散射分布(R,G,B,UV)</mie_eccentricity>
 	<reayleigh_scatter>瑞利散射系数(R,G,B,UV)</reayleigh_scatter>
 	<OZone_absorb>臭氧层吸收系数(R,G,B,UV)</OZone_absorb>
-	<SunColor>阳光颜色(R,G,B,UV)</SunColor>
+	<sunColor>阳光颜色(R,G,B,UV)</sunColor>
 	<scatterLUTSize>散射映射表尺寸(垂直观察角,光照角度,水平观察角,高度) x16</scatterLUTSize>
 	<cloudTexPath>云层贴图</cloudTexPath>
 	<cloudTexValue>(反射,自发光,不透明度,高度)</cloudTexValue>

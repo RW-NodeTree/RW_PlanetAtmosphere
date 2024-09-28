@@ -29,7 +29,7 @@ namespace RW_PlanetAtmosphere
         public static Vector4       mie_scatter                 = Vector4.one * 3.996f / AtmosphereSettings.scale;
         public static Vector4       mie_absorb                  = Vector4.one * 4.44f / AtmosphereSettings.scale;
         public static Vector4       mie_eccentricity            = new Vector4(0.618f,0.618f,0.618f,0.618f);
-        public static Vector4       SunColor                    = new Vector4(0.8f,0.72f,0.65f,0);
+        public static Vector4       sunColor                    = new Vector4(0.8f,0.72f,0.65f,0);
         public static Vector4       scatterLUT_Size             = new Vector4( 8, 2, 1, 2);
         public static List<string>  cloudTexPath                = new List<string>(){"EarthCloudTex/8k_earth_clouds"};
         public static List<Vector4> cloudTexValue               = new List<Vector4>(){new Vector4(1.0f,0.0f,0.5f,0.05f)};
@@ -109,7 +109,7 @@ namespace RW_PlanetAtmosphere
             SaveAndLoadValueVec4(ref mie_scatter, "mie_scatter", defaultValue: Vector4.one * 3.996f / scale, forceSave: true);
             SaveAndLoadValueVec4(ref mie_absorb, "mie_absorb", defaultValue: Vector4.one * 4.44f / scale, forceSave: true);
             SaveAndLoadValueVec4(ref mie_eccentricity, "mie_eccentricity", defaultValue: new Vector4(0.618f,0.618f,0.618f,0.618f), forceSave: true);
-            SaveAndLoadValueVec4(ref SunColor, "SunColor", defaultValue: new Vector4(1, 1, 1, 0), forceSave: true);
+            SaveAndLoadValueVec4(ref sunColor, "sunColor", defaultValue: new Vector4(1, 1, 1, 0), forceSave: true);
             SaveAndLoadValueVec4(ref scatterLUT_Size, "scatterLUT_Size", defaultValue: new Vector4( 8, 2, 2, 1), forceSave: true);
 
 
@@ -335,15 +335,15 @@ namespace RW_PlanetAtmosphere
             sizeY+=32;
 
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"SunColor".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),SunColor.x.ToString("f5")),out newValue);
-            SunColor.x = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),SunColor.y.ToString("f5")),out newValue);
-            SunColor.y = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),SunColor.z.ToString("f5")),out newValue);
-            SunColor.z = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),SunColor.w.ToString("f5")),out newValue);
-            SunColor.w = newValue;
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"sunColor".Translate());
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),sunColor.x.ToString("f5")),out newValue);
+            sunColor.x = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),sunColor.y.ToString("f5")),out newValue);
+            sunColor.y = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),sunColor.z.ToString("f5")),out newValue);
+            sunColor.z = newValue;
+            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),sunColor.w.ToString("f5")),out newValue);
+            sunColor.w = newValue;
             sizeY+=32;
 
 
@@ -480,7 +480,7 @@ namespace RW_PlanetAtmosphere
                         translucentLUT_Size = def.translucentLUT_Size;
                         mie_scatter = def.mie_scatter;
                         mie_absorb = def.mie_absorb;
-                        SunColor = def.SunColor;
+                        sunColor = def.sunColor;
                         mie_eccentricity = def.mie_eccentricity;
                         reayleigh_scatter = def.reayleigh_scatter;
                         OZone_absorb = def.OZone_absorb;

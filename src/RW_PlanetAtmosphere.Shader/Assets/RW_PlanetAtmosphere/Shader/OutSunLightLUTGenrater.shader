@@ -1,7 +1,9 @@
-﻿Shader "Planet/TranslucentGenrater"
+﻿Shader "Planet/OutSunLightLUTGenrater"
 {
     Properties
     {
+        sunRadius("sun Radius", Float) = 6960
+        sunDistance("sun Distance", Float) = 1495978.92
         minh ("planet ground radius", float) = 63.71393
         maxh ("planet sky radius", float) = 64.71393
         H_Reayleigh ("reayleigh factor scale", float) = 0.08
@@ -9,6 +11,7 @@
         H_OZone ("ozone height", float) = 0.25
         D_OZone ("ozone radius", float) = 0.15
         translucentLUT ("translucent LUT", 2D) = "white"{}
+        outSunLightLUT ("out sun light LUT", 2D) = "white"{}
         reayleigh_scatter ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
         molecule_absorb ("Molecule Absorb Factor", Vector) = (0,0,0,0)
         OZone_absorb ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,6.4)
@@ -55,25 +58,11 @@
 
             float4 frag (v2f i) : SV_Target
             {
-                i.uv *= translucentLUT_TexelSize.zw;
-                i.uv /= translucentLUT_TexelSize.zw-float2(1.0,1.0);
-                // const float3 reayleigh_scatter = float3(0.58,1.35,3.31);
-                // const float3 OZone_absorb = float3(0.21195,0.20962,0.01686);
-                // const float3 OZone_absorb = float3(0.065,0.1881,0.0085);
-                float4 mieScatterFactor = mie_scatter;
-                float4 mieAbsorbFactor = mie_absorb;
-                float2 uv = pMap2AH(i.uv);
-                float reayleigh = 0.0;
-                float mie = 0.0;
-                float oZone = 0.0;
-                float dis = 0.0;
-                IngAirDensity(uv.x, uv.y, reayleigh, mie, oZone);
-                // float4 light = translucent(float4(1.0,1.0,1.0,1.0), reayleigh_scatter, reayleigh);
-                // light = translucent(light, mieScatterFactor + mieAbsorbFactor, mie);
-                // light = translucent(light, OZone_absorb, oZone);
-                // return light;
-                return translucent((reayleigh_scatter + molecule_absorb) * reayleigh) * translucent((mieScatterFactor + mieAbsorbFactor) * mie) * translucent(OZone_absorb * oZone);
-                // return reayleigh_scatter * reayleigh + (mieScatterFactor + mieAbsorbFactor) * mie + OZone_absorb * oZone;
+                i.uv *= outSunLightLUT_TexelSize.zw;
+                i.uv /= outSunLightLUT_TexelSize.zw-float2(1.0,1.0);
+                float2 ad = Map2AD(i.uv);
+                return IngSunLight(ad);
+                // return float4(ad,1,1);
             }
 
             ENDCG

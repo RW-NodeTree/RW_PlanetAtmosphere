@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: BasicShape
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Name: Tester
+  m_Shader: {fileID: 4800000, guid: c7cfc9e8177312546ab7216b674c9edc, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -55,15 +55,11 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _RingMap:
+    - inSunLightLUT:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - scatterLUT_Mie:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - scatterLUT_Reayleigh:
+    - outSunLightLUT:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -72,11 +68,13 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _BumpIntensity: 1
+    - D_OZone: 0.15
+    - H_Mie: 0.02
+    - H_OZone: 0.25
+    - H_Reayleigh: 0.08
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DiffuseIntensity: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
     - _Glossiness: 0.5
@@ -85,36 +83,21 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PlanetRadius: 100
-    - _RingLength: 20
-    - _RingStart: 110
-    - _Shininess: 20
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularIntensity: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - deltaL: 8
-    - deltaW: 2
-    - exposure: 16
-    - ground_light: 0
-    - ground_refract: 0.0625
-    - lengthL: 1
-    - lengthW: 1
     - maxh: 64.71393
     - minh: 63.71393
-    - opacity: 1
+    - sunDistance: 1495978.9
+    - sunRadius: 6960
     m_Colors:
-    - OZone_absorb: {r: 0, g: 0, b: 0, a: 6.4}
-    - _AmbientColor: {r: 0, g: 0, b: 0, a: 1}
+    - OZone_absorb: {r: 0.21195, g: 0.20962, b: 0.01686, a: 6.4}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DiffuseColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - mie_absorb: {r: 4.44, g: 4.44, b: 4.44, a: 4.44}
-    - mie_eccentricity: {r: 0.8, g: 0.8, b: 0.8, a: 0.8}
-    - mie_scatter: {r: 4, g: 4, b: 4, a: 4}
+    - mie_eccentricity: {r: 0.618, g: 0.618, b: 0.618, a: 0.618}
+    - mie_scatter: {r: 3.996, g: 3.996, b: 3.996, a: 3.996}
     - molecule_absorb: {r: 0, g: 0, b: 0, a: 0}
-    - reayleigh_scatter: {r: 0.47293, g: 1.22733, b: 3.10319, a: 11.69904}
-    - scatterLUT_Size: {r: 128, g: 32, b: 8, a: 32}
-    - sunColor: {r: 1, g: 1, b: 1, a: 0}
+    - reayleigh_scatter: {r: 0.46278, g: 1.25945, b: 3.10319, a: 11.69904}

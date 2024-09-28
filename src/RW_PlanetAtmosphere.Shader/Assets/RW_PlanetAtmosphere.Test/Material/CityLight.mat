@@ -59,6 +59,18 @@ Material:
         m_Texture: {fileID: 2800000, guid: e65b00e9ae9b7db4dac5502a37dcb007, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - inSunLightLUT:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - outSunLightLUT:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - planetLightTexture:
+        m_Texture: {fileID: 2800000, guid: e65b00e9ae9b7db4dac5502a37dcb007, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - scatterLUT:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -94,14 +106,16 @@ Material:
     - maxh: 64.71393
     - minh: 63.71393
     - opacity: 1
+    - sunDistance: 1495978.9
+    - sunRadius: 6960
     m_Colors:
     - OZone_absorb: {r: 0, g: 0, b: 0, a: 6.4}
-    - SunColor: {r: 1, g: 1, b: 1, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - mie_absorb: {r: 4.44, g: 4.44, b: 4.44, a: 4.44}
-    - mie_eccentricity: {r: 0.5, g: 0.5, b: 0.5, a: 0.5019608}
+    - mie_eccentricity: {r: 0.8, g: 0.8, b: 0.8, a: 0.8}
     - mie_scatter: {r: 4, g: 4, b: 4, a: 4}
     - molecule_absorb: {r: 0, g: 0, b: 0, a: 0}
     - reayleigh_scatter: {r: 0.47293, g: 1.22733, b: 3.10319, a: 11.69904}
     - scatterLUT_Size: {r: 128, g: 32, b: 8, a: 32}
+    - sunColor: {r: 1, g: 1, b: 1, a: 0}

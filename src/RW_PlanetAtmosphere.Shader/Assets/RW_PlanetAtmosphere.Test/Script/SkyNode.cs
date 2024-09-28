@@ -1,15 +1,43 @@
 using UnityEngine;
 using System;
+using UnityEngine.Rendering;
 
 namespace RW_PlanetAtmosphere
 {
     public abstract class SkyNode // : IExposable
     {
-        public abstract float CameraDepth(Vector3 cameraPos);
-        public abstract float LightDepth(Vector3 lightDir);
+        private RenderTexture color;
+        private RenderTexture depth;
 
-        public abstract void UpdateNode();
-        public abstract void ApplyShadow(SkyNode other);
+        public RenderTexture ColorTexture
+        {
+            get
+            {
+                if (color == null || color.width != Screen.width || color.height != Screen.height)
+                {
+                    if (color != null) GameObject.Destroy(color);
+                    color = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGBFloat);
+                }
+                return color;
+            }
+        }
+
+        public RenderTexture DepthTexture
+        {
+            get
+            {
+                if (depth == null || depth.width != Screen.width || depth.height != Screen.height)
+                {
+                    if (depth != null) GameObject.Destroy(depth);
+                    depth = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.RFloat);
+                }
+                return depth;
+            }
+        }
+
+        public abstract void GenBaseColor(CommandBuffer commandBuffer);
+        public abstract void ApplyShadows(CommandBuffer commandBuffer, SkyNode other);
+        public abstract void BlendTexture(CommandBuffer commandBuffer, RenderTexture sourceColor, RenderTexture sourceDepth, RenderTexture sourceIdMap, int id);
         // public abstract void ExposeData();
     }
 

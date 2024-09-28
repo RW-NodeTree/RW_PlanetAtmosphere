@@ -6,7 +6,8 @@
         deltaW ("scatterLUT light curve max derivative(p)", Range(1.0,20.0)) = 4.0
         lengthL ("scatterLUT light curve max range(v)", Range(0.5,1.0)) = 1.0
         lengthW ("scatterLUT light curve max range(p)", Range(0.5,1.0)) = 1.0
-        sunPerspective("sun Perspective", Range(0, 1)) = 0.99998970394887936920575070222273
+        sunRadius("sun Radius", Float) = 6960
+        sunDistance("sun Distance", Float) = 1495978.92
         minh ("planet ground radius", float) = 63.71393
         maxh ("planet sky radius", float) = 64.71393
         H_Reayleigh ("reayleigh factor scale", float) = 0.08
@@ -70,7 +71,14 @@
                 f2s result;
                 i.uv *= scatterLUT_Size.xy*scatterLUT_Size.zw;
                 i.uv /= scatterLUT_Size.xy*scatterLUT_Size.zw-float2(1.0,1.0);
-                float4 ahlw = Map2AHLW(i.uv);
+                
+                i.uv = saturate(i.uv);
+                i.uv *= scatterLUT_Size.xy*scatterLUT_Size.zw-float2(1.0,1.0);
+                float4 map = i.uv.xyxy;
+                map.zw = floor(map.zw / scatterLUT_Size.xy);
+                map.xy = (map.xy - map.zw * scatterLUT_Size.xy) / (scatterLUT_Size.xy - float2(1.0,1.0));
+                map.zw = map.zw / (scatterLUT_Size.zw - float2(1.0,1.0));
+                float4 ahlw = Map2AHLW(map);
                 // return ahlw.yyyy-float4(minh,minh,minh,minh);
                 GenScatterInfo(ahlw.x, ahlw.y, ahlw.z, ahlw.w,result.reayleighScatter,result.mieScatter);
                 // result.reayleighScatter = min(result.reayleighScatter,1.0);

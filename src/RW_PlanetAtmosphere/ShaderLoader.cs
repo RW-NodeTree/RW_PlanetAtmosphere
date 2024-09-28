@@ -41,10 +41,10 @@ namespace RW_PlanetAtmosphere
         private static int propId_exposure              = Shader.PropertyToID("exposure");
         private static int propId_ground_refract        = Shader.PropertyToID("ground_refract");
         private static int propId_ground_light          = Shader.PropertyToID("ground_light");
-        private static int propId_deltaL           = Shader.PropertyToID("deltaL");
-        private static int propId_deltaW           = Shader.PropertyToID("deltaW");
-        private static int propId_lengthL          = Shader.PropertyToID("lengthL");
-        private static int propId_lengthW          = Shader.PropertyToID("lengthW");
+        private static int propId_deltaL                = Shader.PropertyToID("deltaL");
+        private static int propId_deltaW                = Shader.PropertyToID("deltaW");
+        private static int propId_lengthL               = Shader.PropertyToID("lengthL");
+        private static int propId_lengthW               = Shader.PropertyToID("lengthW");
         private static int propId_minh                  = Shader.PropertyToID("minh");
         private static int propId_maxh                  = Shader.PropertyToID("maxh");
         private static int propId_H_Reayleigh           = Shader.PropertyToID("H_Reayleigh");
@@ -57,7 +57,7 @@ namespace RW_PlanetAtmosphere
         private static int propId_mie_scatter           = Shader.PropertyToID("mie_scatter");
         private static int propId_mie_absorb            = Shader.PropertyToID("mie_absorb");
         private static int propId_mie_eccentricity      = Shader.PropertyToID("mie_eccentricity");
-        private static int propId_SunColor              = Shader.PropertyToID("SunColor");
+        private static int propId_sunColor              = Shader.PropertyToID("sunColor");
         private static int propId_scatterLUT_Size       = Shader.PropertyToID("scatterLUT_Size");
         private static int propId_translucentLUT        = Shader.PropertyToID("translucentLUT");
         private static int propId_scatterLUT_Reayleigh  = Shader.PropertyToID("scatterLUT_Reayleigh");
@@ -136,13 +136,13 @@ namespace RW_PlanetAtmosphere
                 WorldMaterials.RiversBorder.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
                 WorldMaterials.UngeneratedPlanetParts.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
 
-                planetAtmosphere.materialsTest.Add(WorldMaterials.WorldOcean);
-                planetAtmosphere.materialsTest.Add(WorldMaterials.UngeneratedPlanetParts);
-                planetAtmosphere.materialsTest.Add(WorldMaterials.Stars);
-                planetAtmosphere.materialsTest.Add(WorldMaterials.Rivers);
-                planetAtmosphere.materialsTest.Add(WorldMaterials.RiversBorder);
-                planetAtmosphere.materialsTest.Add(WorldMaterials.WorldTerrain);
-                planetAtmosphere.materialsTest.Add(WorldMaterials.WorldIce);
+                // planetAtmosphere.materialsTest.Add(WorldMaterials.WorldOcean);
+                // planetAtmosphere.materialsTest.Add(WorldMaterials.UngeneratedPlanetParts);
+                // planetAtmosphere.materialsTest.Add(WorldMaterials.Stars);
+                // planetAtmosphere.materialsTest.Add(WorldMaterials.Rivers);
+                // planetAtmosphere.materialsTest.Add(WorldMaterials.RiversBorder);
+                // planetAtmosphere.materialsTest.Add(WorldMaterials.WorldTerrain);
+                // planetAtmosphere.materialsTest.Add(WorldMaterials.WorldIce);
 
                 // WorldMaterials.WorldOcean.color = new Color32(1,2,4,255);
                 // WorldMaterials.UngeneratedPlanetParts.color = new Color32(1,2,4,255);
@@ -184,7 +184,7 @@ namespace RW_PlanetAtmosphere
                 material.SetFloat(propId_exposure, AtmosphereSettings.exposure);
                 material.SetFloat(propId_ground_refract, ground_refract);
                 material.SetFloat(propId_ground_light, ground_light);
-                material.SetVector(propId_SunColor, AtmosphereSettings.SunColor);
+                material.SetVector(propId_sunColor, AtmosphereSettings.sunColor);
                 material.SetVector(propId_mie_eccentricity, AtmosphereSettings.mie_eccentricity);
             }
             catch(Exception ex)
@@ -195,7 +195,7 @@ material : {material}
 exposure : {AtmosphereSettings.exposure}
 ground_refract : {ground_refract}
 ground_light : {ground_light}
-SunColor : {AtmosphereSettings.SunColor}
+sunColor : {AtmosphereSettings.sunColor}
 mie_eccentricity : {AtmosphereSettings.mie_eccentricity}
 Exception : {ex}"
                 );
@@ -275,7 +275,7 @@ Exception : {ex}"
 
         private class PlanetAtmosphere : MonoBehaviour
         {
-            public readonly List<Material> materialsTest = new List<Material>();
+            // public readonly List<Material> materialsTest = new List<Material>();
             private Transform cachedTransform = null;
             void parmUpdated()
             {
@@ -297,17 +297,17 @@ Exception : {ex}"
                         AtmosphereSettings.H_OZone + AtmosphereSettings.D_OZone,
                         -Mathf.Log(0.00001f)*(Mathf.Max
                         (
-                            AtmosphereSettings.reayleigh_scatter.x * AtmosphereSettings.SunColor.x,
-                            AtmosphereSettings.reayleigh_scatter.y * AtmosphereSettings.SunColor.y,
-                            AtmosphereSettings.reayleigh_scatter.z * AtmosphereSettings.SunColor.z,
-                            AtmosphereSettings.reayleigh_scatter.w * AtmosphereSettings.SunColor.w
+                            AtmosphereSettings.reayleigh_scatter.x * AtmosphereSettings.sunColor.x,
+                            AtmosphereSettings.reayleigh_scatter.y * AtmosphereSettings.sunColor.y,
+                            AtmosphereSettings.reayleigh_scatter.z * AtmosphereSettings.sunColor.z,
+                            AtmosphereSettings.reayleigh_scatter.w * AtmosphereSettings.sunColor.w
                         ) * AtmosphereSettings.H_Reayleigh),
                         -Mathf.Log(0.00001f)*(Mathf.Max
                         (
-                            (AtmosphereSettings.mie_scatter.x + AtmosphereSettings.mie_absorb.x) * AtmosphereSettings.SunColor.x,
-                            (AtmosphereSettings.mie_scatter.y + AtmosphereSettings.mie_absorb.y) * AtmosphereSettings.SunColor.y,
-                            (AtmosphereSettings.mie_scatter.z + AtmosphereSettings.mie_absorb.z) * AtmosphereSettings.SunColor.z,
-                            (AtmosphereSettings.mie_scatter.w + AtmosphereSettings.mie_absorb.w) * AtmosphereSettings.SunColor.w
+                            (AtmosphereSettings.mie_scatter.x + AtmosphereSettings.mie_absorb.x) * AtmosphereSettings.sunColor.x,
+                            (AtmosphereSettings.mie_scatter.y + AtmosphereSettings.mie_absorb.y) * AtmosphereSettings.sunColor.y,
+                            (AtmosphereSettings.mie_scatter.z + AtmosphereSettings.mie_absorb.z) * AtmosphereSettings.sunColor.z,
+                            (AtmosphereSettings.mie_scatter.w + AtmosphereSettings.mie_absorb.w) * AtmosphereSettings.sunColor.w
                         ) * AtmosphereSettings.H_Mie)
                     );
                     cachedTransform = cachedTransform ?? transform;

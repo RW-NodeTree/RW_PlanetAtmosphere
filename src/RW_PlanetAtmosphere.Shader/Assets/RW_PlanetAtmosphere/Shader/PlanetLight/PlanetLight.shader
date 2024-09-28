@@ -9,7 +9,9 @@
         exposure ("exposure", Float) = 16.0
         minh ("planet ground radius", Float) = 63.71393
         maxh ("planet sky radius", float) = 64.71393
-        SunColor ("SunColor", Color) = (1,1,1,0.24)
+        sunRadius("sun Radius", Float) = 6960
+        sunDistance("sun Distance", Float) = 1495978.92
+        sunColor ("Sun Color", Color) = (1,1,1,0.24)
         mie_eccentricity ("mie eccentricity", Color) = (0.618,0.618,0.618,0.618)
         reayleigh_scatter ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
         molecule_absorb ("Molecule Absorb Factor", Vector) = (0,0,0,0)
@@ -17,6 +19,8 @@
         mie_scatter ("Mie scatter Factor", Vector) = (3.996,3.996,3.996,3.996)
         mie_absorb ("Mie absorb Factor", Vector) = (4.44,4.44,4.44,4.44)
         translucentLUT ("translucent LUT", 2D) = "white"{}
+        outSunLightLUT ("out sun light LUT", 2D) = "white"{}
+        inSunLightLUT ("in sun light LUT", 2D) = "white"{}
         planetLightTexture ("planet light texture", 2D) = "black"{}
     }
 
@@ -54,7 +58,7 @@
             };
         
             sampler2D planetLightTexture;
-            float4 SunColor;
+            float4 sunColor;
             
             // sampler2D _CameraDepthTexture;
             // const float s = float(6.6315851227221438037423488874623);
@@ -97,7 +101,7 @@
                 // col.y = 1.0;
                 // col.z = 1.0;
                 AtmospherePropInfo infos = getAtmospherePropInfoByRelPos(pos,fargPos,sun);
-                float4 translucentLight = getLightTranslucent(infos);
+                float4 translucentLight = getLightTranslucent(infos.ahlwE.zy);
                 float4 translucentGround = getGroundTranslucent(infos);
                 // col.xz += float2(0.08,0.2) * col.w;
                 col.xyz *= clamp((1.0 - bright(translucentLight) * 4.0),0.0,1.0);

@@ -1,8 +1,12 @@
 
 sampler2D translucentLUT;
+sampler2D outSunLightLUT;
+sampler2D inSunLightLUT;
 sampler2D scatterLUT_Reayleigh;
 sampler2D scatterLUT_Mie;
 float4 translucentLUT_TexelSize;
+float4 outSunLightLUT_TexelSize;
+float4 inSunLightLUT_TexelSize;
 float4 scatterLUT_Size;
 float4 mie_eccentricity;
 float4 reayleigh_scatter;
@@ -21,11 +25,12 @@ float deltaL;
 float deltaW;
 float lengthL;
 float lengthW;
-float sunPerspective;
+float sunRadius;
+float sunDistance;
 
-#define ingCount 2048
+#define ingCount 4096
 #define ingCountDyn 32
-#define ingLightCount 6
+#define ingLightCount 64
 
 #define PI 3.1415926535897932384626433832795
 
@@ -53,26 +58,26 @@ float3x3 Crossfloat3x3_W2L(float3 d1, float3 d2) //d1,d2 on x-y plane, x axis lo
     return float3x3(d1,d2,d3);
 }
 
-void getLightSampleDir(in float3 baseDir, out float3 sampleDir[ingLightCount])
-{
-    sunPerspective = saturate(sunPerspective);
-    float sunPerspectiveSineValue = sqrt(1.0 - sunPerspective * sunPerspective);
-    float3 d1 = abs(baseDir);
-    d1 = float3(
-        step(d1.x,d1.y) * step(d1.x,d1.z),
-        step(d1.y,d1.x) * step(d1.y,d1.z),
-        step(d1.z,d1.x) * step(d1.z,d1.y)
-    );
-    float3x3 mat = Crossfloat3x3_W2L(baseDir, d1);
-    for(int i = 0; i < ingLightCount; i++)
-    {
-        float ratio = float(i) / float(ingLightCount);
-        sampleDir[i] = normalize(mul(float3(sunPerspective, sunPerspectiveSineValue * cos(2.0 * PI * ratio), sunPerspectiveSineValue * sin(2.0 * PI * ratio)),mat));
-    }
-}
+// void getLightSampleDir(in float3 baseDir, out float3 sampleDir[ingLightCount])
+// {
+//     float2 sunPerspectiveSinCos = sunRadius/sunDistance;
+//     sunPerspectiveSinCos.y = sqrt(1.0 - sunPerspectiveSinCos.y * sunPerspectiveSinCos.y);
+//     float3 d1 = abs(baseDir);
+//     d1 = float3(
+//         step(d1.x,d1.y) * step(d1.x,d1.z),
+//         step(d1.y,d1.x) * step(d1.y,d1.z),
+//         step(d1.z,d1.x) * step(d1.z,d1.y)
+//     );
+//     float3x3 mat = Crossfloat3x3_W2L(baseDir, d1);
+//     for(int i = 0; i < ingLightCount; i++)
+//     {
+//         float ratio = float(i) / float(ingLightCount);
+//         sampleDir[i] = normalize(mul(float3(sunPerspectiveSinCos.y, sunPerspectiveSinCos.x * cos(2.0 * PI * ratio), sunPerspectiveSinCos.x * sin(2.0 * PI * ratio)),mat));
+//     }
+// }
 
 
-float2 Map2AH(float2 map)
+float2 pMap2AH(float2 map)
 {
     map = saturate(map);
     // map.y *= map.y;
@@ -83,7 +88,7 @@ float2 Map2AH(float2 map)
     float P = map.y * map.y * H;
     map.y = sqrt(P + minh * minh);
     
-    float horizonZenith_ABS = sqrt(map.y * map.y - minh * minh) / map.y;
+    float horizonZenith_ABS = sqrt(P) / map.y;
 
     map.x *= map.x;
     map.x *= (1.0 + horizonZenith_ABS);
@@ -93,61 +98,88 @@ float2 Map2AH(float2 map)
     return map;
 }
 
-
-float4 Map2AHLW(float2 map)
+float2 fMap2AH(float2 map)
 {
     map = saturate(map);
-    map *= scatterLUT_Size.xy*scatterLUT_Size.zw-float2(1.0,1.0);
-    float4 result = map.xyxy;
-    result.zw = floor(result.zw / scatterLUT_Size.xy);
-    result.xy = (result.xy - result.zw * scatterLUT_Size.xy) / (scatterLUT_Size.xy - float2(1.0,1.0));
-    result.zw = result.zw / (scatterLUT_Size.zw - float2(1.0,1.0));
+    // map.y *= map.y;
+    // map.y *= maxh - minh;
+    // map.y += minh;
+    
+    float H = maxh * maxh - minh * minh;
+    float P = map.y * map.y * H;
+    map.y = sqrt(P + minh * minh);
+    
+    float horizonZenith_ABS = sqrt(P) / map.y;
+    float upToHorizonZenithRange = 1.0 + horizonZenith_ABS;
+    float horizonToMaxAndMinZenithRatio = sqrt((1.0 - horizonZenith_ABS)/upToHorizonZenithRange);
+
+    map.x *= 1.0 + horizonToMaxAndMinZenithRatio;
+    map.x -= horizonToMaxAndMinZenithRatio;
+    map.x *= abs(map.x);
+    map.x *= upToHorizonZenithRange;
+    map.x -= horizonZenith_ABS;
+
+    map = clamp(map,float2(-1.0,minh),float2(1.0,maxh));
+    return map;
+}
+
+
+float2 Map2AD(float2 map)
+{
+    map = saturate(map);
+
+    sunDistance = abs(sunDistance);
+    sunRadius = abs(sunRadius);
+
+    float maxDistance = maxh * sunDistance * ingLightCount / (sunRadius - maxh * ingLightCount);
+    float a = (maxDistance + maxh) / maxDistance;
+    float b = 1.0 - a;
+    a *= maxh;
+    map.y = a / (map.y - b);
+    map.y = clamp(map.y,maxh,maxDistance);
+
+    float offsetedSunDistance = map.y * map.y + sunDistance * sunDistance - 2.0 * maxh * maxh;
+    float maxRange = sqrt(max(offsetedSunDistance - sunRadius * sunRadius,0.0));
+    offsetedSunDistance = sqrt(offsetedSunDistance);
+    maxRange /= offsetedSunDistance;
+    maxRange = maxRange * sqrt(max(map.y * map.y - maxh * maxh,0.0)) / map.y - sunRadius * maxh / (offsetedSunDistance * map.y);
+    maxRange = min(maxRange,1.0);
+    map.x = sqrt(map.x);
+    // map.x = sqrt(map.x);
+    map.x = lerp(1.0, maxRange,map.x);
+
+    return map;
+}
+
+float4 Map2AHLW(float4 map)
+{
+    map = saturate(map);
     // result = result.ywzx;
     //xyzw=wxzy
     //yxwz=xwyz
     //ywzx=xyzw
-    result = result.xwyz;
+    map = map.xwyz;
 
-    result.xy = saturate(result.xy);
-    // result.y *= result.y;
-    // result.y *= maxh - minh;
-    // result.y += minh;
-
-    float H = maxh * maxh - minh * minh;
-    float P = result.y * result.y * H;
-    result.y = sqrt(P + minh * minh);
-    
-    float horizonZenith_ABS = sqrt(result.y * result.y - minh * minh) / result.y;
-    float upToHorizonZenithRange = 1.0 + horizonZenith_ABS;
-    float horizonToMaxAndMinZenithRatio = sqrt((1.0 - horizonZenith_ABS)/upToHorizonZenithRange);
-
-    result.x *= 1.0 + horizonToMaxAndMinZenithRatio;
-    result.x -= horizonToMaxAndMinZenithRatio;
-    result.x *= abs(result.x);
-    result.x *= upToHorizonZenithRange;
-    result.x -= horizonZenith_ABS;
-
-    result.xy = clamp(result.xy,float2(-1.0,minh),float2(1.0,maxh));
+    map.xy = fMap2AH(map.xy);
     // result.xy = Map2AH(result.xy);
     // result.w *= PI;
     float2 deltaAHLW = float2(deltaL, deltaW);
-    result.zw *= float2(lengthL, lengthW);
-    result.zw *= 2.0;
-    result.zw -= 1.0;
-    result.zw *= sign(deltaAHLW) * (1.0 - exp(-abs(deltaAHLW)));
-    result.zw = -sign(result.zw)*log(max(0.0,1.0-abs(result.zw)));
-    result.zw /= -deltaAHLW;
-    result.zw = clamp(result.zw,-1.0,1.0);
-    return result;
+    map.zw *= float2(lengthL, lengthW);
+    map.zw *= 2.0;
+    map.zw -= 1.0;
+    map.zw *= sign(deltaAHLW) * (1.0 - exp(-abs(deltaAHLW)));
+    map.zw = -sign(map.zw)*log(max(0.0,1.0-abs(map.zw)));
+    map.zw /= -deltaAHLW;
+    map.zw = clamp(map.zw,-1.0,1.0);
+    return map;
 }
 
-
-float4 translucentFromLUT(float2 ah)
+float2 AH2pMap(float2 ah, out float2 valid, out float allValid)
 {
+    valid = step(float2(-1.0,minh),ah.xy) * step(ah.xy,float2(1.0,maxh));
     ah.xy = clamp(ah.xy,float2(-1.0,minh),float2(1.0,maxh));
 
     float horizonZenith_ABS = sqrt(ah.y * ah.y - minh * minh) / ah.y;
-    float OutputFlag = step(-horizonZenith_ABS, ah.x);
     ah.x += horizonZenith_ABS;
     ah.x /= 1.0 + horizonZenith_ABS;
     ah.x = sqrt(ah.x);
@@ -158,50 +190,147 @@ float4 translucentFromLUT(float2 ah)
 
     ah.y = P / H;
     
+    valid *= step(0.0,ah.xy) * step(ah.xy,1.0);
     ah.xy = saturate(ah.xy);
 
-    ah = (ah * (translucentLUT_TexelSize.zw - float2(1.0,1.0)) + float2(0.5,0.5)) * translucentLUT_TexelSize.xy;
-    return saturate(tex2Dlod(translucentLUT,float4(ah.x,ah.y,0.0,0.0))) * OutputFlag;
+    allValid = valid.x * valid.y;
+    return ah;
 }
 
-void scatterFromLUT(float4 ahlw, out float4 reayleigh, out float4 mie)
+float2 AH2fMap(float2 ah, out float2 valid, out float allValid)
 {
-    float2 deltaDiv_PI = float2(deltaL, deltaW);
-    ahlw.zw = clamp(ahlw.zw,-1.0,1.0);
-    ahlw.zw *= -deltaDiv_PI;
-    ahlw.zw = sign(ahlw.zw) * (1.0 - exp(-abs(ahlw.zw)));
-    ahlw.zw /= sign(deltaDiv_PI) * (1.0 - exp(-abs(deltaDiv_PI)));
-    ahlw.zw += 1.0;
-    ahlw.zw /= 2.0;
-    ahlw.zw /= float2(lengthL, lengthW);
-    float outFlag = 1.0 - step(1.0, ahlw.z);
+    valid = step(float2(-1.0,minh),ah.xy) * step(ah.xy,float2(1.0,maxh));
+    ah.xy = clamp(ah.xy,float2(-1.0,minh),float2(1.0,maxh));
 
-    // ahlw.w /= PI;
-    // ahlw.xy = AH2Map(ahlw.xy);
-    
-    ahlw.xy = clamp(ahlw.xy,float2(-1.0,minh),float2(1.0,maxh));
-    
-    float horizonZenith_ABS = sqrt(ahlw.y * ahlw.y - minh * minh) / ahlw.y;
+    float horizonZenith_ABS = sqrt(ah.y * ah.y - minh * minh) / ah.y;
     float upToHorizonZenithRange = 1.0 + horizonZenith_ABS;
     float horizonToMaxAndMinZenithRatio = sqrt((1.0 - horizonZenith_ABS)/upToHorizonZenithRange);
 
-    ahlw.x += horizonZenith_ABS;
-    ahlw.x /= upToHorizonZenithRange;
-    ahlw.x = sign(ahlw.x) * sqrt(abs(ahlw.x));
-    ahlw.x += horizonToMaxAndMinZenithRatio;
-    ahlw.x /= 1.0 + horizonToMaxAndMinZenithRatio;
-    
-    float H = sqrt(maxh * maxh - minh * minh);
-    float P = sqrt(ahlw.y * ahlw.y - minh * minh);
+    ah.x += horizonZenith_ABS;
+    ah.x /= upToHorizonZenithRange;
+    ah.x = sign(ah.x) * sqrt(abs(ah.x));
+    ah.x += horizonToMaxAndMinZenithRatio;
+    ah.x /= 1.0 + horizonToMaxAndMinZenithRatio;
 
-    ahlw.y = P / H;
+
+    float H = sqrt(maxh * maxh - minh * minh);
+    float P = sqrt(ah.y * ah.y - minh * minh);
+
+    ah.y = P / H;
+    
+    valid *= step(0.0,ah.xy) * step(ah.xy,1.0);
+    ah.xy = saturate(ah.xy);
+
+    allValid = valid.x * valid.y;
+    return ah;
+}
+
+float2 AD2Map(float2 ad, out float2 valid, out float allValid)
+{
+    sunDistance = abs(sunDistance);
+    sunRadius = abs(sunRadius);
+
+    float maxDistance = maxh * sunDistance * ingLightCount / (sunRadius - maxh * ingLightCount);
+    float a = (maxDistance + maxh) / maxDistance;
+    float b = 1.0 - a;
+    a *= maxh;
+    valid.y = step(maxh, ad.y) * step(ad.y,maxDistance);
+    ad.y = clamp(ad.y,maxh,maxDistance);
+
+    float offsetedSunDistance = ad.y * ad.y + sunDistance * sunDistance - 2.0 * maxh * maxh;
+    float maxRange = sqrt(max(offsetedSunDistance - sunRadius * sunRadius,0.0));
+    offsetedSunDistance = sqrt(offsetedSunDistance);
+    maxRange /= offsetedSunDistance;
+    maxRange = maxRange * sqrt(max(ad.y * ad.y - maxh * maxh,0.0)) / ad.y - sunRadius * maxh / (offsetedSunDistance * ad.y);
+    maxRange = min(maxRange,1.0);
+    valid.x = step(maxRange, ad.y) * step(ad.y,1.0);
+    ad.x = clamp(ad.x,maxRange,1.0);
+
+    ad.x = (ad.x - 1.0) / (maxRange - 1.0);
+    ad.x *= ad.x;
+    // ad.x *= ad.x;
+
+    ad.y = a / ad.y + b;
+
+
+    valid *= step(0.0,ad.xy) * step(ad.xy,1.0);
+    ad.xy = saturate(ad.xy);
+
+    allValid = valid.x * valid.y;
+    return ad;
+}
+
+float4 AHLW2Map(float4 ahlw, out float4 valid, out float allValid)
+{
+    float2 deltaLW = float2(deltaL, deltaW);
+    valid.zw = step(-1.0,ahlw.zw) * step(ahlw.zw,1.0);
+    ahlw.zw = clamp(ahlw.zw,-1.0,1.0);
+    ahlw.zw *= -deltaLW;
+    ahlw.zw = sign(ahlw.zw) * (1.0 - exp(-abs(ahlw.zw)));
+    ahlw.zw /= sign(deltaLW) * (1.0 - exp(-abs(deltaLW)));
+    ahlw.zw += 1.0;
+    ahlw.zw /= 2.0;
+    ahlw.zw /= float2(lengthL, lengthW);
+    // float outFlag = 1.0 - step(1.0, ahlw.z);
+
+    // ahlw.w /= PI;
+    // ahlw.xy = AH2Map(ahlw.xy);
+
+    ahlw.xy = AH2fMap(ahlw.xy, valid.xy , allValid);
 
     // ahlw.xy = saturate(ahlw.xy);
 
     // ahlw = ahlw.wxzy;
+    valid = valid.xzwy;
     ahlw = ahlw.xzwy;
 
-    ahlw = saturate(ahlw) * (scatterLUT_Size - float4(1.0,1.0,1.0,1.0));
+    valid *= step(0.0,ahlw) * step(ahlw,1.0);
+    ahlw = saturate(ahlw);
+
+    allValid *= valid.y * valid.z;
+    return ahlw;
+}
+
+float4 translucentFromLUT(float2 ah)
+{
+    float2 valid;
+    float allValid;
+    ah = AH2pMap(ah,valid,allValid);
+
+    ah = (ah * (translucentLUT_TexelSize.zw - float2(1.0,1.0)) + float2(0.5,0.5)) * translucentLUT_TexelSize.xy;
+    return saturate(tex2Dlod(translucentLUT,float4(ah.x,ah.y,0.0,0.0))) * allValid;
+}
+
+float4 inSunLightFromLUT(float2 ah)
+{
+    float cachedMaxh = maxh;
+    maxh = minh + 2.0 * (maxh - minh);
+    float2 valid;
+    float allValid;
+    ah = AH2fMap(ah,valid,allValid);
+    maxh = cachedMaxh;
+
+    ah = (ah * (inSunLightLUT_TexelSize.zw - float2(1.0,1.0)) + float2(0.5,0.5)) * inSunLightLUT_TexelSize.xy;
+    return saturate(tex2Dlod(inSunLightLUT,float4(ah.x,ah.y,0.0,0.0))) * allValid;
+}
+
+
+float4 outSunLightFromLUT(float2 ad)
+{
+    float2 valid;
+    float allValid;
+    ad = AD2Map(ad,valid,allValid);
+
+    ad = (ad * (outSunLightLUT_TexelSize.zw - float2(1.0,1.0)) + float2(0.5,0.5)) * outSunLightLUT_TexelSize.xy;
+    return lerp(1.0, saturate(tex2Dlod(outSunLightLUT,float4(ad.x,ad.y,0.0,0.0))),(1-valid.x)*valid.y);
+}
+
+void scatterFromLUT(float4 ahlw, out float4 reayleigh, out float4 mie)
+{
+    float4 valid;
+    float allValid;
+    ahlw = AHLW2Map(ahlw,valid,allValid);
+    ahlw *= (scatterLUT_Size - float4(1.0,1.0,1.0,1.0));
     ahlw.xy += float2(0.5,0.5);
     float2 zwFloor = clamp(floor(ahlw.zw),float2(0.0,0.0),scatterLUT_Size.zw - float2(1.0,1.0));
     float2 zwCeil = clamp(ceil(ahlw.zw),float2(0.0,0.0),scatterLUT_Size.zw - float2(1.0,1.0));
@@ -215,8 +344,30 @@ void scatterFromLUT(float4 ahlw, out float4 reayleigh, out float4 mie)
     mie         =   (tex2Dlod(scatterLUT_Mie,float4(from.x,from.y,0.0,0.0)) * wFrom.y + tex2Dlod(scatterLUT_Mie,float4(from.x,to.y,0.0,0.0)) * wTo.y) * wFrom.x +
                     (tex2Dlod(scatterLUT_Mie,float4(to.x,from.y,0.0,0.0)) * wFrom.y + tex2Dlod(scatterLUT_Mie,float4(to.x,to.y,0.0,0.0)) * wTo.y) * wTo.x;
 
-    reayleigh *= outFlag;
-    mie *= outFlag;
+    reayleigh *= valid.y;
+    mie *= valid.y;
+}
+
+float2 getAHMappingCoord(inout float3 startPos, inout float3 viewDir)
+{
+    viewDir = normalize(viewDir);
+    float h0 = length(cross(startPos,viewDir));
+    float xs = dot(startPos,viewDir);
+    float hs = length(startPos);
+    if(h0 <= maxh)
+    {
+        float cTop = sqrt(maxh * maxh - h0 * h0);
+        if(xs < -cTop)
+        {
+            startPos -= (xs+cTop) * viewDir;
+            xs = -cTop;
+            hs = maxh;
+        }
+    }
+    return float2(
+        clamp(dot(startPos/hs,viewDir),-1,1),
+        hs
+    );
 }
 
 
@@ -325,6 +476,37 @@ void IngAirDensity(in float viewZenith, in float height, out float reayleigh, ou
     oZone = IngOZoneDensity(mh,height) - IngOZoneDensity(start,height);
 }
 
+float4 IngSunLight(float2 ad)
+{
+    float sunPerspective = asin(saturate(sunRadius/sunDistance));
+    float3 baseDir = float3(ad.x,0,0);
+    baseDir.y = sqrt(1.0 - ad.x * ad.x);
+    float3 d1 = abs(baseDir);
+    d1 = float3(
+        step(d1.x,d1.y) * step(d1.x,d1.z),
+        step(d1.y,d1.x) * step(d1.y,d1.z),
+        step(d1.z,d1.x) * step(d1.z,d1.y)
+    );
+    float4 result = 0.0;
+    float3x3 mat = Crossfloat3x3_W2L(baseDir, d1);
+    for(int i = 0; i < ingLightCount; i++)
+    {
+        float ratioI = (float(i) + 0.5) / ingLightCount;
+        float sizeFactor = (i + 1) * (i + 1) - i * i;
+        float2 sumAng;
+        sincos(ratioI * sunPerspective,sumAng.x,sumAng.y);
+        for(int j = 0; j < ingLightCount; j++)
+        {
+            float ratioJ = 2.0 * PI * (float(j) + 0.5) / ingLightCount;
+            float3 sampleDir = mul(float3(sumAng.y, sumAng.x * cos(ratioJ), sumAng.x * sin(ratioJ)),mat);
+            float3 samplePos = float3(-ad.y,0,0);
+            float2 ah = getAHMappingCoord(samplePos,sampleDir);
+            result += (ah.y > maxh ? 1.0 : translucentFromLUT(ah)) * sizeFactor;
+        }
+    }
+    result /= ingLightCount * ingLightCount * (ingLightCount - 1.0);
+    return result;
+}
 
 void GenScatterInfo(float viewZenith, float height, float lightZenith, float lightToViewXYDotProduct, out float4 reayleighScatter, out float4 mieScatter)
 {
@@ -367,14 +549,9 @@ void GenScatterInfo(float viewZenith, float height, float lightZenith, float lig
     float3 lightDir = float3(sqrt(1.0 - lightZenith*lightZenith),lightZenith,0.0);
     lightDir.z = lightDir.x * sqrt(1.0 - lightToViewXYDotProduct*lightToViewXYDotProduct);
     lightDir.x *= lightToViewXYDotProduct;
-    float3 sunParallaxLightDir[ingLightCount];
-    float4 prve_light = translucentFromLUT(float2(lightZenith,height));
-    getLightSampleDir(lightDir, sunParallaxLightDir);
-    for(int j = 0; j < ingLightCount; j++)
-    {
-        prve_light += translucentFromLUT(float2(sunParallaxLightDir[j].y,height));
-    }
-    prve_light /= float(ingLightCount + 1);
+    float3 sunPos = lightDir * sunDistance;
+    lightDir = normalize(sunPos - float3(0,height,0));
+    float4 prve_light = inSunLightFromLUT(float2(lightDir.y,height));
     // float prve_mie = prve_reayleigh * prve_reayleigh;
     // prve_mie *= prve_mie * prve_mie * prve_reayleigh;
     for(int i = 1; i < ingCount; i++)
@@ -385,12 +562,8 @@ void GenScatterInfo(float viewZenith, float height, float lightZenith, float lig
         float3 current_postion = l * viewDir;
         current_postion.y += height;
         float current_H = length(current_postion);
-        float4 current_light = translucentFromLUT(float2(clamp(dot(current_postion/current_H,lightDir),-1.0,1.0),current_H));
-        for(int j = 0; j < ingLightCount; j++)
-        {
-            current_light += translucentFromLUT(float2(clamp(dot(current_postion/current_H,sunParallaxLightDir[j]),-1.0,1.0),current_H));
-        }
-        current_light /= float(ingLightCount + 1);
+        lightDir = normalize(sunPos - current_postion);
+        float4 current_light = inSunLightFromLUT(float2(clamp(dot(current_postion/current_H,lightDir),-1.0,1.0),current_H));
         current_H -= minh;
         float current_reayleigh = exp(-current_H/H_Reayleigh);
         float current_mie = exp(-current_H/H_Mie);
@@ -420,6 +593,9 @@ void GenScatterInfo(float viewZenith, float height, float lightZenith, float lig
     mieScatter = max(mieScatter, float4(0.0,0.0,0.0,0.0));
 }
 
+
+
+
 void GenScatterInfoDyn(float viewZenith, float height, float lightZenith, float lightToViewXYDotProduct, float depth, out float4 reayleighScatter, out float4 mieScatter, out float4 trans)
 {
     reayleighScatter = float4(0.0,0.0,0.0,0.0);
@@ -438,7 +614,9 @@ void GenScatterInfoDyn(float viewZenith, float height, float lightZenith, float 
     float3 lightDir = float3(sqrt(1.0 - lightZenith*lightZenith),lightZenith,0.0);
     lightDir.z = lightDir.x * sqrt(1.0 - lightToViewXYDotProduct*lightToViewXYDotProduct);
     lightDir.x *= lightToViewXYDotProduct;
-    float4 prve_light = translucentFromLUT(float2(lightZenith,height));
+    float3 sunPos = lightDir * sunDistance;
+    lightDir = normalize(sunPos - float3(0,height,0));
+    float4 prve_light = inSunLightFromLUT(float2(lightDir.y,height));
     // float prve_mie = prve_reayleigh * prve_reayleigh;
     // prve_mie *= prve_mie * prve_mie * prve_reayleigh;
     for(int i = 1; i < ingCountDyn; i++)
@@ -449,7 +627,8 @@ void GenScatterInfoDyn(float viewZenith, float height, float lightZenith, float 
         float3 current_postion = l * viewDir;
         current_postion.y += height;
         float current_H = length(current_postion);
-        float4 current_light = translucentFromLUT(float2(clamp(dot(current_postion/current_H,lightDir),-1.0,1.0),current_H));
+        lightDir = normalize(sunPos - current_postion);
+        float4 current_light = inSunLightFromLUT(float2(clamp(dot(current_postion/current_H,lightDir),-1.0,1.0),current_H));
         current_H -= minh;
         float current_reayleigh = exp(-current_H/H_Reayleigh);
         float current_mie = exp(-current_H/H_Mie);
@@ -526,33 +705,14 @@ AtmospherePropInfo getAtmospherePropInfoByRelPos(inout float3 startPos, inout fl
         clamp(transedLightDir.x,-1,1),
         clamp(transedLightDir.y,-1,1)
     );
-    transedLightDir = endPos;
-    h0 = length(cross(endPos,lightDir));
-    xs = dot(endPos,lightDir);
-    hs = he;
-    if(h0 <= maxh)
-    {
-        float cTop = sqrt(maxh * maxh - h0 * h0);
-        if(xs < -cTop)
-        {
-            transedLightDir -= (xs+cTop) * lightDir;
-            xs = -cTop;
-            hs = maxh;
-        }
-    }
-    result.ahlwE = -2;
-    if(hs <= maxh)
-    {
-        proj = Crossfloat3x3_W2L(transedLightDir,viewDir);
-        transedLightDir = normalize(mul(proj,lightDir));
-        result.ahlwE.y = hs;
-        result.ahlwE.z = clamp(transedLightDir.x,-1,1);
-        if(hs == he)
-        {
-            result.ahlwE.x = clamp(dot(endPos/he,viewDir),-1,1);
-            result.ahlwE.w = clamp(transedLightDir.y,-1,1);
-        }
-    }
+    proj = Crossfloat3x3_W2L(endPos,viewDir);
+    transedLightDir = normalize(mul(proj,lightDir));
+    result.ahlwE = float4(
+        clamp(dot(endPos/he,viewDir),-1,1),
+        he,
+        clamp(transedLightDir.x,-1,1),
+        clamp(transedLightDir.y,-1,1)
+    );
     return result;
 }
 
@@ -568,18 +728,27 @@ float4 mieStrong(float cosw)
     return 0.07957747154594766788444188168626*(float4(1.0,1.0,1.0,1.0)-g)*(1.0+cosw*cosw)/((float4(2.0,2.0,2.0,2.0)+g)*pow(float4(1.0,1.0,1.0,1.0)+g-2.0*mie*cosw,float4(1.5,1.5,1.5,1.5)));
 }
 
-float4 getLightTranslucent(AtmospherePropInfo infos)
+float4 getLightTranslucent(float2 LHMappingCoord)
 {
-    if(infos.ahlwS.y < minh) return 0.0;
-    if(infos.ahlwE.y <= maxh && infos.ahlwE.z >= -1) return saturate(translucentFromLUT(infos.ahlwE.zy));
-    return 1.0;
+    // if(AHMappingCoord.y < minh) return 0.0;
+    float2 sunRelPos = float2(LHMappingCoord.x*sunDistance-LHMappingCoord.y,sqrt(1.0-LHMappingCoord.x*LHMappingCoord.x)*sunDistance);
+    sunRelPos = normalize(sunRelPos);
+    LHMappingCoord.x = sunRelPos.x;
+    float4 result = 0.0;
+    float p = (LHMappingCoord.y - maxh) / (maxh - minh);
+    p *= abs(p);
+    p *= abs(p);
+    result += saturate(inSunLightFromLUT(LHMappingCoord) * (1.0 - max(p,0.0)) * step(p,1.0));
+    LHMappingCoord.x = -LHMappingCoord.x;
+    result += saturate(outSunLightFromLUT(LHMappingCoord) * min(p,1.0) * step(0.0,p));
+    return result;
 }
 
 float4 getGroundTranslucent(AtmospherePropInfo infos)
 {
     if(infos.ahlwS.y < minh) return 0.0;
     if(infos.ahlwS.y > maxh) return 1.0;
-    if(infos.ahlwE.y <= maxh && infos.ahlwE.x >= -1)
+    if(infos.ahlwE.y <= maxh)
     {
         float4 StartEndAH = infos.ahlwE.x > 0 ? float4(infos.ahlwS.x,infos.ahlwS.y,infos.ahlwE.x,infos.ahlwE.y): float4(-infos.ahlwE.x,infos.ahlwE.y,-infos.ahlwS.x,infos.ahlwS.y);
         return saturate(translucentFromLUT(StartEndAH.xy) / translucentFromLUT(StartEndAH.zw));
@@ -605,7 +774,7 @@ float4 getSkyScatter(
         return 0.0;
     }
     scatterFromLUT(infos.ahlwS,reayleighScatter,mieScatter);
-    if(infos.ahlwE.y <= maxh && infos.ahlwE.y > minh && infos.ahlwE.x >= -1)
+    if(infos.ahlwE.y <= maxh && infos.ahlwE.y > minh)
     {
         float4 reayleighScatterTest;
         float4 mieScatterTest;
@@ -619,24 +788,3 @@ float4 getSkyScatter(
     return max(reayleighScatter + mieScatter,0.0);
 }
 
-//blocked light
-float4 LightScatter(
-    AtmospherePropInfo infos,
-    float4 lightColor,
-    float4 surfaceColor,
-    float4 surfaceLight,
-    out float4 translucentLight,
-    out float4 translucentGround,
-    out float4 reayleighScatter,
-    out float4 mieScatter
-)
-{
-    translucentLight = getLightTranslucent(infos);
-    translucentGround = getGroundTranslucent(infos);
-    float4 result = getSkyScatter(infos,translucentGround,reayleighScatter,mieScatter) * lightColor;
-    if(infos.ahlwS.y <= maxh && infos.ahlwE.y <= maxh && infos.ahlwE.x >= -1)
-    {
-        result += translucentGround * (surfaceColor * translucentLight * lightColor + surfaceLight);
-    }
-    return result;
-}
