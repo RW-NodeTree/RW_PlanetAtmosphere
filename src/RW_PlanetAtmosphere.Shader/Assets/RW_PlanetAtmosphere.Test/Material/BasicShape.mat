@@ -79,7 +79,7 @@ Material:
     - _DiffuseIntensity: 1
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 1
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
@@ -116,5 +116,5 @@ Material:
     - mie_scatter: {r: 4, g: 4, b: 4, a: 4}
     - molecule_absorb: {r: 0, g: 0, b: 0, a: 0}
     - reayleigh_scatter: {r: 0.47293, g: 1.22733, b: 3.10319, a: 11.69904}
-    - scatterLUT_Size: {r: 128, g: 32, b: 8, a: 32}
+    - scatterLUTSize: {r: 128, g: 32, b: 8, a: 32}
     - sunColor: {r: 1, g: 1, b: 1, a: 0}

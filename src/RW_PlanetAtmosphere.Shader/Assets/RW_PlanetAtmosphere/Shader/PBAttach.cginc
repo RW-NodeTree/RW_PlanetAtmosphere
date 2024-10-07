@@ -7,8 +7,6 @@ sampler2D ringMap;
 float radius;
 sampler2D sphereMap;
 
-#define PI 3.1415926535897932384626433832795
-
 inline float4 sampleRing(float u);
 
 float4 sampleRingBasic(float u)
@@ -47,9 +45,9 @@ void getColorFromSphere(
     float3 start,
     float3 dir,
     out float4 resultA,
-    out float3 crossPointA,
+    out float4 crossPointA,
     out float4 resultB,
-    out float3 crossPointB
+    out float4 crossPointB
 )
 {
     resultA = 0;
@@ -59,24 +57,28 @@ void getColorFromSphere(
     tangent = normalize(tangent);
     dir = normalize(dir);
     float3 midCrossPoint = start - dot(dir,start) * dir;
-    crossPointA = midCrossPoint;
-    crossPointB = midCrossPoint;
+    crossPointA.xyz = midCrossPoint;
+    crossPointB.xyz = midCrossPoint;
+    crossPointA.w = 0;
+    crossPointB.w = 0;
     float h0 = length(midCrossPoint);
     if(h0 <= radius)
     {
         float x0 = sqrt(radius * radius - h0 * h0);
-        crossPointA -= x0 * dir;
-        crossPointB += x0 * dir;
+        crossPointA.xyz -= x0 * dir;
+        crossPointB.xyz += x0 * dir;
         float3 d2 = normalize(cross(normal,tangent));
         float3 d3 = normalize(cross(d2,normal));
+        crossPointA.w = step(0.0,dot(crossPointA.xyz-start,dir));
+        crossPointB.w = step(0.0,dot(crossPointB.xyz-start,dir));
         float3x3 mat = float3x3(normal,d3,d2);
-        d2 = normalize(mul(mat,crossPointA));
-        d3 = normalize(mul(mat,crossPointB));
+        d2 = normalize(mul(mat,crossPointA.xyz));
+        d3 = normalize(mul(mat,crossPointB.xyz));
         // resultA = tex2Dlod(sphereMap,float4(atan2(d2.z, d2.y), acos(clamp(-d2.x,-1.0,1.0)),0,0));
         // resultB = tex2Dlod(sphereMap,float4(atan2(d3.z, d3.y), acos(clamp(-d3.x,-1.0,1.0)),0,0));
-        resultA = sampleSphere(float2(0.5 * atan2(d2.z, d2.y) / PI, acos(clamp(-d2.x,-1.0,1.0)) / PI));
-        resultB = sampleSphere(float2(0.5 * atan2(d3.z, d3.y) / PI, acos(clamp(-d3.x,-1.0,1.0)) / PI));
-        resultA *= step(0.0,dot(crossPointA-start,dir));
-        resultB *= step(0.0,dot(crossPointB-start,dir));
+        resultA = sampleSphere(float2(0.5 * atan2(d2.z, d2.y), acos(clamp(-d2.x,-1.0,1.0))) * UNITY_INV_PI);
+        resultB = sampleSphere(float2(0.5 * atan2(d3.z, d3.y), acos(clamp(-d3.x,-1.0,1.0))) * UNITY_INV_PI);
+        resultA *= crossPointA.w;
+        resultB *= crossPointB.w;
     }
 }

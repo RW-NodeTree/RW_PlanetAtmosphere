@@ -1,3 +1,4 @@
+#include "UnityCG.cginc"
 
 sampler2D translucentLUT;
 sampler2D outSunLightLUT;
@@ -7,7 +8,7 @@ sampler2D scatterLUT_Mie;
 float4 translucentLUT_TexelSize;
 float4 outSunLightLUT_TexelSize;
 float4 inSunLightLUT_TexelSize;
-float4 scatterLUT_Size;
+float4 scatterLUTSize;
 float4 mie_eccentricity;
 float4 reayleigh_scatter;
 float4 molecule_absorb;
@@ -20,7 +21,6 @@ float H_Reayleigh;
 float H_Mie;
 float H_OZone;
 float D_OZone;
-float exposure;
 float deltaL;
 float deltaW;
 float lengthL;
@@ -32,21 +32,20 @@ float sunDistance;
 #define ingCountDyn 32
 #define ingLightCount 64
 
-#define PI 3.1415926535897932384626433832795
 
 float bright(float3 L)
 {
     return L.x * 0.299 + L.y * 0.587 + L.z * 0.114;
 }
 
-float3 hdr(float3 L) 
-{
-    L *= exposure;
-    // L = sqrt(L);
-    // L = lerp(pow(L * 0.38317, 1.0 / 2.2) , float3(1.0,1.0,1.0) - exp(-L), step(1.413,L));
-    // L = float3(1.0,1.0,1.0) - exp(-L);
-    return L;
-}
+// float3 hdr(float3 L) 
+// {
+//     L *= exposure;
+//     // L = sqrt(L);
+//     // L = lerp(pow(L * 0.38317, 1.0 / 2.2) , float3(1.0,1.0,1.0) - exp(-L), step(1.413,L));
+//     // L = float3(1.0,1.0,1.0) - exp(-L);
+//     return L;
+// }
 
 
 float3x3 Crossfloat3x3_W2L(float3 d1, float3 d2) //d1,d2 on x-y plane, x axis lock on d1
@@ -132,6 +131,7 @@ float2 Map2AD(float2 map)
     sunRadius = abs(sunRadius);
 
     float maxDistance = maxh * sunDistance * ingLightCount / (sunRadius - maxh * ingLightCount);
+    maxDistance = sqrt(maxDistance * maxDistance + maxh * maxh);
     float a = (maxDistance + maxh) / maxDistance;
     float b = 1.0 - a;
     a *= maxh;
@@ -231,6 +231,7 @@ float2 AD2Map(float2 ad, out float2 valid, out float allValid)
     sunRadius = abs(sunRadius);
 
     float maxDistance = maxh * sunDistance * ingLightCount / (sunRadius - maxh * ingLightCount);
+    maxDistance = sqrt(maxDistance * maxDistance + maxh * maxh);
     float a = (maxDistance + maxh) / maxDistance;
     float b = 1.0 - a;
     a *= maxh;
@@ -269,8 +270,10 @@ float4 AHLW2Map(float4 ahlw, out float4 valid, out float allValid)
     ahlw.zw = sign(ahlw.zw) * (1.0 - exp(-abs(ahlw.zw)));
     ahlw.zw /= sign(deltaLW) * (1.0 - exp(-abs(deltaLW)));
     ahlw.zw += 1.0;
-    ahlw.zw /= 2.0;
+    ahlw.zw *= 0.5;
     ahlw.zw /= float2(lengthL, lengthW);
+    valid.zw *= step(ahlw.zw,1.0);
+    ahlw.zw = saturate(ahlw.zw);
     // float outFlag = 1.0 - step(1.0, ahlw.z);
 
     // ahlw.w /= PI;
@@ -284,8 +287,6 @@ float4 AHLW2Map(float4 ahlw, out float4 valid, out float allValid)
     valid = valid.xzwy;
     ahlw = ahlw.xzwy;
 
-    valid *= step(0.0,ahlw) * step(ahlw,1.0);
-    ahlw = saturate(ahlw);
 
     allValid *= valid.y * valid.z;
     return ahlw;
@@ -330,12 +331,12 @@ void scatterFromLUT(float4 ahlw, out float4 reayleigh, out float4 mie)
     float4 valid;
     float allValid;
     ahlw = AHLW2Map(ahlw,valid,allValid);
-    ahlw *= (scatterLUT_Size - float4(1.0,1.0,1.0,1.0));
+    ahlw *= (scatterLUTSize - float4(1.0,1.0,1.0,1.0));
     ahlw.xy += float2(0.5,0.5);
-    float2 zwFloor = clamp(floor(ahlw.zw),float2(0.0,0.0),scatterLUT_Size.zw - float2(1.0,1.0));
-    float2 zwCeil = clamp(ceil(ahlw.zw),float2(0.0,0.0),scatterLUT_Size.zw - float2(1.0,1.0));
-    float2 from = (ahlw.xy / scatterLUT_Size.xy + zwFloor) / scatterLUT_Size.zw;
-    float2 to = (ahlw.xy / scatterLUT_Size.xy + zwCeil) / scatterLUT_Size.zw;
+    float2 zwFloor = clamp(floor(ahlw.zw),float2(0.0,0.0),scatterLUTSize.zw - float2(1.0,1.0));
+    float2 zwCeil = clamp(ceil(ahlw.zw),float2(0.0,0.0),scatterLUTSize.zw - float2(1.0,1.0));
+    float2 from = (ahlw.xy / scatterLUTSize.xy + zwFloor) / scatterLUTSize.zw;
+    float2 to = (ahlw.xy / scatterLUTSize.xy + zwCeil) / scatterLUTSize.zw;
     float2 wTo = saturate(ahlw.zw - zwFloor);
     float2 wFrom = float2(1.0,1.0) - wTo;
 
@@ -497,7 +498,7 @@ float4 IngSunLight(float2 ad)
         sincos(ratioI * sunPerspective,sumAng.x,sumAng.y);
         for(int j = 0; j < ingLightCount; j++)
         {
-            float ratioJ = 2.0 * PI * (float(j) + 0.5) / ingLightCount;
+            float ratioJ = 2.0 * UNITY_PI * (float(j) + 0.5) / ingLightCount;
             float3 sampleDir = mul(float3(sumAng.y, sumAng.x * cos(ratioJ), sumAng.x * sin(ratioJ)),mat);
             float3 samplePos = float3(-ad.y,0,0);
             float2 ah = getAHMappingCoord(samplePos,sampleDir);
@@ -663,6 +664,7 @@ struct AtmospherePropInfo
 {
     float4 ahlwS;
     float4 ahlwE;
+    float3 shadowReciverPos;
 };
 
 AtmospherePropInfo getAtmospherePropInfoByRelPos(inout float3 startPos, inout float3 endPos, inout float3 lightDir)
@@ -677,12 +679,14 @@ AtmospherePropInfo getAtmospherePropInfoByRelPos(inout float3 startPos, inout fl
     float xe = dot(endPos,viewDir);
     float hs = length(startPos);
     float he = length(endPos);
+    // result.shadowReciverPos = endPos;
     if(h0 <= maxh)
     {
         float cTop = sqrt(maxh * maxh - h0 * h0);
         if(xs < -cTop && xe >= -cTop)
         {
-            startPos -= (xs+cTop) * viewDir;
+            startPos -= (xs + cTop) * viewDir;
+            // result.shadowReciverPos = startPos;
             xs = -cTop;
             hs = maxh;
         }
@@ -696,6 +700,11 @@ AtmospherePropInfo getAtmospherePropInfoByRelPos(inout float3 startPos, inout fl
                 he = minh;
             }
         }
+        // if (hs < maxh)
+        // {
+        //     result.shadowReciverPos = startPos;
+        //     if (h0 > minh || xs > 0) result.shadowReciverPos += (cTop - xs) * viewDir;
+        // }
     }
     proj = Crossfloat3x3_W2L(startPos,viewDir);
     transedLightDir = normalize(mul(proj,lightDir));

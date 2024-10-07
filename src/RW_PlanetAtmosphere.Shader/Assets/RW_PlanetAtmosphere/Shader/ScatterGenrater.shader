@@ -16,7 +16,7 @@
         D_OZone ("ozone radius", float) = 0.15
         translucentLUT ("translucent LUT", 2D) = "white"{}
         scatterLUT ("scatter LUT", 2D) = "black"{}
-        scatterLUT_Size ("scatterLUT Size", Vector) = (0,0,0,0)
+        scatterLUTSize ("scatterLUT Size", Vector) = (0,0,0,0)
         reayleigh_scatter ("Reayleigh Scatter Factor", Vector) = (0.46278,1.25945,3.10319,11.69904)
         molecule_absorb ("Molecule Absorb Factor", Vector) = (0,0,0,0)
         OZone_absorb ("OZone Absorb Factor", Vector) = (0.21195,0.20962,0.01686,6.4)
@@ -69,15 +69,15 @@
             f2s frag (v2f i)
             {
                 f2s result;
-                i.uv *= scatterLUT_Size.xy*scatterLUT_Size.zw;
-                i.uv /= scatterLUT_Size.xy*scatterLUT_Size.zw-float2(1.0,1.0);
+                i.uv *= scatterLUTSize.xy*scatterLUTSize.zw;
+                i.uv /= scatterLUTSize.xy*scatterLUTSize.zw-float2(1.0,1.0);
                 
                 i.uv = saturate(i.uv);
-                i.uv *= scatterLUT_Size.xy*scatterLUT_Size.zw-float2(1.0,1.0);
+                i.uv *= scatterLUTSize.xy*scatterLUTSize.zw-float2(1.0,1.0);
                 float4 map = i.uv.xyxy;
-                map.zw = floor(map.zw / scatterLUT_Size.xy);
-                map.xy = (map.xy - map.zw * scatterLUT_Size.xy) / (scatterLUT_Size.xy - float2(1.0,1.0));
-                map.zw = map.zw / (scatterLUT_Size.zw - float2(1.0,1.0));
+                map.zw = floor(map.zw / scatterLUTSize.xy);
+                map.xy = (map.xy - map.zw * scatterLUTSize.xy) / (scatterLUTSize.xy - float2(1.0,1.0));
+                map.zw = map.zw / (scatterLUTSize.zw - float2(1.0,1.0));
                 float4 ahlw = Map2AHLW(map);
                 // return ahlw.yyyy-float4(minh,minh,minh,minh);
                 GenScatterInfo(ahlw.x, ahlw.y, ahlw.z, ahlw.w,result.reayleighScatter,result.mieScatter);

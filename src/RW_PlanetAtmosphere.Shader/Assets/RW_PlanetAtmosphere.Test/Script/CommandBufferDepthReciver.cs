@@ -1,93 +1,153 @@
-﻿using System;
+﻿using RW_PlanetAtmosphere;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class CommandBufferDepthReciver : MonoBehaviour
+namespace RW_PlanetAtmosphere
 {
-    public Camera cam;
-    //public Mesh meshTest;
-    public Material materialTest;
-    public Vector3 pos;
-    private RenderTexture targetC;
-    private RenderTexture targetD;
-    private CommandBuffer commandBufferBefore;
-    private CommandBuffer commandBufferAfter;
-    private RenderTargetIdentifier cacheColor;
-    private RenderTargetIdentifier cacheDepth;
-    private RenderTargetIdentifier targetId;
-    void Start()
+
+    public class CommandBufferDepthReciver : MonoBehaviour
     {
-        //if(cam != null)
-        //{
-        //    target = new RenderTexture(1024,1024,32);
-        //    target.useMipMap = false;
-        //    target.format = RenderTextureFormat.RFloat;
-        //    cacheColor = new RenderTargetIdentifier(BuiltinRenderTextureType.CurrentActive);
-        //    cacheDepth = new RenderTargetIdentifier(BuiltinRenderTextureType.Depth);
-        //    targetId = new RenderTargetIdentifier(target);
+        public Camera cam;
+        public Shader CopyToDepth;
+        public Shader AddToTarget;
+        public Shader AtmosphereLUT;
+        public Shader TranslucentGenrater;
+        public Shader OutSunLightLUTGenrater;
+        public Shader InSunLightLUTGenrater;
+        public Shader ScatterGenrater;
+        public Shader SkyBoxCloud;
+        public Shader BasicRing;
+        public List<string> texture2DIds = new List<string>();
+        public List<Texture2D> texture2DTextures = new List<Texture2D>();
+        public List<Def> defs = new List<Def>();
+        private List<TransparentObject> objects = new List<TransparentObject>();
 
-        //    commandBufferBefore = new CommandBuffer();
-        //    commandBufferBefore.SetRenderTarget(cacheColor,cacheDepth);
-        //    cam.AddCommandBuffer(CameraEvent.BeforeForwardAlpha, commandBufferBefore);
 
-        //    commandBufferAfter = new CommandBuffer();
-        //    commandBufferAfter.Blit(cacheDepth,targetId);
-        //    cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfter);
+        private CommandBuffer commandBufferAfter;
+#if UNITY_EDITOR
+        private CommandBuffer commandBufferAfter_DevCamear;
+#endif
 
-        //    // RenderSettings.ambientLight = Color.black;
-        //}
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        // if(TranslucentGenrater != null && ScatterGenrater != null && materialSkyLUT != null && materialCloudLUT != null && materialCloudGenrater != null)
-        // {
-        //     Graphics.Blit(null, atmosphereInfoMapCache, materialCloudGenrater);
-        //     Graphics.Blit(atmosphereInfoMapCache, atmosphereInfoMap);
-        // }
-        //if(meshTest != null && materialTest != null)
-        //{
-        //    Graphics.DrawMesh(meshTest,Matrix4x4.Translate(pos),materialTest,0);
-        //    for(int i = 0; i < materialTest.passCount; i++)
-        //    {
-        //        Debug.Log(materialTest.GetPassName(i));
-        //    }
-        //    Debug.Log(materialTest.shader.passCount);
-        //}
-    }
-
-    void OnPreRender()
-    {
-        if (targetC == null || targetC.width != Screen.width || targetC.height != Screen.height)
-        {   
-            if (targetC != null) Destroy(targetC);
-            targetC = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGBFloat);
-            targetC.name = "custom color";
-        }
-        if (targetD == null || targetD.width != Screen.width || targetD.height != Screen.height)
+        void Start()
         {
-            if (targetD != null) Destroy(targetD);
-            targetD = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.Depth);
-            targetD.name = "custom depth";
+            if (
+                cam != null && CopyToDepth != null &&
+                AddToTarget != null && AtmosphereLUT != null &&
+                TranslucentGenrater != null && OutSunLightLUTGenrater != null &&
+                InSunLightLUTGenrater != null && ScatterGenrater != null &&
+                BasicRing != null
+            )
+            {
+                cam.depthTextureMode = DepthTextureMode.Depth;
+                Application.targetFrameRate = 10000;
+                //Debug.Log(Shader.PropertyToID("RW_PlanetAtmosphere_Reflection"));
+                objects.Capacity = defs.Count;
+                foreach (Def obj in defs)
+                {
+                    if(obj != null) objects.Add(obj.TransparentObject);
+                }
+#if UNITY_EDITOR
+                Debug.Log(PlayerSettings.MTRendering);
+                Debug.Log(SystemInfo.renderingThreadingMode);
+                //PlayerSettings.MTRendering = true;
+#endif
+
+                TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/CopyToDepth.shader", CopyToDepth);
+                TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/AddToTarget.shader", AddToTarget);
+                TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/Atmosphere/AtmosphereLUT.shader", AtmosphereLUT);
+                TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/TranslucentGenrater.shader", TranslucentGenrater);
+                TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/OutSunLightLUTGenrater.shader", OutSunLightLUTGenrater);
+                TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/InSunLightLUTGenrater.shader", InSunLightLUTGenrater);
+                TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/ScatterGenrater.shader", ScatterGenrater);
+                TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/Cloud/SkyBoxCloud.shader", SkyBoxCloud);
+                TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/Ring/BasicRing.shader", BasicRing);
+                for (int i = 0; i < texture2DIds.Count && i < texture2DTextures.Count; i++)
+                {
+                    TransparentObject.texture2Ds.Add(texture2DIds[i], texture2DTextures[i]);
+                }
+
+                commandBufferAfter = new CommandBuffer();
+                commandBufferAfter.name = "commandBufferAfter";
+                cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, commandBufferAfter);
+
+#if UNITY_EDITOR
+                Camera camera = SceneView.lastActiveSceneView.camera;
+                if (camera != null)
+                {
+                    commandBufferAfter_DevCamear = new CommandBuffer();
+                    commandBufferAfter_DevCamear.name = "commandBufferAfter_DevCamear";
+                    camera.AddCommandBuffer(CameraEvent.AfterForwardAlpha, commandBufferAfter_DevCamear);
+                }
+#endif
+                //cam.AddCommandBuffer(CameraEvent.AfterEverything, commandBufferAfter);
+
+                // RenderSettings.ambientLight = Color.black;
+            }
         }
-        //cam.depthTextureMode = DepthTextureMode.Depth;
-        cam.SetTargetBuffers(targetC.colorBuffer, targetD.depthBuffer);
-    }
 
-    void OnRenderImage(RenderTexture source, RenderTexture destination)
-    {
-        if(materialTest) Graphics.Blit(targetD, destination, materialTest);
-        else Graphics.Blit(targetD, destination);
-    }
+        // Update is called once per frame
+        void Update()
+        {
+            if (objects != null)
+            {
+                if(cam != null && commandBufferAfter != null) TransparentObject.DrawTransparentObjects(objects, commandBufferAfter, cam);
+#if UNITY_EDITOR
+                Camera camera = SceneView.lastActiveSceneView.camera;
+                if (camera != null && commandBufferAfter_DevCamear != null) TransparentObject.DrawTransparentObjects(objects, commandBufferAfter_DevCamear, camera);
+#endif
+            }
+        }
 
+        //void OnPreRender()
+        //{
+        //    if (targetC == null || targetC.width != Screen.width || targetC.height != Screen.height)
+        //    {   
+        //        if (targetC != null) Destroy(targetC);
+        //        targetC = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.ARGBFloat);
+        //        targetC.name = "custom color";
+        //    }
+        //    if (targetD == null || targetD.width != Screen.width || targetD.height != Screen.height)
+        //    {
+        //        if (targetD != null) Destroy(targetD);
+        //        targetD = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.Depth);
+        //        targetD.name = "custom depth";
+        //    }
+        //    //cam.depthTextureMode = DepthTextureMode.Depth;
+        //    cam.SetTargetBuffers(targetC.colorBuffer, targetD.depthBuffer);
+        //}
 
-    void OnGUI()
-    {
-        GUI.DrawTexture(new Rect(0, 0, targetD.width, targetD.height), targetD);
-        // GUI.DrawTexture(new Rect(0, translucentLUT.height, scatterLUT.width, scatterLUT.height), scatterLUT);
+        //void OnRenderImage(RenderTexture source, RenderTexture destination)
+        //{
+        //    if(materialTest) Graphics.Blit(source, destination, materialTest);
+        //    else Graphics.Blit(source, destination);
+        //}
+
+        private void OnDestroy()
+        {
+            if (cam != null && commandBufferAfter != null)
+            {
+                cam.RemoveCommandBuffer(CameraEvent.AfterForwardAlpha, commandBufferAfter);
+            }
+#if UNITY_EDITOR
+            Camera camera = SceneView.lastActiveSceneView.camera;
+            if (camera != null && commandBufferAfter_DevCamear != null)
+            {
+                camera.RemoveCommandBuffer(CameraEvent.AfterForwardAlpha, commandBufferAfter_DevCamear);
+            }
+#endif
+        }
+
+        void OnGUI()
+        {
+            //GUI.DrawTexture(new Rect(0, 0, targetD.width, targetD.height), targetD);
+            // GUI.DrawTexture(new Rect(0, translucentLUT.height, scatterLUT.width, scatterLUT.height), scatterLUT);
+            //GUI.Label(new Rect(0, 0, 128, 32), 1f / Time.deltaTime + "FPS");
+            if (Input.GetKeyUp(KeyCode.S) && Input.GetKey(KeyCode.LeftControl) && Input.GetKey(KeyCode.LeftShift))
+                ScreenCapture.CaptureScreenshot($"Screenshot-{DateTime.Now.ToString("yyyy-MM-dd-")}{DateTime.Now.Ticks - DateTime.Today.Ticks}.png");
+        }
     }
 }
