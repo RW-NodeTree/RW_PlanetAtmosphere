@@ -127,13 +127,12 @@
                 f2bShadowTrans o;
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
-                float depth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
+                // float depth;
                 float3 eye = i.worldSpaceFarPos - i.worldSpaceNearPos;
                 float3 pos = i.worldSpaceNearPos;
-                float3 fargPos = worldPosFromDepthMap(i,depth);
+                // float3 fargPos = worldPosFromDepthMap(i,depth);
                 pos -= i.worldSpaceZeroPoint;
-                fargPos -= i.worldSpaceZeroPoint;
+                // fargPos -= i.worldSpaceZeroPoint;
         
                 float4 cloudColorA;
                 float4 cloudPosA;
@@ -168,13 +167,12 @@
                 f2bShadowTrans o;
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
-                float depth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
+                // float depth;
                 float3 eye = i.worldSpaceFarPos - i.worldSpaceNearPos;
                 float3 pos = i.worldSpaceNearPos;
-                float3 fargPos = worldPosFromDepthMap(i,depth);
+                // float3 fargPos = worldPosFromDepthMap(i,depth);
                 pos -= i.worldSpaceZeroPoint;
-                fargPos -= i.worldSpaceZeroPoint;
+                // fargPos -= i.worldSpaceZeroPoint;
         
                 float4 cloudColorA;
                 float4 cloudPosA;
@@ -225,7 +223,7 @@
                 getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosA.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosA.xyz + i.worldSpaceZeroPoint);
-                o.reflection.xyz = max(cloudColorA.xyz * cloudColorA.w * refraction * exposure,0) * saturate(dot(cloudPosA.xyz,sun));
+                o.reflection.xyz = max(cloudColorA.xyz * _LightColor0.xyz * cloudColorA.w * refraction * exposure,0) * saturate(dot(cloudPosA.xyz,sun));
                 o.reflection.w = cloudColorA.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
@@ -267,7 +265,7 @@
                 getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosB.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosB.xyz + i.worldSpaceZeroPoint);
-                o.reflection.xyz = max(cloudColorB.xyz * cloudColorB.w * refraction * exposure, 0) * saturate(dot(cloudPosB.xyz,sun));
+                o.reflection.xyz = max(cloudColorB.xyz * _LightColor0.xyz * cloudColorB.w * refraction * exposure, 0) * saturate(dot(cloudPosB.xyz,sun));
                 o.reflection.w = cloudColorB.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
@@ -295,7 +293,6 @@
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 eye = i.worldSpaceFarPos - i.worldSpaceNearPos;
                 float3 pos = i.worldSpaceNearPos;
                 float3 fargPos = worldPosFromDepthMap(i,depth);
@@ -337,7 +334,6 @@
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 eye = i.worldSpaceFarPos - i.worldSpaceNearPos;
                 float3 pos = i.worldSpaceNearPos;
                 float3 fargPos = worldPosFromDepthMap(i,depth);

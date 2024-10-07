@@ -11,6 +11,8 @@ namespace RW_PlanetAtmosphere
 
     public class CommandBufferDepthReciver : MonoBehaviour
     {
+        public float sunRadius;
+        public float sunDistance;
         public Camera cam;
         public Shader CopyToDepth;
         public Shader AddToTarget;
@@ -21,16 +23,24 @@ namespace RW_PlanetAtmosphere
         public Shader ScatterGenrater;
         public Shader SkyBoxCloud;
         public Shader BasicRing;
+        public Shader SunFlear;
+        public Texture2D sunFlareTexture;
         public List<string> texture2DIds = new List<string>();
         public List<Texture2D> texture2DTextures = new List<Texture2D>();
         public List<Def> defs = new List<Def>();
-        private List<TransparentObject> objects = new List<TransparentObject>();
 
 
+        private Material materialSunFlear;
         private CommandBuffer commandBufferAfter;
 #if UNITY_EDITOR
         private CommandBuffer commandBufferAfter_DevCamear;
 #endif
+        private List<TransparentObject> objects = new List<TransparentObject>();
+        
+        private static readonly int propId_sunRadius            = Shader.PropertyToID("sunRadius");
+        private static readonly int propId_sunDistance          = Shader.PropertyToID("sunDistance");
+        private static readonly int propId_sunFlareTexture      = Shader.PropertyToID("sunFlareTexture");
+        private static readonly int propId_backgroundTexture    = Shader.PropertyToID("backgroundTexture");
 
         void Start()
         {
@@ -56,6 +66,14 @@ namespace RW_PlanetAtmosphere
                 //PlayerSettings.MTRendering = true;
 #endif
 
+                if (SunFlear != null && sunFlareTexture != null)
+                {
+                    materialSunFlear = new Material(SunFlear);
+                    materialSunFlear.SetFloat(propId_sunRadius, sunRadius);
+                    materialSunFlear.SetFloat(propId_sunDistance, sunDistance);
+                    materialSunFlear.SetTexture(propId_sunFlareTexture, sunFlareTexture);
+                }
+
                 TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/CopyToDepth.shader", CopyToDepth);
                 TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/AddToTarget.shader", AddToTarget);
                 TransparentObject.shaders.Add("Assets/RW_PlanetAtmosphere/Shader/Atmosphere/AtmosphereLUT.shader", AtmosphereLUT);
@@ -72,6 +90,7 @@ namespace RW_PlanetAtmosphere
 
                 commandBufferAfter = new CommandBuffer();
                 commandBufferAfter.name = "commandBufferAfter";
+
                 cam.AddCommandBuffer(CameraEvent.AfterForwardAlpha, commandBufferAfter);
 
 #if UNITY_EDITOR
@@ -94,10 +113,41 @@ namespace RW_PlanetAtmosphere
         {
             if (objects != null)
             {
-                if(cam != null && commandBufferAfter != null) TransparentObject.DrawTransparentObjects(objects, commandBufferAfter, cam);
+                void BeforeShadow(CommandBuffer cb)
+                {
+                    if (materialSunFlear)
+                    {
+                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
+                    }
+                }
+                void AfterTrans(CommandBuffer cb)
+                {
+                    if (materialSunFlear)
+                    {
+                        cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
+                        cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
+                    }
+                }
+                if (cam != null && commandBufferAfter != null)
+                {
+                    TransparentObject.DrawTransparentObjects(objects, commandBufferAfter, cam, BeforeShadow, null, AfterTrans);
+                    if (materialSunFlear)
+                    {
+                        commandBufferAfter.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 1);
+                        commandBufferAfter.ReleaseTemporaryRT(propId_backgroundTexture);
+                    }
+                }
 #if UNITY_EDITOR
                 Camera camera = SceneView.lastActiveSceneView.camera;
-                if (camera != null && commandBufferAfter_DevCamear != null) TransparentObject.DrawTransparentObjects(objects, commandBufferAfter_DevCamear, camera);
+                if (camera != null && commandBufferAfter_DevCamear != null)
+                {
+                    TransparentObject.DrawTransparentObjects(objects, commandBufferAfter_DevCamear, camera, BeforeShadow, null, AfterTrans);
+                    if(materialSunFlear)
+                    {
+                        commandBufferAfter_DevCamear.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 1);
+                        commandBufferAfter_DevCamear.ReleaseTemporaryRT(propId_backgroundTexture);
+                    }
+                }
 #endif
             }
         }

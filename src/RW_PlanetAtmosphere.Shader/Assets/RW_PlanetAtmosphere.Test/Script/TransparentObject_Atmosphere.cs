@@ -121,6 +121,8 @@ namespace RW_PlanetAtmosphere
 
         public override bool IsVolum => maxh > minh;
 
+        public override int Order => 0;
+
         void UpdateMaterialDyn(Material material)
         {
             if (material == null) return;

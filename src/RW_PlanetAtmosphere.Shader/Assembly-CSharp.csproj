@@ -79,7 +79,9 @@
     <None Include="Assets\RW_PlanetAtmosphere\Shader\PostFX.cginc" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\PBAttach.cginc" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\InSunLightLUTGenrater.shader" />
+    <None Include="Assets\RW_PlanetAtmosphere\Shader\SunFlare.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\AddToTarget.shader" />
+    <None Include="Assets\RW_PlanetAtmosphere\Shader\WriteDepth.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\ScatterGenrater.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\Atmosohere\AtmosphereLUT.shader" />
     <None Include="Assets\RW_PlanetAtmosphere\Shader\BaseInc.cginc" />

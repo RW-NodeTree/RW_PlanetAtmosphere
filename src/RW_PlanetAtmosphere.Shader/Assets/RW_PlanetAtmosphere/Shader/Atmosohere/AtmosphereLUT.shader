@@ -70,7 +70,7 @@
                 
 
                 o.shadowTransFactor = translucentLight;
-                o.shadowTransFactor.xz += float2(0.08,0.2) * o.shadowTransFactor.w * _LightColor0.w;
+                // o.shadowTransFactor.xz += float2(0.08,0.2) * o.shadowTransFactor.w * _LightColor0.w;
                 o.shadowTransFactor.w = 1.0;
     
                 float4 clipSpacePos = UnityWorldToClipPos(pos + i.worldSpaceZeroPoint);

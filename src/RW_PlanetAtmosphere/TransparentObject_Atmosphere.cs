@@ -123,6 +123,8 @@ namespace RW_PlanetAtmosphere
         }
 
         public override bool IsVolum => maxh > minh;
+        
+        public override int Order => 0;
 
         public override float SettingGUIHeight => GUIheight;
 

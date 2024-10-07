@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CloudData
   m_EditorClassIdentifier: 
   renderingShadow: 1
-  exposure: 16
+  exposure: 4
   refraction: 1
   luminescen: 0
   radius: 63.76393

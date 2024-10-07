@@ -45,9 +45,9 @@
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
                 float3 sun = normalize(_WorldSpaceLightPos0.xyz);
-                float3 pos = i.worldSpaceNearPos;
+                // float3 pos = i.worldSpaceNearPos;
                 float3 fargPos = worldPosFromDepthMap(i,depth);
-                pos -= i.worldSpaceZeroPoint;
+                // pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
 
                 float radius = max(ringFromTo.x,ringFromTo.y);
@@ -82,12 +82,11 @@
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 eye = i.worldSpaceFarPos - i.worldSpaceNearPos;
                 float3 pos = i.worldSpaceNearPos;
-                float3 fargPos = worldPosFromDepthMap(i,depth);
+                // float3 fargPos = worldPosFromDepthMap(i,depth);
                 pos -= i.worldSpaceZeroPoint;
-                fargPos -= i.worldSpaceZeroPoint;
+                // fargPos -= i.worldSpaceZeroPoint;
 
                 float t;
                 float3 crossPoint;
@@ -117,18 +116,17 @@
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 eye = i.worldSpaceFarPos - i.worldSpaceNearPos;
                 float3 pos = i.worldSpaceNearPos;
-                float3 fargPos = worldPosFromDepthMap(i,depth);
+                // float3 fargPos = worldPosFromDepthMap(i,depth);
                 pos -= i.worldSpaceZeroPoint;
-                fargPos -= i.worldSpaceZeroPoint;
+                // fargPos -= i.worldSpaceZeroPoint;
 
                 float t;
                 float3 crossPoint;
                 float4 color = getColorFromRing(pos,eye,crossPoint,t);
                 float4 clipSpacePos = UnityWorldToClipPos(crossPoint + i.worldSpaceZeroPoint);
-                o.reflection.xyz = color.xyz*color.w*refraction;
+                o.reflection.xyz = color.xyz*_LightColor0.xyz*color.w*refraction;
                 o.reflection.w = color.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
@@ -153,12 +151,11 @@
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 eye = i.worldSpaceFarPos - i.worldSpaceNearPos;
                 float3 pos = i.worldSpaceNearPos;
-                float3 fargPos = worldPosFromDepthMap(i,depth);
+                // float3 fargPos = worldPosFromDepthMap(i,depth);
                 pos -= i.worldSpaceZeroPoint;
-                fargPos -= i.worldSpaceZeroPoint;
+                // fargPos -= i.worldSpaceZeroPoint;
 
                 float t;
                 float3 crossPoint;

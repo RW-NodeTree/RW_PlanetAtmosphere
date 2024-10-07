@@ -68,6 +68,8 @@ namespace RW_PlanetAtmosphere
             }
         }
         public override bool IsVolum => false;
+        
+        public override int Order => 0;
 
         public override float SettingGUIHeight => GUIheight;
 

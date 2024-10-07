@@ -55,6 +55,9 @@ namespace RW_PlanetAtmosphere
         }
 
         public override bool IsVolum => false;
+
+        public override int Order => 0;
+
         void UpdateMaterial(Material material)
         {
             if (material == null) return;

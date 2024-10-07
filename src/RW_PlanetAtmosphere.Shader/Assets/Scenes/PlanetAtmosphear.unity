@@ -610,6 +610,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db853102666c076408eb71df5aebc5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sunRadius: 6960
+  sunDistance: 1495978.9
   cam: {fileID: 1959794535}
   CopyToDepth: {fileID: 4800000, guid: 629651229d39aad418b7c5bb1f3dc11b, type: 3}
   AddToTarget: {fileID: 4800000, guid: f8b4af443a3da0b4294bb61a4ed0c855, type: 3}
@@ -622,6 +624,8 @@ MonoBehaviour:
   ScatterGenrater: {fileID: 4800000, guid: ebf0f75afe86e31479b7b2bd2e5960e0, type: 3}
   SkyBoxCloud: {fileID: 4800000, guid: b04598c89ebb17c48bcf6673e0cbd3bd, type: 3}
   BasicRing: {fileID: 4800000, guid: 4154437f2c15605429ade0d90374665e, type: 3}
+  SunFlear: {fileID: 4800000, guid: 38ae1516186c7bd49ad375ffecff32d4, type: 3}
+  sunFlareTexture: {fileID: 2800000, guid: 3282dd5d92d03a64c907d56e294ed4fc, type: 3}
   texture2DIds:
   - cloud
   - ring
