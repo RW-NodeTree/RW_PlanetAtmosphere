@@ -125,6 +125,7 @@ namespace RW_PlanetAtmosphere
                     if (shader != null && shader.isSupported) return shader;
                 }
             }
+            Log.Error("Unable to load shader, Path = " + path);
             return null;
             // return shaders.TryGetValue(path, out var shader) ? shader : null;
         }

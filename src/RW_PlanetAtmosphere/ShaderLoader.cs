@@ -129,13 +129,13 @@ namespace RW_PlanetAtmosphere
             // CommandBuffer commandBufferBeforeTransparent;
             CommandBuffer commandBufferAfterTransparent;
             // public readonly List<Material> materialsTest = new List<Material>();
-            private Transform cachedTransform = null;
+            // private Transform cachedTransform = null;
             void Start()
             {
                 // commandBufferBeforeTransparent = new CommandBuffer();
                 // commandBufferBeforeTransparent.name = "commandBufferBeforeTransparent";
                 commandBufferAfterTransparent = new CommandBuffer();
-                commandBufferAfterTransparent.name = "commandBufferAfterTransparent";
+                commandBufferAfterTransparent.name = "RW_PlanetAtmosphere.AfterTransparent";
                 // Find.WorldCamera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha,commandBufferBeforeTransparent);
                 Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfterTransparent);
 
@@ -165,11 +165,11 @@ namespace RW_PlanetAtmosphere
                     {
                         cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
                     }
-                    // if(materialWriteDepth)
-                    // {
-                    //     cb.SetRenderTarget(BuiltinRenderTextureType.Depth,BuiltinRenderTextureType.CameraTarget);
-                    //     cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth);
-                    // }
+                    if(materialWriteDepth)
+                    {
+                        cb.SetRenderTarget(BuiltinRenderTextureType.Depth,BuiltinRenderTextureType.CameraTarget);
+                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth);
+                    }
                 }
                 void BackgroundBlendLumen(CommandBuffer cb)
                 {
