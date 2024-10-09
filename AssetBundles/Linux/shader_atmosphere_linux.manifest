@@ -1,5 +1,5 @@
 ManifestFileVersion: 0
-CRC: 394102753
+CRC: 1949274465
 Hashes:
   AssetFileHash:
     serializedVersion: 2
@@ -13,7 +13,7 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/RW_PlanetAtmosphere/Shader/Atmosohere/AtmosphereLUT.shader
+- Assets/RW_PlanetAtmosphere/Shader/Atmosphere/AtmosphereLUT.shader
 - Assets/RW_PlanetAtmosphere/Shader/CopyToDepth.shader
 - Assets/RW_PlanetAtmosphere/Shader/WriteDepth.shader
 - Assets/RW_PlanetAtmosphere/Shader/AddToTarget.shader
