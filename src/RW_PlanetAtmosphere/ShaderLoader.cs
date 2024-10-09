@@ -68,6 +68,7 @@ namespace RW_PlanetAtmosphere
             lightDriver.light = gameObject.AddComponent<Light>();
             lightDriver.light.type = LightType.Directional;
             GameObject.DontDestroyOnLoad(gameObject);
+            gameObject.layer = WorldCameraManager.WorldLayer;
 
 
         }
