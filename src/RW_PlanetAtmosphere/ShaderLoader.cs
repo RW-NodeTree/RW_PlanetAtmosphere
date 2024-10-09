@@ -165,11 +165,11 @@ namespace RW_PlanetAtmosphere
                     {
                         cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
                     }
-                    if(materialWriteDepth)
-                    {
-                        cb.SetRenderTarget(BuiltinRenderTextureType.Depth,BuiltinRenderTextureType.CameraTarget);
-                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth);
-                    }
+                    // if(materialWriteDepth)
+                    // {
+                    //     cb.SetRenderTarget(BuiltinRenderTextureType.Depth,BuiltinRenderTextureType.CameraTarget);
+                    //     cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth);
+                    // }
                 }
                 void BackgroundBlendLumen(CommandBuffer cb)
                 {
