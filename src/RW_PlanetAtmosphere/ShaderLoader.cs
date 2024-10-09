@@ -126,30 +126,23 @@ namespace RW_PlanetAtmosphere
 
         private class PlanetAtmosphereRenderer : MonoBehaviour
         {
-            CommandBuffer commandBufferBeforeTransparent;
+            // CommandBuffer commandBufferBeforeTransparent;
             CommandBuffer commandBufferAfterTransparent;
             // public readonly List<Material> materialsTest = new List<Material>();
             private Transform cachedTransform = null;
             void Start()
             {
-                commandBufferBeforeTransparent = new CommandBuffer();
-                commandBufferBeforeTransparent.name = "commandBufferBeforeTransparent";
+                // commandBufferBeforeTransparent = new CommandBuffer();
+                // commandBufferBeforeTransparent.name = "commandBufferBeforeTransparent";
                 commandBufferAfterTransparent = new CommandBuffer();
                 commandBufferAfterTransparent.name = "commandBufferAfterTransparent";
-                Find.WorldCamera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha,commandBufferBeforeTransparent);
+                // Find.WorldCamera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha,commandBufferBeforeTransparent);
                 Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfterTransparent);
 
             }
             void Update()
             {
                 checkAndUpdate();
-                commandBufferBeforeTransparent.Clear();
-                if(materialWriteDepth)
-                {
-                    commandBufferBeforeTransparent.SetRenderTarget(BuiltinRenderTextureType.Depth,BuiltinRenderTextureType.CameraTarget);
-                    commandBufferBeforeTransparent.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth);
-                }
-
                 void BeforeShadow(CommandBuffer cb)
                 {
                     cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
@@ -171,6 +164,11 @@ namespace RW_PlanetAtmosphere
                     if (materialSunFlear)
                     {
                         cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
+                    }
+                    if(materialWriteDepth)
+                    {
+                        cb.SetRenderTarget(BuiltinRenderTextureType.Depth,BuiltinRenderTextureType.CameraTarget);
+                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth);
                     }
                 }
                 void BackgroundBlendLumen(CommandBuffer cb)
