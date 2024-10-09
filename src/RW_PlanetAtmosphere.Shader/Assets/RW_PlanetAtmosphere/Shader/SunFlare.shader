@@ -4,7 +4,7 @@
     {
         sunRadius("sun Radius", Float) = 6960
         sunDistance("sun Distance", Float) = 1495978.92
-        sunFlareTexture ("sun Dlare Texture", 2D) = "Black"{}
+        sunFlareTexture ("sun Dlare Texture", 2D) = "black"{}
 
     }
 
@@ -32,7 +32,8 @@
             {
                 f2bShadowTrans o;
                 o.depth = i.screenFar.z / i.screenFar.w;
-                o.shadowTransFactor = 1;
+                o.shadowTransFactor = _LightColor0;
+                o.shadowTransFactor.w = 1;
                 float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 eye = normalize(i.worldSpaceFarPos - i.worldSpaceNearPos);
                 float r = sqrt(sunDistance * sunDistance - sunRadius * sunRadius) / sunDistance;

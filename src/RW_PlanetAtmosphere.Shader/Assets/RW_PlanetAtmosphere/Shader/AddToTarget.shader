@@ -2,10 +2,52 @@
 {
     // Properties
     // {
-    //     _MainTex ("Albedo (RGB)", 2D) = "(0,0,0,1)" {}
+    //     _Color ("color", Color) = (1,1,1,1)
     // }
     SubShader
     {
+        CGINCLUDE
+
+        sampler2D ColorTex;
+        sampler2D DepthTex;
+        float4 MainColor;
+
+
+        struct appdata
+        {
+            float4 vertex : POSITION;
+            float2 uv : TEXCOORD0;
+        };
+
+        struct v2f
+        {
+            float4 vertex : SV_POSITION;
+            float2 uv : TEXCOORD0;
+        };
+
+        
+        v2f vert (appdata v)
+        {
+            v2f o;
+            o.vertex = UnityObjectToClipPos(v.vertex);
+            o.uv =  v.uv;
+            return o;
+        }
+
+        
+        void fragColorAndDepth (v2f i, out float4 color : SV_TARGET, out float depth : SV_DEPTH)
+        {
+            color = float4(tex2Dlod(ColorTex,float4(i.uv,0,0)).xyz*MainColor.xyz,0);
+            depth = tex2Dlod(DepthTex,float4(i.uv,0,0)).x;
+        }
+
+        float4 fragColorOnly (v2f i) : SV_TARGET
+        {
+            return tex2Dlod(ColorTex,float4(i.uv,0,0))*MainColor;
+        }
+
+        ENDCG
+
         Tags { "Queue"="Geometry" "RenderType"="Opaque"}
         Pass
         {
@@ -14,21 +56,8 @@
             Cull Off
             ZWrite Off
             CGPROGRAM
-            #pragma vertex basicVert
-            #pragma fragment frag
-
-            #include "./BaseInc.cginc"
-            sampler2D ColorTex;
-            sampler2D DepthTex;
-
-            f2bColor frag (v2f i)
-            {
-                f2bColor o;
-                o.reflection = float4(tex2Dlod(ColorTex,float4(0.5*i.screenNear.xy/i.screenNear.w + 0.5,0,0)).xyz,0);
-                o.depthTexel = 0.0;
-                o.depth = tex2Dlod(DepthTex,float4(0.5*i.screenNear.xy/i.screenNear.w + 0.5,0,0)).x;
-                return o;
-            }
+            #pragma vertex vert
+            #pragma fragment fragColorAndDepth
 
             ENDCG
         }
@@ -38,21 +67,32 @@
             Cull Off
             ZWrite Off
             CGPROGRAM
-            #pragma vertex basicVert
-            #pragma fragment frag
+            #pragma vertex vert
+            #pragma fragment fragColorAndDepth
 
-            #include "./BaseInc.cginc"
-            sampler2D ColorTex;
-            sampler2D DepthTex;
+            ENDCG
+        }
+        Pass
+        {
+            Blend One Zero
+            ZTest Always
+            Cull Off
+            ZWrite Off
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment fragColorOnly
 
-            f2bColor frag (v2f i)
-            {
-                f2bColor o;
-                o.reflection = float4(tex2Dlod(ColorTex,float4(0.5*i.screenNear.xy/i.screenNear.w + 0.5,0,0)).xyz,0);
-                o.depthTexel = 0.0;
-                o.depth = tex2Dlod(DepthTex,float4(0.5*i.screenNear.xy/i.screenNear.w + 0.5,0,0)).x;
-                return o;
-            }
+            ENDCG
+        }
+        Pass
+        {
+            Blend One One
+            ZTest Always
+            Cull Off
+            ZWrite Off
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment fragColorOnly
 
             ENDCG
         }

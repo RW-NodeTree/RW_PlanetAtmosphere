@@ -25,12 +25,8 @@ namespace RW_PlanetAtmosphere.Patch
             )]
         private static bool PreWorldLayer_Glow_Regenerate(WorldLayer_Glow __instance, ref IEnumerable __result)
         {
-            if(ShaderLoader.isEnable)
-            {
-                __result = RegenerateOverider(__instance);
-                return false;
-            }
-            return true;
+            __result = RegenerateOverider(__instance);
+            return false;
         }
 
         private static IEnumerable RegenerateOverider(WorldLayer_Glow instance)

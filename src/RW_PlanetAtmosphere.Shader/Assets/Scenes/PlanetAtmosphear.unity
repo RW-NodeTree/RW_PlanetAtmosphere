@@ -367,7 +367,7 @@ MeshRenderer:
   m_GameObject: {fileID: 1102691664}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 0
+  m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 1
@@ -506,7 +506,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1701627307}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -120, y: 0, z: -120}
+  m_LocalPosition: {x: -75.8, y: 15.99, z: -122.8}
   m_LocalScale: {x: 3.475, y: 3.475, z: 3.475}
   m_Children: []
   m_Father: {fileID: 0}
@@ -591,8 +591,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959794533}
-  m_LocalRotation: {x: 0.00034961625, y: 0.45527288, z: 0.0006837249, w: 0.89035165}
-  m_LocalPosition: {x: -161.21165, y: 0, z: -122.13758}
+  m_LocalRotation: {x: 0.044931494, y: 0.34422052, z: -0.015101168, w: 0.9376915}
+  m_LocalPosition: {x: -130.63219, y: 23.236671, z: -149.90746}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -610,8 +610,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db853102666c076408eb71df5aebc5fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  updateCommandBuffer: 1
+  textRoat: 0
+  gamma: 2.2
   sunRadius: 6960
   sunDistance: 1495978.9
+  refraction: 1
+  luminescen: 0
+  tonemapType: 0
   cam: {fileID: 1959794535}
   CopyToDepth: {fileID: 4800000, guid: 629651229d39aad418b7c5bb1f3dc11b, type: 3}
   AddToTarget: {fileID: 4800000, guid: f8b4af443a3da0b4294bb61a4ed0c855, type: 3}
@@ -625,7 +631,9 @@ MonoBehaviour:
   SkyBoxCloud: {fileID: 4800000, guid: b04598c89ebb17c48bcf6673e0cbd3bd, type: 3}
   BasicRing: {fileID: 4800000, guid: 4154437f2c15605429ade0d90374665e, type: 3}
   SunFlear: {fileID: 4800000, guid: 38ae1516186c7bd49ad375ffecff32d4, type: 3}
-  sunFlareTexture: {fileID: 2800000, guid: 3282dd5d92d03a64c907d56e294ed4fc, type: 3}
+  Tonemaps: {fileID: 4800000, guid: 3c7b00d59950ad44ca14beea08db8882, type: 3}
+  RemoveAlpha: {fileID: 4800000, guid: 746390bc2f6ccf5438908da3a8d4e663, type: 3}
+  sunFlareTexture: {fileID: 2800000, guid: 87cfb95c8830b5d4aa7764d2eb2d5f50, type: 3}
   texture2DIds:
   - cloud
   - ring
@@ -635,8 +643,8 @@ MonoBehaviour:
   defs:
   - {fileID: 11400000, guid: f714c43a99db80f489f75009b9f792fc, type: 2}
   - {fileID: 11400000, guid: 3a45d485fb3b27d419776fb8e6630137, type: 2}
-  - {fileID: 11400000, guid: e0438a1b5d083b34d9061acfd56cabe8, type: 2}
   - {fileID: 11400000, guid: 204253560a971f944bfdc582827d95df, type: 2}
+  - {fileID: 11400000, guid: e0438a1b5d083b34d9061acfd56cabe8, type: 2}
 --- !u!114 &1959794538
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -644,7 +652,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959794533}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
   m_Name: 
@@ -661,7 +669,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1959794533}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
   m_Name: 

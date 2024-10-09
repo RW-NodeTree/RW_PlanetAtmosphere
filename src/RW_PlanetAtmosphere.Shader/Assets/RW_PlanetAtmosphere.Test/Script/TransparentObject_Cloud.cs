@@ -10,7 +10,7 @@ namespace RW_PlanetAtmosphere
     public class TransparentObject_Cloud : TransparentObject
     {
         public bool renderingShadow     = true;
-        public float exposure           = 16f;
+        public float exposure           = 2;
         public float refraction         = 1;
         public float luminescen         = 0;
         //public float playRange          = 0.015625f;

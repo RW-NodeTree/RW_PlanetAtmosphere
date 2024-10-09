@@ -8,13 +8,24 @@ using System;
 
 namespace RW_PlanetAtmosphere
 {
-    internal class AtmosphereSettings : ModSettings
+    public class AtmosphereSettings : ModSettings
     {
-        public static Vector4       sunColor                    = new Vector4(0.8f,0.72f,0.65f,0);
+        public static bool                      needUpdate          = true;
+        public static float                     gamma               = 1;
+        public static float                     refraction          = 1.75f;
+        public static float                     luminescen          = 0.25f;
+        public static float                     sunRadius           = 6960 * scale;
+        public static float                     sunDistance         = 1495978.92f * scale;
+        public static float                     planetRadius        = 100;
+        public static float                     renderingSizeFactor = 1;
+        public static Vector4                   sunColor            = new Vector4(0.8f,0.72f,0.65f,0);
+        public static TonemapType               tonemapType         = TonemapType.SEUSTonemap;
+        public static string                    sunFlareTexturePath = "Effect/sunFlare";
+        public static List<TransparentObject>   objects             = new List<TransparentObject>() {new TransparentObject_Atmosphere(), new TransparentObject_Cloud()};
 
 
+        private static bool dropDownOpened = false;
         private static Vector2 scrollPos = Vector2.zero;
-        private static Vector2 scrollPosDev = Vector2.zero;
         private static float sizeY = 0;
 
 
@@ -23,60 +34,98 @@ namespace RW_PlanetAtmosphere
         public override void ExposeData()
         {
             base.ExposeData();
-            void SaveAndLoadValueVec4(ref Vector4 value, string label, Vector4 defaultValue = default(Vector4), bool forceSave = false)
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref gamma, "gamma", 6, 1, true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction, "refraction", 6, 1.75f, true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen, "luminescen", 6, 0.25f, true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref sunRadius, "sunRadius", 6, 6960 * scale, true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref sunDistance, "sunDistance", 6, 1495978.92f * scale, true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref planetRadius, "planetRadius", 6, 100, true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref renderingSizeFactor, "renderingSizeFactor", 6, 1, true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref sunColor, "sunColor", 6, new Vector4(0.8f,0.72f,0.65f, 0), true);
+            Scribe_Values.Look(ref tonemapType, "tonemapType", TonemapType.SEUSTonemap, true);
+            if(objects == null)
             {
-                value.x = Math.Abs(value.x);
-                value.y = Math.Abs(value.y);
-                value.z = Math.Abs(value.z);
-                value.w = Math.Abs(value.w);
-                value *= 1000;
-                Scribe_Values.Look(ref value, label, defaultValue, forceSave);
-                value /= 1000;
-                value.x = Math.Abs(value.x);
-                value.y = Math.Abs(value.y);
-                value.z = Math.Abs(value.z);
-                value.w = Math.Abs(value.w);
+                objects = new List<TransparentObject>() {new TransparentObject_Atmosphere(), new TransparentObject_Cloud()};
             }
-            SaveAndLoadValueVec4(ref sunColor, "sunColor", defaultValue: new Vector4(1, 1, 1, 0), forceSave: true);
+            Scribe_Collections.Look(ref objects, "objects", LookMode.Deep);
+            if(objects == null)
+            {
+                objects = new List<TransparentObject>() {new TransparentObject_Atmosphere(), new TransparentObject_Cloud()};
+            }
         }
 
         public static void DoWindowContents(Rect inRect)
         {
+            if(objects == null)
+            {
+                objects = new List<TransparentObject>() {new TransparentObject_Atmosphere(), new TransparentObject_Cloud()};
+            }
+            objects.RemoveAll(x => x == null);
             Widgets.DrawLineHorizontal(0,31,inRect.width);
             Vector2 ScrollViewSize = new Vector2(inRect.width,sizeY);
-            if(ScrollViewSize.y > inRect.height-64) ScrollViewSize.x -= 36;
+            if(ScrollViewSize.y > inRect.height-64) ScrollViewSize.x -= GUI.skin.verticalScrollbar.fixedWidth;
             Widgets.BeginScrollView(new Rect(0,32,inRect.width,inRect.height-64),ref scrollPos,new Rect(Vector2.zero, ScrollViewSize));
 
-            float newValue;
-
             sizeY = 0;
+            Vector2 viewingFromTo = new Vector2(scrollPos.y,scrollPos.y+inRect.height-64);
+            HelperMethod_GUI.GUIFloat(ref sizeY, ref gamma, "gamma".Translate(), ScrollViewSize.x, viewingFromTo, 6);
+            HelperMethod_GUI.GUIFloat(ref sizeY, ref refraction, "refraction".Translate(), ScrollViewSize.x, viewingFromTo, 6);
+            HelperMethod_GUI.GUIFloat(ref sizeY, ref luminescen, "luminescen".Translate(), ScrollViewSize.x, viewingFromTo, 6);
+            HelperMethod_GUI.GUIFloat(ref sizeY, ref sunRadius, "sunRadius".Translate(), ScrollViewSize.x, viewingFromTo, 6);
+            HelperMethod_GUI.GUIFloat(ref sizeY, ref sunDistance, "sunDistance".Translate(), ScrollViewSize.x, viewingFromTo, 6);
+            HelperMethod_GUI.GUIFloat(ref sizeY, ref planetRadius, "planetRadius".Translate(), ScrollViewSize.x, viewingFromTo, 6);
+            HelperMethod_GUI.GUIFloat(ref sizeY, ref renderingSizeFactor, "renderingSizeFactor".Translate(), ScrollViewSize.x, viewingFromTo, 6);
+            HelperMethod_GUI.GUIEnum(ref sizeY, tonemapType, "tonemapType".Translate(), ScrollViewSize.x, viewingFromTo, x=>tonemapType=x);
+            HelperMethod_GUI.GUIString(ref sizeY, ref sunFlareTexturePath, "sunFlareTexturePath".Translate(), ScrollViewSize.x, viewingFromTo);
 
 
+            Text.Font = GameFont.Medium;
+            Widgets.DrawBoxSolid(new Rect(0,sizeY,ScrollViewSize.x,48),Widgets.MenuSectionBGFillColor);
+            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x,48),"TransparentObject_Atmosphere".Translate());
+            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(inRect.width-48,sizeY),dropDownOpened,48);
+            Text.Font = GameFont.Small;
+            sizeY += 48;
 
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x*0.5f,32),"sunColor".Translate());
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f,sizeY,ScrollViewSize.x*0.5f/4f,32),sunColor.x.ToString("f5")),out newValue);
-            sunColor.x = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*5f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),sunColor.y.ToString("f5")),out newValue);
-            sunColor.y = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*6f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),sunColor.z.ToString("f5")),out newValue);
-            sunColor.z = newValue;
-            float.TryParse(Widgets.TextField(new Rect(ScrollViewSize.x*0.5f*7f/4f,sizeY,ScrollViewSize.x*0.5f/4f,32),sunColor.w.ToString("f5")),out newValue);
-            sunColor.w = newValue;
-            sizeY+=32;
+            if(dropDownOpened)
+            {
+                ScrollViewSize.x -= GUI.skin.verticalScrollbar.fixedWidth;
+                Widgets.BeginGroup(new Rect(GUI.skin.verticalScrollbar.fixedWidth,0,ScrollViewSize.x,ScrollViewSize.y));
+                foreach(TransparentObject transparentObject in objects)
+                {
+                    sizeY = transparentObject.SettingGUI(sizeY,ScrollViewSize.x, viewingFromTo);
+                }
+                Widgets.EndGroup();
+            }
             Widgets.EndScrollView();
 
             if(Widgets.ButtonText(new Rect(0,inRect.height-32,inRect.width*0.5f,32), "apply".Translate()))
             {
-                
+                foreach(TransparentObject obj in objects) obj.needUpdate = true;
+                needUpdate = true;
             }
 
             if(Widgets.ButtonText(new Rect(inRect.width*0.5f,inRect.height-32,inRect.width*0.5f,32), "reset".Translate()))
             {
                 List<FloatMenuOption> options = new List<FloatMenuOption>();
-                foreach(PlenetRendererDef def in DefDatabase<PlenetRendererDef>.AllDefs)
+                foreach(RendererDef def in DefDatabase<RendererDef>.AllDefs)
                 {
                     options.Add(new FloatMenuOption(def.label ?? def.defName,delegate()
                     {
+                        gamma = def.gamma;
+                        refraction = def.refraction;
+                        luminescen = def.luminescen;
+                        sunRadius = def.sunRadius;
+                        sunDistance = def.sunDistance;
+                        planetRadius = def.planetRadius;
+                        renderingSizeFactor = def.renderingSizeFactor;
+                        sunColor = def.sunColor;
+                        tonemapType = def.tonemapType;
+                        sunFlareTexturePath = def.sunFlareTexturePath;
+                        objects.Clear();
+                        objects.Capacity = def.objects.Count;
+                        foreach(ObjectDef objectDef in def.objects) objects.Add(objectDef.TransparentObject);
+                        objects.RemoveAll(x => x == null);
+                        needUpdate = true;
                     }));
                 }
                 Find.WindowStack.Add(new FloatMenu(options));
@@ -87,10 +136,9 @@ namespace RW_PlanetAtmosphere
 
     public class AtmosphereMod : Mod
     {
-        private static AtmosphereSettings settings;
         public AtmosphereMod(ModContentPack content) : base(content)
         {
-            settings = GetSettings<AtmosphereSettings>();
+            GetSettings<AtmosphereSettings>();
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

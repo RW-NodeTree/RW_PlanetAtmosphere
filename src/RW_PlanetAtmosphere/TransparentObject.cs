@@ -10,6 +10,8 @@ namespace RW_PlanetAtmosphere
 {
     public abstract class TransparentObject : /**ScriptableObject, **/IEnumerable, IExposable
     {
+        public bool needUpdate = true;
+        
         // public static readonly Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
         // public static readonly Dictionary<string, Texture2D> texture2Ds = new Dictionary<string, Texture2D>();
         public static readonly int Reflection = Shader.PropertyToID("RW_PlanetAtmosphere_Reflection");
@@ -19,6 +21,7 @@ namespace RW_PlanetAtmosphere
         public static readonly int CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
         public static readonly int ColorTex = Shader.PropertyToID("ColorTex");
         public static readonly int DepthTex = Shader.PropertyToID("DepthTex");
+        public static readonly int MainColor = Shader.PropertyToID("MainColor");
         private static Mesh defaultRenderingMesh;
         private static Material copyToDepthMaterial;
         private static Material addToTargetMaterial;
@@ -84,8 +87,6 @@ namespace RW_PlanetAtmosphere
 
         public abstract int Order { get; }
 
-        public abstract float SettingGUIHeight{ get;}
-
         // addition
         public abstract void GenBaseColor(CommandBuffer commandBuffer, Camera camera, object signal);
         // multiplication
@@ -97,7 +98,7 @@ namespace RW_PlanetAtmosphere
 
         public abstract void ExposeData();
 
-        public abstract void SettingGUI(Rect inRect, Rect outRect);
+        public abstract float SettingGUI(float posY, float width, Vector2 outFromTo);
 
         public virtual IEnumerator GetEnumerator()
         {
@@ -134,7 +135,7 @@ namespace RW_PlanetAtmosphere
         }
 
 
-        public static void DrawTransparentObjects(List<TransparentObject> transparentObjects, CommandBuffer commandBuffer, Camera camera, Action<CommandBuffer> backgroundBlendLumen = null)
+        public static void DrawTransparentObjects(List<TransparentObject> transparentObjects, CommandBuffer commandBuffer, Camera camera, Action<CommandBuffer> beforeBackgroundBlendShadow = null, Action<CommandBuffer> backgroundBlendLumen = null, Action<CommandBuffer> afterBackgroundBlendTrans = null)
         {
             if (transparentObjects != null && commandBuffer != null && camera != null)
             {
@@ -147,6 +148,9 @@ namespace RW_PlanetAtmosphere
                 commandBuffer.GetTemporaryRT(Reflection_volum, -1, -1, 24, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat, RenderTextureReadWrite.Linear);
                 commandBuffer.GetTemporaryRT(DepthTexel_volum, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.RFloat, RenderTextureReadWrite.Linear);
 
+                commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+                commandBuffer.SetGlobalTexture(CameraDepthTexture, BuiltinRenderTextureType.Depth);
+                if(beforeBackgroundBlendShadow != null) beforeBackgroundBlendShadow(commandBuffer);
                 for (int i = 0; i < transparentObjects.Count; i++)
                 {
                     TransparentObject obj0 = transparentObjects[i];
@@ -170,6 +174,9 @@ namespace RW_PlanetAtmosphere
                         obj0.BlendTrans(commandBuffer, null, camera, t0);
                     }
                 }
+                commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+                commandBuffer.SetGlobalTexture(CameraDepthTexture, BuiltinRenderTextureType.Depth);
+                if (afterBackgroundBlendTrans != null) afterBackgroundBlendTrans(commandBuffer);
                 for (int i = 0; i < transparentObjects.Count; i++)
                 {
                     TransparentObject obj0 = transparentObjects[i];
@@ -250,20 +257,22 @@ namespace RW_PlanetAtmosphere
                                                 }
                                             }
                                         }
-                                        commandBuffer.SetRenderTarget(Reflection);
-                                        commandBuffer.SetGlobalTexture(CameraDepthTexture, DepthTexel);
+                                        //commandBuffer.SetRenderTarget(Reflection);
+                                        // commandBuffer.SetGlobalTexture(CameraDepthTexture, DepthTexel);
                                         commandBuffer.SetGlobalTexture(ColorTex, Reflection_volum);
                                         commandBuffer.SetGlobalTexture(DepthTex, DepthTexel_volum);
-                                        commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.identity, AddToTargetMaterial, 0, 0);
+                                        commandBuffer.SetGlobalColor(MainColor, Color.white);
+                                        commandBuffer.Blit(null, Reflection, AddToTargetMaterial, 0);
                                     }
                                 }
                             }
                         }
-                        commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
-                        commandBuffer.SetGlobalTexture(CameraDepthTexture, BuiltinRenderTextureType.Depth);
+                        //commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+                        // commandBuffer.SetGlobalTexture(CameraDepthTexture, BuiltinRenderTextureType.Depth);
                         commandBuffer.SetGlobalTexture(ColorTex, Reflection);
                         commandBuffer.SetGlobalTexture(DepthTex, DepthTexel);
-                        commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.identity, AddToTargetMaterial, 0, obj0.IsVolum ? 0 : 1);
+                        commandBuffer.SetGlobalColor(MainColor, Color.white);
+                        commandBuffer.Blit(null, BuiltinRenderTextureType.CameraTarget, AddToTargetMaterial, obj0.IsVolum ? 0 : 1);
                     }
                 }
                 commandBuffer.ReleaseTemporaryRT(Reflection);

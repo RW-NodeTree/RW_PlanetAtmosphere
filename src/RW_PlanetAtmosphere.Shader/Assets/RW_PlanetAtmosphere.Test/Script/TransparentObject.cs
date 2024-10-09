@@ -18,6 +18,7 @@ namespace RW_PlanetAtmosphere
         public static readonly int CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
         public static readonly int ColorTex = Shader.PropertyToID("ColorTex");
         public static readonly int DepthTex = Shader.PropertyToID("DepthTex");
+        public static readonly int MainColor = Shader.PropertyToID("MainColor");
         private static Mesh defaultRenderingMesh;
         private static Material copyToDepthMaterial;
         private static Material addToTargetMaterial;
@@ -270,20 +271,22 @@ namespace RW_PlanetAtmosphere
                                                 }
                                             }
                                         }
-                                        commandBuffer.SetRenderTarget(Reflection);
-                                        commandBuffer.SetGlobalTexture(CameraDepthTexture, DepthTexel);
+                                        //commandBuffer.SetRenderTarget(Reflection);
+                                        //commandBuffer.SetGlobalTexture(CameraDepthTexture, DepthTexel);
                                         commandBuffer.SetGlobalTexture(ColorTex, Reflection_volum);
                                         commandBuffer.SetGlobalTexture(DepthTex, DepthTexel_volum);
-                                        commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.identity, AddToTargetMaterial, 0, 0);
+                                        commandBuffer.SetGlobalColor(MainColor, Color.white);
+                                        commandBuffer.Blit(null, Reflection, AddToTargetMaterial, 0);
                                     }
                                 }
                             }
                         }
-                        commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
-                        commandBuffer.SetGlobalTexture(CameraDepthTexture, BuiltinRenderTextureType.Depth);
+                        //commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+                        //commandBuffer.SetGlobalTexture(CameraDepthTexture, BuiltinRenderTextureType.Depth);
                         commandBuffer.SetGlobalTexture(ColorTex, Reflection);
                         commandBuffer.SetGlobalTexture(DepthTex, DepthTexel);
-                        commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.identity, AddToTargetMaterial, 0, obj0.IsVolum ? 0 : 1);
+                        commandBuffer.SetGlobalColor(MainColor, Color.white);
+                        commandBuffer.Blit(null, BuiltinRenderTextureType.CameraTarget, AddToTargetMaterial, obj0.IsVolum ? 0 : 1);
                     }
                 }
                 commandBuffer.ReleaseTemporaryRT(Reflection);

@@ -12,43 +12,43 @@ namespace RW_PlanetAtmosphere
     public class TransparentObject_Cloud : TransparentObject
     {
         public bool renderingShadow     = true;
-        public float exposure           = 16f;
+        public float exposure           = 2;
         public float refraction         = 1;
         public float luminescen         = 0;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
-        public float radius             = 63.76393f;
+        public float radius             = 63.76393f * AtmosphereSettings.scale;
         //public float sunRadius          = 6960;
         //public float sunDistance        = 1495978.92f;
         public Vector3 normal           = Vector3.up;
         public Vector3 tangent          = Vector3.right;
         public Vector3 postion          = Vector3.zero;
-        public string cloudTexturePath  = null;
+        public string cloudTexturePath  = "EarthCloudTex/8k_earth_clouds";
         //public string noiseTexturePath  = null;
 
-        private float GUIheight = 0;
+        #region propsIDs
+
+        public static readonly int propId_exposure     = Shader.PropertyToID("exposure");
+        public static readonly int propId_refraction   = Shader.PropertyToID("refraction");
+        public static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
+        //public static readonly int propId_playRange    = Shader.PropertyToID("playRange");
+        //public static readonly int propId_flowDir      = Shader.PropertyToID("flowDir");
+        public static readonly int propId_radius       = Shader.PropertyToID("radius");
+        public static readonly int propId_normal       = Shader.PropertyToID("normal");
+        public static readonly int propId_tangent      = Shader.PropertyToID("tangent");
+        public static readonly int propId_cloudTexture = Shader.PropertyToID("cloudTexture");
+        //public static readonly int propId_sunRadius    = Shader.PropertyToID("sunRadius");
+        //public static readonly int propId_sunDistance  = Shader.PropertyToID("sunDistance");
+        //public static int propId_noiseTexture = Shader.PropertyToID("noiseTexture");
+
+        #endregion
+
+        private bool dropDownOpened = false;
         private Texture2D cloudTexture;
         //private Texture2D noiseTexture;
         private Material materialSkyBoxCloud;
 
         private static Shader SkyBoxCloud;
-
-        #region propsIDs
-
-        private static readonly int propId_exposure     = Shader.PropertyToID("exposure");
-        private static readonly int propId_refraction   = Shader.PropertyToID("refraction");
-        private static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
-        //private static readonly int propId_playRange    = Shader.PropertyToID("playRange");
-        //private static readonly int propId_flowDir      = Shader.PropertyToID("flowDir");
-        private static readonly int propId_radius       = Shader.PropertyToID("radius");
-        private static readonly int propId_normal       = Shader.PropertyToID("normal");
-        private static readonly int propId_tangent      = Shader.PropertyToID("tangent");
-        private static readonly int propId_cloudTexture = Shader.PropertyToID("cloudTexture");
-        //private static readonly int propId_sunRadius    = Shader.PropertyToID("sunRadius");
-        //private static readonly int propId_sunDistance  = Shader.PropertyToID("sunDistance");
-        //private static int propId_noiseTexture = Shader.PropertyToID("noiseTexture");
-
-        #endregion
 
         public TransparentObject_Cloud() { }
 
@@ -71,9 +71,7 @@ namespace RW_PlanetAtmosphere
         
         public override int Order => 0;
 
-        public override float SettingGUIHeight => GUIheight;
-
-        void UpdateMaterial(Material material)
+        public void UpdateMaterial(Material material)
         {
             if (material == null) return;
 
@@ -104,16 +102,20 @@ namespace RW_PlanetAtmosphere
         {
             if(init())
             {
-                if (cloudTexturePath != null && cloudTexturePath.Length > 0)
-                    cloudTexture = GetTexture2D(cloudTexturePath);
-                // if (noiseTexturePath != null && noiseTexturePath.Length > 0)
-                //     noiseTexture = GetTexture2D(noiseTexturePath);
                 if (!materialSkyBoxCloud)
                     materialSkyBoxCloud = new Material(SkyBoxCloud);
-                if(materialSkyBoxCloud)
+                if(needUpdate)
                 {
-                    UpdateMaterial(materialSkyBoxCloud);
-                    return true;
+                    needUpdate = false;
+                    if (cloudTexturePath != null && cloudTexturePath.Length > 0)
+                        cloudTexture = GetTexture2D(cloudTexturePath);
+                    // if (noiseTexturePath != null && noiseTexturePath.Length > 0)
+                    //     noiseTexture = GetTexture2D(noiseTexturePath);
+                    if(materialSkyBoxCloud)
+                    {
+                        UpdateMaterial(materialSkyBoxCloud);
+                        return true;
+                    }
                 }
             }
             return false;
@@ -190,86 +192,28 @@ namespace RW_PlanetAtmosphere
             yield return false;
         }
 
-        public override void SettingGUI(Rect inRect, Rect outRect)
+        public override float SettingGUI(float posY, float width, Vector2 outFromTo)
         {
-            float sizeY = inRect.y;
             Text.Font = GameFont.Medium;
-            Widgets.DrawBoxSolid(new Rect(inRect.x,sizeY,inRect.width,48),Widgets.MenuSectionBGFillColor);
-            Widgets.Label(new Rect(inRect.x,sizeY,inRect.width,48),"TransparentObject_Cloud".Translate());
+            Widgets.DrawBoxSolid(new Rect(0,posY,width,48),Widgets.MenuSectionBGFillColor);
+            Widgets.Label(new Rect(0,posY,width,48),"TransparentObject_Cloud".Translate());
+            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(width-48,posY),dropDownOpened,48);
             Text.Font = GameFont.Small;
-            sizeY += 48;
-            void GUIbool(ref bool value, string name)
+            posY += 48;
+
+            if(dropDownOpened)
             {
-                if(
-                    inRect.xMin     < outRect.xMax &&
-                    outRect.xMin    < inRect.xMax  &&
-                    sizeY           < outRect.yMax &&
-                    outRect.yMin    < sizeY + 32
-                )
-                {
-                    Widgets.Label(new Rect(inRect.x,sizeY,inRect.width*0.5f,32),name);
-                    Widgets.Checkbox(inRect.xMax - 32, sizeY, ref value, 32);
-                }
-                sizeY+=32;
+                HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, "renderingShadow".Translate(),width,outFromTo);
+                HelperMethod_GUI.GUIFloat(ref posY, ref exposure, "exposure".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIFloat(ref posY, ref radius, "radius".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIVec3(ref posY, ref normal, "normal".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIVec3(ref posY, ref tangent, "tangent".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIVec3(ref posY, ref postion, "postion".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIString(ref posY, ref cloudTexturePath, "cloudTexturePath".Translate(),width,outFromTo);
             }
-            void GUIfloat(ref float value, string name)
-            {
-                if(
-                    inRect.xMin     < outRect.xMax &&
-                    outRect.xMin    < inRect.xMax  &&
-                    sizeY           < outRect.yMax &&
-                    outRect.yMin    < sizeY + 32
-                )
-                {
-                    Widgets.Label(new Rect(inRect.x,sizeY,inRect.width*0.5f,32),name);
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f,       sizeY,inRect.width*0.5f,32),value.ToString("f5")),out value);
-                }
-                sizeY+=32;
-            }
-            void GUIstring(ref string value, string name)
-            {
-                if(
-                    inRect.xMin     < outRect.xMax &&
-                    outRect.xMin    < inRect.xMax  &&
-                    sizeY           < outRect.yMax &&
-                    outRect.yMin    < sizeY + 32
-                )
-                {
-                    Widgets.Label(new Rect(inRect.x,sizeY,inRect.width*0.5f,32),name);
-                    value = Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f,       sizeY,inRect.width*0.5f,32),value);
-                }
-                sizeY+=32;
-            }
-            void GUIVec3(ref Vector3 value, string name)
-            {
-                if(
-                    inRect.xMin     < outRect.xMax &&
-                    outRect.xMin    < inRect.xMax  &&
-                    sizeY           < outRect.yMax &&
-                    outRect.yMin    < sizeY + 32
-                )
-                {
-                    float newValue;
-                    Widgets.Label(new Rect(inRect.x,sizeY,inRect.width*0.5f,32),name);
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f,       sizeY,inRect.width*0.5f/3f,32),value.x.ToString("f5")),out newValue);
-                    value.x = newValue;
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f*4f/3f, sizeY,inRect.width*0.5f/3f,32),value.y.ToString("f5")),out newValue);
-                    value.y = newValue;
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f*5f/3f, sizeY,inRect.width*0.5f/3f,32),value.z.ToString("f5")),out newValue);
-                    value.z = newValue;
-                }
-                sizeY+=32;
-            }
-            GUIbool(ref renderingShadow, "renderingShadow".Translate());
-            GUIfloat(ref exposure, "exposure".Translate());
-            GUIfloat(ref refraction, "refraction".Translate());
-            GUIfloat(ref luminescen, "luminescen".Translate());
-            GUIfloat(ref radius, "radius".Translate());
-            GUIVec3(ref normal, "normal".Translate());
-            GUIVec3(ref tangent, "tangent".Translate());
-            GUIVec3(ref postion, "postion".Translate());
-            GUIstring(ref cloudTexturePath, "cloudTexturePath".Translate());
-            GUIheight = sizeY - inRect.y;
+            return posY;
         }
 
         public override void ExposeData()

@@ -14,9 +14,28 @@ using UnityEngine.Rendering;
 namespace RW_PlanetAtmosphere
 {
     [StaticConstructorOnStartup]
-    internal static class ShaderLoader
+    public static class ShaderLoader
     {
-        static LightDriver lightDriver;
+
+        #region propsIDs
+
+        public static readonly int propId_gamma             = Shader.PropertyToID("gamma");
+        public static readonly int propId_radius            = Shader.PropertyToID("radius");
+        public static readonly int propId_sunRadius         = Shader.PropertyToID("sunRadius");
+        public static readonly int propId_sunDistance       = Shader.PropertyToID("sunDistance");
+        public static readonly int propId_sunFlareTexture   = Shader.PropertyToID("sunFlareTexture");
+        public static readonly int propId_backgroundTexture = Shader.PropertyToID("backgroundTexture");
+
+        #endregion
+
+        internal static RenderTexture cameraOverride;
+
+        private static Material materialSunFlear;
+        private static Material materialTonemaps;
+        private static Material materialWriteDepth;
+        private static Material materialRemoveAlpha;
+        private static Texture2D sunFlareTexture;
+        private static LightDriver lightDriver;
         static ShaderLoader()
         {
             WorldCameraManager.WorldCamera.depthTextureMode = DepthTextureMode.Depth;
@@ -49,18 +68,143 @@ namespace RW_PlanetAtmosphere
             lightDriver.light = gameObject.AddComponent<Light>();
             lightDriver.light.type = LightType.Directional;
             GameObject.DontDestroyOnLoad(gameObject);
+
+
+        }
+
+        static void checkAndUpdate()
+        {
+            if(AtmosphereSettings.needUpdate)
+            {
+                AtmosphereSettings.needUpdate = false;
+                sunFlareTexture = TransparentObject.GetTexture2D(AtmosphereSettings.sunFlareTexturePath);
+                Shader
+                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/SunFlare.shader");
+                if(shader)
+                {
+                    materialSunFlear = new Material(shader);
+                    materialSunFlear.SetFloat(propId_sunRadius, AtmosphereSettings.sunRadius);
+                    materialSunFlear.SetFloat(propId_sunDistance, AtmosphereSettings.sunDistance);
+                    materialSunFlear.SetTexture(propId_sunFlareTexture, sunFlareTexture);
+                }
+                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/Tonemaps.shader");
+                if(shader)
+                {
+                    materialTonemaps = new Material(shader);
+                    materialTonemaps.SetFloat(propId_gamma, AtmosphereSettings.gamma);
+                }
+                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/WriteDepth.shader");
+                if(shader)
+                {
+                    materialWriteDepth = new Material(shader);
+                    materialWriteDepth.SetFloat(propId_radius,AtmosphereSettings.planetRadius);
+                }
+                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/RemoveAlpha.shader");
+                if(shader) materialRemoveAlpha = new Material(shader);
+                if(AtmosphereSettings.renderingSizeFactor != 1)
+                {
+                    int width = (int)(Screen.width * AtmosphereSettings.renderingSizeFactor);
+                    int height = (int)(Screen.height * AtmosphereSettings.renderingSizeFactor);
+                    if(cameraOverride == null || cameraOverride.width != width || cameraOverride.height != height)
+                    {
+                        if(cameraOverride != null) GameObject.Destroy(cameraOverride);
+                        cameraOverride = new RenderTexture(width,height,24,RenderTextureFormat.ARGBFloat)
+                        {
+                            useMipMap = false
+                        };
+                        cameraOverride.Create();
+                    }
+                }
+                else
+                {
+                    cameraOverride = null;
+                }
+            }
         }
 
 
         private class PlanetAtmosphereRenderer : MonoBehaviour
         {
+            CommandBuffer commandBufferBeforeTransparent;
             CommandBuffer commandBufferAfterTransparent;
-            CommandBuffer commandBufferAfterOpaque;
             // public readonly List<Material> materialsTest = new List<Material>();
             private Transform cachedTransform = null;
+            void Start()
+            {
+                commandBufferBeforeTransparent = new CommandBuffer();
+                commandBufferBeforeTransparent.name = "commandBufferBeforeTransparent";
+                commandBufferAfterTransparent = new CommandBuffer();
+                commandBufferAfterTransparent.name = "commandBufferAfterTransparent";
+                Find.WorldCamera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha,commandBufferBeforeTransparent);
+                Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfterTransparent);
+
+            }
             void Update()
             {
-                // WorldCameraManager.WorldCamera.AddCommandBuffer()
+                checkAndUpdate();
+                void BeforeShadow(CommandBuffer cb)
+                {
+                    cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
+                    cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
+                    if(materialRemoveAlpha)
+                    {
+                        cb.Blit(null, BuiltinRenderTextureType.CameraTarget, materialRemoveAlpha, 0);
+                        cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
+                        // cb.ReleaseTemporaryRT(propId_backgroundTexture);
+                    }
+                    AtmosphereSettings.refraction = Math.Abs(AtmosphereSettings.refraction);
+                    if(AtmosphereSettings.refraction != 1)
+                    {
+                        Color color = new Color(AtmosphereSettings.refraction,AtmosphereSettings.refraction,AtmosphereSettings.refraction,1);
+                        cb.SetGlobalTexture(TransparentObject.ColorTex, propId_backgroundTexture);
+                        cb.SetGlobalColor(TransparentObject.MainColor, color);
+                        cb.Blit(null, BuiltinRenderTextureType.CameraTarget, TransparentObject.AddToTargetMaterial, 2);
+                    }
+                    if (materialSunFlear)
+                    {
+                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
+                    }
+                    if(materialWriteDepth)
+                    {
+                        cb.SetRenderTarget(TransparentObject.DepthTexel,TransparentObject.Reflection);
+                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth);
+                    }
+                }
+                void BackgroundBlendLumen(CommandBuffer cb)
+                {
+                    AtmosphereSettings.luminescen = Math.Abs(AtmosphereSettings.luminescen);
+                    if(AtmosphereSettings.luminescen != 0)
+                    {
+                        Color color = new Color(AtmosphereSettings.luminescen,AtmosphereSettings.luminescen,AtmosphereSettings.luminescen,0);
+                        cb.SetGlobalTexture(TransparentObject.ColorTex, propId_backgroundTexture);
+                        cb.SetGlobalColor(TransparentObject.MainColor, color);
+                        cb.Blit(null, BuiltinRenderTextureType.CameraTarget, TransparentObject.AddToTargetMaterial, 3);
+                    }
+                    cb.ReleaseTemporaryRT(propId_backgroundTexture);
+                }
+                void AfterTrans(CommandBuffer cb)
+                {
+                    if (materialSunFlear)
+                    {
+                        cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
+                        cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
+                    }
+                }
+                TransparentObject.DrawTransparentObjects(AtmosphereSettings.objects, commandBufferAfterTransparent, WorldCameraManager.WorldCamera, BeforeShadow, BackgroundBlendLumen, AfterTrans);
+                if (materialSunFlear)
+                {
+                    commandBufferAfterTransparent.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 1);
+                    commandBufferAfterTransparent.ReleaseTemporaryRT(propId_backgroundTexture);
+                }
+                if (materialTonemaps)
+                {
+                    materialTonemaps.SetFloat(propId_gamma, AtmosphereSettings.gamma);
+                    commandBufferAfterTransparent.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
+                    commandBufferAfterTransparent.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
+                    //commandBufferAfter.SetGlobalTexture(propId_backgroundTexture, BuiltinRenderTextureType.CameraTarget);
+                    commandBufferAfterTransparent.Blit(null, BuiltinRenderTextureType.CameraTarget, materialTonemaps,(int)AtmosphereSettings.tonemapType);
+                    commandBufferAfterTransparent.ReleaseTemporaryRT(propId_backgroundTexture);
+                }
             }
 
         }
@@ -72,7 +216,12 @@ namespace RW_PlanetAtmosphere
             private Transform cachedTransform = null;
             void Update()
             {
-
+                light.color = AtmosphereSettings.sunColor;
+                cachedTransform = cachedTransform ?? transform;
+                if(Find.World != null)
+                {
+                    cachedTransform.LookAt(-GenCelestial.CurSunPositionInWorldSpace());
+                }
             }
 
         }

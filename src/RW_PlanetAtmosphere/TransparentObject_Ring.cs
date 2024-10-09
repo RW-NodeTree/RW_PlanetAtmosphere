@@ -14,30 +14,30 @@ namespace RW_PlanetAtmosphere
         public bool renderingShadow = true;
         public float refraction     = 1;
         public float luminescen     = 0;
-        public float sunRadius      = 6960;
-        public float sunDistance    = 1495978.92f;
-        public Vector2 ringFromTo   = new Vector2(100, 150);
+        public Vector2 ringFromTo   = new Vector2(100, 150) * AtmosphereSettings.scale;
         public Vector3 normal       = Vector3.up;
         public Vector3 postion      = Vector3.zero;
         public string ringMapPath   = null;
 
-        private float GUIheight = 0;
+
+        private bool dropDownOpened = false;
         private Texture2D ringMap;
         private Material materialBasicRing;
 
-        private static Shader BasicRing;
-
         #region propsIDs
 
-        private static readonly int propId_refraction   = Shader.PropertyToID("refraction");
-        private static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
-        private static readonly int propId_ringFromTo   = Shader.PropertyToID("ringFromTo");
-        private static readonly int propId_sunRadius    = Shader.PropertyToID("sunRadius");
-        private static readonly int propId_sunDistance  = Shader.PropertyToID("sunDistance");
-        private static readonly int propId_normal       = Shader.PropertyToID("normal");
-        private static readonly int propId_ringMap      = Shader.PropertyToID("ringMap");
+        public static readonly int propId_refraction   = Shader.PropertyToID("refraction");
+        public static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
+        public static readonly int propId_ringFromTo   = Shader.PropertyToID("ringFromTo");
+        public static readonly int propId_sunRadius    = Shader.PropertyToID("sunRadius");
+        public static readonly int propId_sunDistance  = Shader.PropertyToID("sunDistance");
+        public static readonly int propId_normal       = Shader.PropertyToID("normal");
+        public static readonly int propId_ringMap      = Shader.PropertyToID("ringMap");
 
         #endregion
+
+
+        private static Shader BasicRing;
 
         public TransparentObject_Ring() { }
 
@@ -47,11 +47,9 @@ namespace RW_PlanetAtmosphere
             {
                 renderingShadow = ringDef.renderingShadow;
                 refraction      = ringDef.refraction;
-                luminescen      = ringDef.luminescen ;   
-                sunRadius       = ringDef.sunRadius;   
-                sunDistance     = ringDef.sunDistance;   
-                ringFromTo      = ringDef.ringFromTo ;   
-                normal          = ringDef.normal;   
+                luminescen      = ringDef.luminescen;
+                ringFromTo      = ringDef.ringFromTo;
+                normal          = ringDef.normal;
                 postion         = ringDef.postion;
                 ringMapPath     = ringDef.ringMapPath;
             }
@@ -61,17 +59,15 @@ namespace RW_PlanetAtmosphere
 
         public override int Order => 0;
 
-        public override float SettingGUIHeight => GUIheight;
 
-
-        void UpdateMaterial(Material material)
+        public void UpdateMaterial(Material material)
         {
             if (material == null) return;
 
             material.SetFloat(propId_refraction, refraction);
             material.SetFloat(propId_luminescen, luminescen);
-            material.SetFloat(propId_sunRadius, sunRadius);
-            material.SetFloat(propId_sunDistance, sunDistance);
+            material.SetFloat(propId_sunRadius, AtmosphereSettings.sunRadius);
+            material.SetFloat(propId_sunDistance, AtmosphereSettings.sunDistance);
 
             material.SetVector(propId_ringFromTo, ringFromTo);
             material.SetVector(propId_normal, normal);
@@ -90,14 +86,18 @@ namespace RW_PlanetAtmosphere
         {
             if(init())
             {
-                if (ringMapPath != null && ringMapPath.Length > 0)
-                    ringMap = GetTexture2D(ringMapPath);
                 if (!materialBasicRing)
                     materialBasicRing = new Material(BasicRing);
-                if(materialBasicRing)
+                if(needUpdate)
                 {
-                    UpdateMaterial(materialBasicRing);
-                    return true;
+                    needUpdate = false;
+                    if (ringMapPath != null && ringMapPath.Length > 0)
+                        ringMap = GetTexture2D(ringMapPath);
+                    if(materialBasicRing)
+                    {
+                        UpdateMaterial(materialBasicRing);
+                        return true;
+                    }
                 }
             }
             return false;
@@ -140,104 +140,25 @@ namespace RW_PlanetAtmosphere
             }
         }
 
-        public override void SettingGUI(Rect inRect, Rect outRect)
+        public override float SettingGUI(float posY, float width, Vector2 outFromTo)
         {
-            float sizeY = inRect.y;
             Text.Font = GameFont.Medium;
-            Widgets.DrawBoxSolid(new Rect(inRect.x,sizeY,inRect.width,48),Widgets.MenuSectionBGFillColor);
-            Widgets.Label(new Rect(inRect.x,sizeY,inRect.width,48),"TransparentObject_Cloud".Translate());
+            Widgets.DrawBoxSolid(new Rect(0,posY,width,48),Widgets.MenuSectionBGFillColor);
+            Widgets.Label(new Rect(0,posY,width,48),"TransparentObject_Cloud".Translate());
+            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(width-48,posY),dropDownOpened,48);
             Text.Font = GameFont.Small;
-            sizeY += 48;
-            void GUIbool(ref bool value, string name)
+            posY += 48;
+            if(dropDownOpened)
             {
-                if(
-                    inRect.xMin     < outRect.xMax &&
-                    outRect.xMin    < inRect.xMax  &&
-                    sizeY           < outRect.yMax &&
-                    outRect.yMin    < sizeY + 32
-                )
-                {
-                    Widgets.Label(new Rect(inRect.x,sizeY,inRect.width*0.5f,32),name);
-                    Widgets.Checkbox(inRect.xMax - 32, sizeY, ref value, 32);
-                }
-                sizeY+=32;
+                HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, "renderingShadow".Translate(),width,outFromTo);
+                HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIVec2(ref posY, ref ringFromTo, "ringFromTo".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIVec3(ref posY, ref normal, "normal".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIVec3(ref posY, ref postion, "postion".Translate(),width,outFromTo,6);
+                HelperMethod_GUI.GUIString(ref posY, ref ringMapPath, "ringMapPath".Translate(),width,outFromTo);
             }
-            void GUIfloat(ref float value, string name)
-            {
-                if(
-                    inRect.xMin     < outRect.xMax &&
-                    outRect.xMin    < inRect.xMax  &&
-                    sizeY           < outRect.yMax &&
-                    outRect.yMin    < sizeY + 32
-                )
-                {
-                    Widgets.Label(new Rect(inRect.x,sizeY,inRect.width*0.5f,32),name);
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f,       sizeY,inRect.width*0.5f,32),value.ToString("f5")),out value);
-                }
-                sizeY+=32;
-            }
-            void GUIstring(ref string value, string name)
-            {
-                if(
-                    inRect.xMin     < outRect.xMax &&
-                    outRect.xMin    < inRect.xMax  &&
-                    sizeY           < outRect.yMax &&
-                    outRect.yMin    < sizeY + 32
-                )
-                {
-                    Widgets.Label(new Rect(inRect.x,sizeY,inRect.width*0.5f,32),name);
-                    value = Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f,       sizeY,inRect.width*0.5f,32),value);
-                }
-                sizeY+=32;
-            }
-            void GUIVec2(ref Vector2 value, string name)
-            {
-                if(
-                    inRect.xMin     < outRect.xMax &&
-                    outRect.xMin    < inRect.xMax  &&
-                    sizeY           < outRect.yMax &&
-                    outRect.yMin    < sizeY + 32
-                )
-                {
-                    float newValue;
-                    Widgets.Label(new Rect(inRect.x,sizeY,inRect.width*0.5f,32),name);
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f,       sizeY,inRect.width*0.5f/2f,32),value.x.ToString("f5")),out newValue);
-                    value.x = newValue;
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f*3f/2f, sizeY,inRect.width*0.5f/2f,32),value.y.ToString("f5")),out newValue);
-                    value.y = newValue;
-                }
-                sizeY+=32;
-            }
-            void GUIVec3(ref Vector3 value, string name)
-            {
-                if(
-                    inRect.xMin     < outRect.xMax &&
-                    outRect.xMin    < inRect.xMax  &&
-                    sizeY           < outRect.yMax &&
-                    outRect.yMin    < sizeY + 32
-                )
-                {
-                    float newValue;
-                    Widgets.Label(new Rect(inRect.x,sizeY,inRect.width*0.5f,32),name);
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f,       sizeY,inRect.width*0.5f/3f,32),value.x.ToString("f5")),out newValue);
-                    value.x = newValue;
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f*4f/3f, sizeY,inRect.width*0.5f/3f,32),value.y.ToString("f5")),out newValue);
-                    value.y = newValue;
-                    float.TryParse(Widgets.TextField(new Rect(inRect.x+inRect.width*0.5f*5f/3f, sizeY,inRect.width*0.5f/3f,32),value.z.ToString("f5")),out newValue);
-                    value.z = newValue;
-                }
-                sizeY+=32;
-            }
-            GUIbool(ref renderingShadow, "renderingShadow".Translate());
-            GUIfloat(ref refraction, "refraction".Translate());
-            GUIfloat(ref luminescen, "luminescen".Translate());
-            GUIfloat(ref sunRadius, "sunRadius".Translate());
-            GUIfloat(ref sunDistance, "sunDistance".Translate());
-            GUIVec2(ref ringFromTo, "ringFromTo".Translate());
-            GUIVec3(ref normal, "normal".Translate());
-            GUIVec3(ref postion, "postion".Translate());
-            GUIstring(ref ringMapPath, "ringMapPath".Translate());
-            GUIheight = sizeY - inRect.y;
+            return posY;
         }
 
         public override void ExposeData()
