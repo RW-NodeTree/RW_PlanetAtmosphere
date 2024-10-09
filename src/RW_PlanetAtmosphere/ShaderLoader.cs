@@ -218,6 +218,7 @@ namespace RW_PlanetAtmosphere
             void Update()
             {
                 light.color = AtmosphereSettings.sunColor;
+                RenderSettings.sun = light;
                 cachedTransform = cachedTransform ?? transform;
                 if(Find.World != null)
                 {
