@@ -117,6 +117,7 @@ namespace RW_PlanetAtmosphere
                 }
                 else
                 {
+                    if(cameraOverride != null) GameObject.Destroy(cameraOverride);
                     cameraOverride = null;
                 }
             }
