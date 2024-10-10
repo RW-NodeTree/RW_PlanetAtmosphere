@@ -135,13 +135,13 @@ namespace RW_PlanetAtmosphere
             }
             void Update()
             {
-                if(Find.World != null)
+                if (Find.World != null)
                 {
                     Shader.SetGlobalVector("_WorldSpaceLightPos0",GenCelestial.CurSunPositionInWorldSpace());
                     Shader.SetGlobalVector("_LightColor0",AtmosphereSettings.sunColor);
                 }
                 checkAndUpdate();
-                if(materialWriteDepth)
+                if (materialWriteDepth)
                 {
                     commandBufferAfterDepth.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 0);
                 }
@@ -149,14 +149,14 @@ namespace RW_PlanetAtmosphere
                 {
                     cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
                     cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
-                    if(materialRemoveAlpha)
+                    if (materialRemoveAlpha)
                     {
                         cb.Blit(null, BuiltinRenderTextureType.CameraTarget, materialRemoveAlpha, 0);
                         cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                         // cb.ReleaseTemporaryRT(propId_backgroundTexture);
                     }
                     AtmosphereSettings.refraction = Math.Abs(AtmosphereSettings.refraction);
-                    if(AtmosphereSettings.refraction != 1)
+                    if (AtmosphereSettings.refraction != 1)
                     {
                         Color color = new Color(AtmosphereSettings.refraction,AtmosphereSettings.refraction,AtmosphereSettings.refraction,1);
                         cb.SetGlobalTexture(TransparentObject.ColorTex, propId_backgroundTexture);
@@ -167,6 +167,11 @@ namespace RW_PlanetAtmosphere
                     {
                         cb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
                         cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
+                    }
+                    if (materialWriteDepth)
+                    {
+                        cb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 1);
                     }
                 }
                 void BackgroundBlendLumen(CommandBuffer cb)

@@ -166,9 +166,6 @@ namespace RW_PlanetAtmosphere
             if (cam != null) cam.targetTexture = screenTexture;
             if (objects != null && updateCommandBuffer)
             {
-
-
-
                 void BeforeShadow(CommandBuffer cb)
                 {
                     cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
@@ -190,6 +187,11 @@ namespace RW_PlanetAtmosphere
                     {
                         cb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
                         cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
+                    }
+                    if (materialWriteDepth)
+                    {
+                        cb.SetRenderTarget( BuiltinRenderTextureType.CameraTarget);
+                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialWriteDepth, 0, 1);
                     }
                 }
                 void BackgroundBlendLumen(CommandBuffer cb)

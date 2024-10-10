@@ -43,7 +43,6 @@ namespace RW_PlanetAtmosphere
 
         #endregion
 
-        private bool dropDownOpened = false;
         private Texture2D cloudTexture;
         //private Texture2D noiseTexture;
         private Material materialSkyBoxCloud;
@@ -194,25 +193,15 @@ namespace RW_PlanetAtmosphere
 
         public override float SettingGUI(float posY, float width, Vector2 outFromTo)
         {
-            Text.Font = GameFont.Medium;
-            Widgets.DrawBoxSolid(new Rect(0,posY,width,48),Widgets.MenuSectionBGFillColor);
-            Widgets.Label(new Rect(0,posY,width,48),"TransparentObject_Cloud".Translate());
-            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(width-48,posY),dropDownOpened,48);
-            Text.Font = GameFont.Small;
-            posY += 48;
-
-            if(dropDownOpened)
-            {
-                HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, "renderingShadow".Translate(),width,outFromTo);
-                HelperMethod_GUI.GUIFloat(ref posY, ref exposure, "exposure".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY, ref radius, "radius".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec3(ref posY, ref normal, "normal".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec3(ref posY, ref tangent, "tangent".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec3(ref posY, ref postion, "postion".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIString(ref posY, ref cloudTexturePath, "cloudTexturePath".Translate(),width,outFromTo);
-            }
+            HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, "renderingShadow".Translate(),width,outFromTo);
+            HelperMethod_GUI.GUIFloat(ref posY, ref exposure, "exposure".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref radius, "radius".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec3(ref posY, ref normal, "normal".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec3(ref posY, ref tangent, "tangent".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec3(ref posY, ref postion, "postion".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIString(ref posY, ref cloudTexturePath, "cloudTexturePath".Translate(),width,outFromTo);
             return posY;
         }
 

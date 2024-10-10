@@ -25,8 +25,9 @@ namespace RW_PlanetAtmosphere
 
 
         private static bool dropDownOpened = false;
-        private static Vector2 scrollPos = Vector2.zero;
         private static float sizeY = 0;
+        private static Vector2 scrollPos = Vector2.zero;
+        private static List<bool> subMenuDropDownOpened = new List<bool>();
 
 
         internal const float scale = 100f/63.71393f;
@@ -82,7 +83,7 @@ namespace RW_PlanetAtmosphere
             Text.Font = GameFont.Medium;
             Widgets.DrawBoxSolid(new Rect(0,sizeY,ScrollViewSize.x,48),Widgets.MenuSectionBGFillColor);
             Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x,48),"TransparentObject_Atmosphere".Translate());
-            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(inRect.width-48,sizeY),dropDownOpened,48);
+            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(inRect.width-40,sizeY+8),dropDownOpened,32);
             Text.Font = GameFont.Small;
             sizeY += 48;
 
@@ -90,11 +91,52 @@ namespace RW_PlanetAtmosphere
             {
                 ScrollViewSize.x -= GUI.skin.verticalScrollbar.fixedWidth;
                 Widgets.BeginGroup(new Rect(GUI.skin.verticalScrollbar.fixedWidth,0,ScrollViewSize.x,ScrollViewSize.y));
-                foreach(TransparentObject transparentObject in objects)
+
+                for (int i = 0; i < objects.Count; i++)
                 {
-                    sizeY = transparentObject.SettingGUI(sizeY,ScrollViewSize.x, viewingFromTo);
+                    if(subMenuDropDownOpened.Count <= i) subMenuDropDownOpened.Add(false);
+                    TransparentObject transparentObject = objects[i];
+                    bool dropDownOpened = subMenuDropDownOpened[i];
+                    Text.Font = GameFont.Medium;
+                    Widgets.DrawBoxSolid(new Rect(0,sizeY,ScrollViewSize.x,48),Widgets.MenuSectionBGFillColor);
+                    Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x,48),transparentObject.GetType().Name.Translate());
+                    HelperMethod_GUI.GUILabelInFontSize(new Rect(ScrollViewSize.x-88, sizeY+8,32,32),"-");
+                    if (Widgets.ButtonInvisible(new Rect(ScrollViewSize.x-88, sizeY+8,32,32)))
+                    {
+                        objects.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                    else Widgets.DrawHighlightIfMouseover(new Rect(ScrollViewSize.x-88, sizeY+8,32,32));
+
+                    dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(ScrollViewSize.x-40,sizeY+8),dropDownOpened,32);
+                    Text.Font = GameFont.Small;
+                    sizeY += 48;
+                    if(dropDownOpened) sizeY = transparentObject.SettingGUI(sizeY,ScrollViewSize.x, viewingFromTo);
+                    subMenuDropDownOpened[i] = dropDownOpened;
                 }
+                subMenuDropDownOpened.RemoveRange(objects.Count,subMenuDropDownOpened.Count - objects.Count);
+                
+                int fontSize = Text.CurFontStyle.fontSize;
+                Text.CurFontStyle.fontSize = 32;
+                if(Widgets.ButtonText(new Rect(0,sizeY,ScrollViewSize.x,48), "new".Translate()))
+                {
+                    List<FloatMenuOption> options = new List<FloatMenuOption>();
+                    foreach(Type type in typeof(TransparentObject).AllSubclassesNonAbstract())
+                    {
+                        options.Add(new FloatMenuOption(type.Name.Translate(),delegate()
+                        {
+                            objects.Add((TransparentObject)Activator.CreateInstance(type));
+                        }));
+                    }
+                    Find.WindowStack.Add(new FloatMenu(options));
+                }
+                Text.CurFontStyle.fontSize = fontSize;
+                sizeY += 48;
+
+
                 Widgets.EndGroup();
+                ScrollViewSize.x += GUI.skin.verticalScrollbar.fixedWidth;
             }
             Widgets.EndScrollView();
 

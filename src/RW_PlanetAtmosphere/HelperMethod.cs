@@ -50,17 +50,23 @@ namespace RW_PlanetAtmosphere
 
     public static class HelperMethod_GUI
     {
+        public static void GUILabelInFontSize(Rect rect, string str)
+        {
+            if(str == null) return;
+            int fontSize = Text.CurFontStyle.fontSize;
+            Text.CurFontStyle.fontSize = (int)rect.height;
+            Widgets.Label(rect,str);
+            Text.CurFontStyle.fontSize = fontSize;
+        }
         public static bool GUIDragDownButton(Vector2 pos, bool state, float size)
         {
             Rect dropDownMark = new Rect(pos.x,pos.y,size,size);
-            int fontSize = Text.CurFontStyle.fontSize;
             TextAnchor anchor = Text.Anchor;
-            Text.CurFontStyle.fontSize = (int)size;
             Text.Anchor = TextAnchor.MiddleCenter;
-            Widgets.Label(dropDownMark,state?"▼":"▶");
-            Text.CurFontStyle.fontSize = fontSize;
+            GUILabelInFontSize(dropDownMark,state?"▼":"▶");
             Text.Anchor = anchor;
             if(Widgets.ButtonInvisible(dropDownMark,false)) state = !state;
+            else Widgets.DrawHighlightIfMouseover(dropDownMark);
             return state;
         }
         public static void GUIBoolean(ref float posY, ref bool value, string name, float width, Vector2 outFromTo, float sizeY = 32)
@@ -176,6 +182,7 @@ namespace RW_PlanetAtmosphere
                             if(setter != null) setter(val);
                         }));
                     }
+                    Find.WindowStack.Add(new FloatMenu(options));
                 }
             }
             posY+=sizeY;

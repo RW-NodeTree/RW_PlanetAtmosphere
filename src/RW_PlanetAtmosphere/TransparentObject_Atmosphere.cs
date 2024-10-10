@@ -37,7 +37,6 @@ namespace RW_PlanetAtmosphere
         public Vector4 mie_eccentricity         = new Vector4(0.618f, 0.618f, 0.618f, 0.618f);
 
 
-        private bool dropDownOpened = false;
         private Material materialAtmosphereLUT = null;
         private Material materialTranslucentGenrater = null;
         private Material materialOutSunLightLUTGenrater = null;
@@ -342,40 +341,30 @@ namespace RW_PlanetAtmosphere
 
         public override float SettingGUI(float posY, float width, Vector2 outFromTo)
         {
-            Text.Font = GameFont.Medium;
-            Widgets.DrawBoxSolid(new Rect(0,posY,width,48),Widgets.MenuSectionBGFillColor);
-            Widgets.Label(new Rect(0,posY,width,48),"TransparentObject_Atmosphere".Translate());
-            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(width-48,posY),dropDownOpened,48);
-            Text.Font = GameFont.Small;
-            posY += 48;
+            HelperMethod_GUI.GUIVec2(ref posY,ref translucentLUTSize,"translucentLUTSize".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec2(ref posY,ref outSunLightLUTSize,"outSunLightLUTSize".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec2(ref posY,ref inSunLightLUTSize,"inSunLightLUTSize".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref scatterLUTSize,"scatterLUTSize".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec3(ref posY,ref postion,"postion".Translate(),width,outFromTo,6);
 
-            if(dropDownOpened)
-            {
-                HelperMethod_GUI.GUIVec2(ref posY,ref translucentLUTSize,"translucentLUTSize".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec2(ref posY,ref outSunLightLUTSize,"outSunLightLUTSize".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec2(ref posY,ref inSunLightLUTSize,"inSunLightLUTSize".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec4(ref posY,ref scatterLUTSize,"scatterLUTSize".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec3(ref posY,ref postion,"postion".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref exposure,"exposure".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref deltaL,"deltaL".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref deltaW,"deltaW".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref lengthL,"lengthL".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref lengthW,"lengthW".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref minh,"minh".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref maxh,"maxh".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref H_Reayleigh,"H_Reayleigh".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref H_Mie,"H_Mie".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref H_OZone,"H_OZone".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref D_OZone,"D_OZone".Translate(),width,outFromTo,6);
 
-                HelperMethod_GUI.GUIFloat(ref posY,ref exposure,"exposure".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref deltaL,"deltaL".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref deltaW,"deltaW".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref lengthL,"lengthL".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref lengthW,"lengthW".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref minh,"minh".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref maxh,"maxh".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref H_Reayleigh,"H_Reayleigh".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref H_Mie,"H_Mie".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref H_OZone,"H_OZone".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIFloat(ref posY,ref D_OZone,"D_OZone".Translate(),width,outFromTo,6);
-
-                HelperMethod_GUI.GUIVec4(ref posY,ref reayleigh_scatter,"reayleigh_scatter".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec4(ref posY,ref molecule_absorb,"molecule_absorb".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec4(ref posY,ref OZone_absorb,"OZone_absorb".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec4(ref posY,ref mie_scatter,"mie_scatter".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec4(ref posY,ref mie_absorb,"mie_absorb".Translate(),width,outFromTo,6);
-                HelperMethod_GUI.GUIVec4(ref posY,ref mie_eccentricity,"mie_eccentricity".Translate(),width,outFromTo,6);
-            }
+            HelperMethod_GUI.GUIVec4(ref posY,ref reayleigh_scatter,"reayleigh_scatter".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref molecule_absorb,"molecule_absorb".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref OZone_absorb,"OZone_absorb".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref mie_scatter,"mie_scatter".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref mie_absorb,"mie_absorb".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref mie_eccentricity,"mie_eccentricity".Translate(),width,outFromTo,6);
             return posY;
         }
 
