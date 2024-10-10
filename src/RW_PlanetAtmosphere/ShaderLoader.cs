@@ -164,12 +164,13 @@ namespace RW_PlanetAtmosphere
                     }
                     if (materialSunFlear)
                     {
+                        cb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
                         cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
                     }
                     if(materialWriteDepth)
                     {
                         cb.SetRenderTarget(BuiltinRenderTextureType.Depth,BuiltinRenderTextureType.CameraTarget);
-                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth);
+                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 0);
                     }
                 }
                 void BackgroundBlendLumen(CommandBuffer cb)
