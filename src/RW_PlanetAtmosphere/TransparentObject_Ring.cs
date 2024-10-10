@@ -93,11 +93,11 @@ namespace RW_PlanetAtmosphere
                     needUpdate = false;
                     if (ringMapPath != null && ringMapPath.Length > 0)
                         ringMap = GetTexture2D(ringMapPath);
-                    if(materialBasicRing)
-                    {
-                        UpdateMaterial(materialBasicRing);
-                        return true;
-                    }
+                }
+                if(materialBasicRing)
+                {
+                    UpdateMaterial(materialBasicRing);
+                    return true;
                 }
             }
             return false;

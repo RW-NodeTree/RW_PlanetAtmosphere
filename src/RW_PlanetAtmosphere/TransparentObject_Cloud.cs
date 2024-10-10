@@ -111,11 +111,11 @@ namespace RW_PlanetAtmosphere
                         cloudTexture = GetTexture2D(cloudTexturePath);
                     // if (noiseTexturePath != null && noiseTexturePath.Length > 0)
                     //     noiseTexture = GetTexture2D(noiseTexturePath);
-                    if(materialSkyBoxCloud)
-                    {
-                        UpdateMaterial(materialSkyBoxCloud);
-                        return true;
-                    }
+                }
+                if(materialSkyBoxCloud)
+                {
+                    UpdateMaterial(materialSkyBoxCloud);
+                    return true;
                 }
             }
             return false;

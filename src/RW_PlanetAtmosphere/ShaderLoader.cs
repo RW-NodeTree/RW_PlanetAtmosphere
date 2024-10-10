@@ -119,17 +119,18 @@ namespace RW_PlanetAtmosphere
         private class PlanetAtmosphereRenderer : MonoBehaviour
         {
             // CommandBuffer commandBufferBeforeTransparent;
-            CommandBuffer commandBufferAfterTransparent;
+            CommandBuffer commandBufferAfterDepth;
+            CommandBuffer commandBufferAfterAlpha;
             // public readonly List<Material> materialsTest = new List<Material>();
             // private Transform cachedTransform = null;
             void Start()
             {
-                // commandBufferBeforeTransparent = new CommandBuffer();
-                // commandBufferBeforeTransparent.name = "commandBufferBeforeTransparent";
-                commandBufferAfterTransparent = new CommandBuffer();
-                commandBufferAfterTransparent.name = "RW_PlanetAtmosphere.AfterTransparent";
-                // Find.WorldCamera.AddCommandBuffer(CameraEvent.BeforeForwardAlpha,commandBufferBeforeTransparent);
-                Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfterTransparent);
+                commandBufferAfterDepth = new CommandBuffer();
+                commandBufferAfterDepth.name = "RW_PlanetAtmosphere.AfterDepth";
+                commandBufferAfterAlpha = new CommandBuffer();
+                commandBufferAfterAlpha.name = "RW_PlanetAtmosphere.AfterAlpha";
+                Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterDepthTexture,commandBufferAfterDepth);
+                Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfterAlpha);
 
             }
             void Update()
@@ -140,6 +141,10 @@ namespace RW_PlanetAtmosphere
                     Shader.SetGlobalVector("_LightColor0",AtmosphereSettings.sunColor);
                 }
                 checkAndUpdate();
+                if(materialWriteDepth)
+                {
+                    commandBufferAfterDepth.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 0);
+                }
                 void BeforeShadow(CommandBuffer cb)
                 {
                     cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
@@ -163,11 +168,6 @@ namespace RW_PlanetAtmosphere
                         cb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
                         cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
                     }
-                    if(materialWriteDepth)
-                    {
-                        cb.SetRenderTarget(BuiltinRenderTextureType.Depth,BuiltinRenderTextureType.CameraTarget);
-                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 0);
-                    }
                 }
                 void BackgroundBlendLumen(CommandBuffer cb)
                 {
@@ -189,22 +189,22 @@ namespace RW_PlanetAtmosphere
                         cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                     }
                 }
-                TransparentObject.DrawTransparentObjects(AtmosphereSettings.objects, commandBufferAfterTransparent, WorldCameraManager.WorldCamera, BeforeShadow, BackgroundBlendLumen, AfterTrans);
+                TransparentObject.DrawTransparentObjects(AtmosphereSettings.objects, commandBufferAfterAlpha, WorldCameraManager.WorldCamera, BeforeShadow, BackgroundBlendLumen, AfterTrans);
                 if (materialSunFlear)
                 {
-                    commandBufferAfterTransparent.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 1);
-                    commandBufferAfterTransparent.ReleaseTemporaryRT(propId_backgroundTexture);
+                    commandBufferAfterAlpha.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 1);
+                    commandBufferAfterAlpha.ReleaseTemporaryRT(propId_backgroundTexture);
                 }
                 if (materialTonemaps)
                 {
                     materialTonemaps.SetFloat(propId_gamma, AtmosphereSettings.gamma);
-                    commandBufferAfterTransparent.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
-                    commandBufferAfterTransparent.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
+                    commandBufferAfterAlpha.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
+                    commandBufferAfterAlpha.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                     //commandBufferAfter.SetGlobalTexture(propId_backgroundTexture, BuiltinRenderTextureType.CameraTarget);
-                    commandBufferAfterTransparent.Blit(null, BuiltinRenderTextureType.CameraTarget, materialTonemaps,(int)AtmosphereSettings.tonemapType);
-                    commandBufferAfterTransparent.ReleaseTemporaryRT(propId_backgroundTexture);
+                    commandBufferAfterAlpha.Blit(null, BuiltinRenderTextureType.CameraTarget, materialTonemaps,(int)AtmosphereSettings.tonemapType);
+                    commandBufferAfterAlpha.ReleaseTemporaryRT(propId_backgroundTexture);
                 }
-                commandBufferAfterTransparent.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+                commandBufferAfterAlpha.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
             }
 
         }
