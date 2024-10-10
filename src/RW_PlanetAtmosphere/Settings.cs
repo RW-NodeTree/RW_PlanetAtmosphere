@@ -64,7 +64,7 @@ namespace RW_PlanetAtmosphere
             objects.RemoveAll(x => x == null);
             Widgets.DrawLineHorizontal(0,31,inRect.width);
             Vector2 ScrollViewSize = new Vector2(inRect.width,sizeY);
-            if(ScrollViewSize.y > inRect.height-64) ScrollViewSize.x -= GUI.skin.verticalScrollbar.fixedWidth;
+            if(ScrollViewSize.y > inRect.height-64) ScrollViewSize.x -= GUI.skin.verticalScrollbar.fixedWidth+1;
             Widgets.BeginScrollView(new Rect(0,32,inRect.width,inRect.height-64),ref scrollPos,new Rect(Vector2.zero, ScrollViewSize));
 
             sizeY = 0;
@@ -83,7 +83,7 @@ namespace RW_PlanetAtmosphere
             Text.Font = GameFont.Medium;
             Widgets.DrawBoxSolid(new Rect(0,sizeY,ScrollViewSize.x,48),Widgets.MenuSectionBGFillColor);
             Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x,48),"TransparentObject_Atmosphere".Translate());
-            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(inRect.width-40,sizeY+8),dropDownOpened,32);
+            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(ScrollViewSize.x-40,sizeY+8),dropDownOpened,32);
             Text.Font = GameFont.Small;
             sizeY += 48;
 
