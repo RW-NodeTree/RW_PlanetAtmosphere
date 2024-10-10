@@ -143,6 +143,7 @@ namespace RW_PlanetAtmosphere
                 checkAndUpdate();
                 if (materialWriteDepth)
                 {
+                    commandBufferAfterDepth.Clear();
                     commandBufferAfterDepth.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 0);
                 }
                 void BeforeShadow(CommandBuffer cb)
