@@ -162,11 +162,11 @@ namespace RW_PlanetAtmosphere
                         cb.SetGlobalColor(TransparentObject.MainColor, color);
                         cb.Blit(null, BuiltinRenderTextureType.CameraTarget, TransparentObject.AddToTargetMaterial, 2);
                     }
-                    if (materialSunFlear)
-                    {
-                        cb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
-                        cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
-                    }
+                    // if (materialSunFlear)
+                    // {
+                    //     cb.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+                    //     cb.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 0);
+                    // }
                     if(materialWriteDepth)
                     {
                         cb.SetRenderTarget(BuiltinRenderTextureType.Depth,BuiltinRenderTextureType.CameraTarget);
@@ -187,18 +187,18 @@ namespace RW_PlanetAtmosphere
                 }
                 void AfterTrans(CommandBuffer cb)
                 {
-                    if (materialSunFlear)
-                    {
-                        cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
-                        cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
-                    }
+                    // if (materialSunFlear)
+                    // {
+                    //     cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
+                    //     cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
+                    // }
                 }
                 TransparentObject.DrawTransparentObjects(AtmosphereSettings.objects, commandBufferAfterTransparent, WorldCameraManager.WorldCamera, BeforeShadow, BackgroundBlendLumen, AfterTrans);
-                if (materialSunFlear)
-                {
-                    commandBufferAfterTransparent.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 1);
-                    commandBufferAfterTransparent.ReleaseTemporaryRT(propId_backgroundTexture);
-                }
+                // if (materialSunFlear)
+                // {
+                //     commandBufferAfterTransparent.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 1);
+                //     commandBufferAfterTransparent.ReleaseTemporaryRT(propId_backgroundTexture);
+                // }
                 if (materialTonemaps)
                 {
                     materialTonemaps.SetFloat(propId_gamma, AtmosphereSettings.gamma);
