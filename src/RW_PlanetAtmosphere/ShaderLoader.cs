@@ -136,7 +136,7 @@ namespace RW_PlanetAtmosphere
             {
                 if(Find.World != null)
                 {
-                    Shader.SetGlobalVector("_WorldSpaceLightPos0",-GenCelestial.CurSunPositionInWorldSpace());
+                    Shader.SetGlobalVector("_WorldSpaceLightPos0",GenCelestial.CurSunPositionInWorldSpace());
                     Shader.SetGlobalVector("_LightColor0",AtmosphereSettings.sunColor);
                 }
                 checkAndUpdate();
