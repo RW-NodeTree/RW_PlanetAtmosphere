@@ -90,7 +90,7 @@ namespace RW_PlanetAtmosphere
             if(dropDownOpened)
             {
                 float lineStart = sizeY;
-                ScrollViewSize.x -= GUI.skin.verticalScrollbar.fixedWidth;
+                ScrollViewSize.x -= 48;
                 Widgets.BeginGroup(new Rect(GUI.skin.verticalScrollbar.fixedWidth,0,ScrollViewSize.x,ScrollViewSize.y));
 
                 for (int i = 0; i < objects.Count; i++)
@@ -146,8 +146,8 @@ namespace RW_PlanetAtmosphere
 
 
                 Widgets.EndGroup();
-                ScrollViewSize.x += GUI.skin.verticalScrollbar.fixedWidth;
-                Widgets.DrawLineVertical(GUI.skin.verticalScrollbar.fixedWidth * 0.5f,lineStart,sizeY-lineStart);
+                ScrollViewSize.x += 48;
+                Widgets.DrawLineVertical(24,lineStart,sizeY-lineStart);
             }
             Widgets.EndScrollView();
 
