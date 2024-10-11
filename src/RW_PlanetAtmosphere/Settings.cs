@@ -91,7 +91,7 @@ namespace RW_PlanetAtmosphere
             {
                 float lineStart = sizeY;
                 ScrollViewSize.x -= 48;
-                Widgets.BeginGroup(new Rect(GUI.skin.verticalScrollbar.fixedWidth,0,ScrollViewSize.x,ScrollViewSize.y));
+                Widgets.BeginGroup(new Rect(48,0,ScrollViewSize.x,ScrollViewSize.y));
 
                 for (int i = 0; i < objects.Count; i++)
                 {
