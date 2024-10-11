@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<Atmosphere>Atmosphere</Atmosphere>
+	<exposure>Exposure</exposure>
+	<ground_refract>Ground refract</ground_refract>
+	<ground_light>Ground glowing</ground_light>
+	<deltaL>LUT light mapping curve derivative</deltaL>
+	<lengthL>LUT light mapping curve range</lengthL>
+	<deltaW>LUT viewing mapping curve derivative</deltaW>
+	<lengthW>LUT viewing mapping curve range</lengthW>
+	<H_Reayleigh>Reayleigh exp(-1) scale</H_Reayleigh>
+	<H_Mie>Mie exp(-1) scale</H_Mie>
+	<H_OZone>OZone Height</H_OZone>
+	<D_OZone>OZone Range</D_OZone>
+	<translucentLUTSize>translucent LUT Size(VAng,Height) x16</translucentLUTSize>
+	<mie_scatter>Mie scatter amount(R,G,B,UV)</mie_scatter>
+	<mie_absorb>Mie absorb amount(R,G,B,UV)</mie_absorb>
+	<mie_eccentricity>Mie eccentricity(R,G,B,UV)</mie_eccentricity>
+	<reayleigh_scatter>Reayleigh scatter factor(R,G,B,UV)</reayleigh_scatter>
+	<OZone_absorb>OZone absorb factor(R,G,B,UV)</OZone_absorb>
+	<sunColor>Sun color(R,G,B,UV)</sunColor>
+	<scatterLUTSize>Scatter LUT Size(VAng,LightAng,HAng,Height) x16</scatterLUTSize>
+	<cloudTexPath>Cloud Texture</cloudTexPath>
+	<cloudTexValue>(refract,glowing,opacity,height)</cloudTexValue>
+	<noiseTexPath>Noise Texture</noiseTexPath>
+	<noiseTexValue>(flowing direction angle,flowing speed)</noiseTexValue>
+	<new>new</new>
+	<reset>Reset</reset>
+</LanguageData>

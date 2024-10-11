@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Defs>
+    <RW_PlanetAtmosphere.RendererDef>
+        <defName>default</defName>
+    </RW_PlanetAtmosphere.RendererDef>
+</Defs>

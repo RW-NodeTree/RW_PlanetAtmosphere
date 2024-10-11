@@ -1,0 +1,29 @@
+ManifestFileVersion: 0
+CRC: 1507237834
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 084e557c1d9f6a472a049aef83fbdde1
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 55d48f4ad9c3b13330b9eb5ee5686477
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/RW_PlanetAtmosphere/Shader/Atmosphere/AtmosphereLUT.shader
+- Assets/RW_PlanetAtmosphere/Shader/CopyToDepth.shader
+- Assets/RW_PlanetAtmosphere/Shader/WriteDepth.shader
+- Assets/RW_PlanetAtmosphere/Shader/AddToTarget.shader
+- Assets/RW_PlanetAtmosphere/Shader/Tonemaps.shader
+- Assets/RW_PlanetAtmosphere/Shader/SunFlare.shader
+- Assets/RW_PlanetAtmosphere/Shader/TranslucentGenrater.shader
+- Assets/RW_PlanetAtmosphere/Shader/Cloud/SkyBoxCloud.shader
+- Assets/RW_PlanetAtmosphere/Shader/InSunLightLUTGenrater.shader
+- Assets/RW_PlanetAtmosphere/Shader/ScatterGenrater.shader
+- Assets/RW_PlanetAtmosphere/Shader/OutSunLightLUTGenrater.shader
+- Assets/RW_PlanetAtmosphere/Shader/RemoveAlpha.shader
+- Assets/RW_PlanetAtmosphere/Shader/Ring/BasicRing.shader
+Dependencies: []

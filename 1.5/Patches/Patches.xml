@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Patch>
+
+	<Operation Class="PatchOperationReplace">
+		<success>Always</success>
+		<xpath>*/BiomeDef[defName="Ocean" or defName="Lake"]/texture</xpath>
+		<value>
+			<texture>TerrainReplace/Water</texture>
+		</value>
+	</Operation>
+
+</Patch>

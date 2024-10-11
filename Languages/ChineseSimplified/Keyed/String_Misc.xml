@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	<Atmosphere>大气层</Atmosphere>
+	<exposure>曝光度</exposure>
+	<ground_refract>地面反射</ground_refract>
+	<ground_light>地面自发光</ground_light>
+	<deltaL>映射表光照映射曲线斜率</deltaL>
+	<lengthL>映射表光照映射曲线范围</lengthL>
+	<deltaW>映射表水平视角映射曲线斜率</deltaW>
+	<lengthW>映射表水平视角映射曲线范围</lengthW>
+	<H_Reayleigh>瑞丽散射exp(-1)处高度</H_Reayleigh>
+	<H_Mie>米尔散射exp(-1)处高度</H_Mie>
+	<H_OZone>臭氧层高度</H_OZone>
+	<D_OZone>臭氧层范围</D_OZone>
+	<translucentLUTSize>透射度映射表尺寸(垂直观察角,高度) x16</translucentLUTSize>
+	<mie_scatter>米尔散射系数(R,G,B,UV)</mie_scatter>
+	<mie_absorb>米尔吸收系数(R,G,B,UV)</mie_absorb>
+	<mie_eccentricity>米尔散射分布(R,G,B,UV)</mie_eccentricity>
+	<reayleigh_scatter>瑞利散射系数(R,G,B,UV)</reayleigh_scatter>
+	<OZone_absorb>臭氧层吸收系数(R,G,B,UV)</OZone_absorb>
+	<sunColor>阳光颜色(R,G,B,UV)</sunColor>
+	<scatterLUTSize>散射映射表尺寸(垂直观察角,光照角度,水平观察角,高度) x16</scatterLUTSize>
+	<cloudTexPath>云层贴图</cloudTexPath>
+	<cloudTexValue>(反射,自发光,不透明度,高度)</cloudTexValue>
+	<noiseTexPath>噪声贴图</noiseTexPath>
+	<noiseTexValue>(流动方向角度,流动速度)</noiseTexValue>
+	<new>新建</new>
+	<reset>重置</reset>
+</LanguageData>
