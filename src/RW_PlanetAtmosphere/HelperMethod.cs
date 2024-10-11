@@ -16,7 +16,7 @@ namespace RW_PlanetAtmosphere
             int mulValue = 1;
             for(int i = 0; i < decimalPlaces; i++) mulValue *= 10;
             value *= mulValue;
-            Scribe_Values.Look(ref value, label, defaultValue, forceSave);
+            Scribe_Values.Look(ref value, label, defaultValue * mulValue, forceSave);
             value /= mulValue;
         }
         public static void SaveAndLoadValueVec2(ref Vector2 value, string label, int decimalPlaces = 1, Vector2 defaultValue = default(Vector2), bool forceSave = false)
@@ -25,7 +25,7 @@ namespace RW_PlanetAtmosphere
             int mulValue = 1;
             for(int i = 0; i < decimalPlaces; i++) mulValue *= 10;
             value *= mulValue;
-            Scribe_Values.Look(ref value, label, defaultValue, forceSave);
+            Scribe_Values.Look(ref value, label, defaultValue * mulValue, forceSave);
             value /= mulValue;
         }
         public static void SaveAndLoadValueVec3(ref Vector3 value, string label, int decimalPlaces = 1, Vector3 defaultValue = default(Vector3), bool forceSave = false)
@@ -34,7 +34,7 @@ namespace RW_PlanetAtmosphere
             int mulValue = 1;
             for(int i = 0; i < decimalPlaces; i++) mulValue *= 10;
             value *= mulValue;
-            Scribe_Values.Look(ref value, label, defaultValue, forceSave);
+            Scribe_Values.Look(ref value, label, defaultValue * mulValue, forceSave);
             value /= mulValue;
         }
         public static void SaveAndLoadValueVec4(ref Vector4 value, string label, int decimalPlaces = 1, Vector4 defaultValue = default(Vector4), bool forceSave = false)
@@ -43,7 +43,7 @@ namespace RW_PlanetAtmosphere
             int mulValue = 1;
             for(int i = 0; i < decimalPlaces; i++) mulValue *= 10;
             value *= mulValue;
-            Scribe_Values.Look(ref value, label, defaultValue, forceSave);
+            Scribe_Values.Look(ref value, label, defaultValue * mulValue, forceSave);
             value /= mulValue;
         }
     }
