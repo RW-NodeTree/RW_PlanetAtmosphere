@@ -1,29 +1,49 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <LanguageData>
+	<gamma>Gamma</gamma>
+	<renderingShadow>Rendering Shadow</renderingShadow>
 	<Atmosphere>Atmosphere</Atmosphere>
+	<refraction>Refraction</refraction>
+	<luminescen>Luminescen</luminescen>
+	<sunRadius>Sun Radius</sunRadius>
+	<sunDistance>Sun Distance</sunDistance>
+	<planetRadius>Planet Radius</planetRadius>
+	<renderingSizeFactor>Rendering Size Factor</renderingSizeFactor>
+	<tonemapType>Tonemap Type</tonemapType>
+	<sunFlareTexturePath>Sun Flare Texture Path</sunFlareTexturePath>
+	<TransparentObjects>Transparent Objects</TransparentObjects>
 	<exposure>Exposure</exposure>
-	<ground_refract>Ground refract</ground_refract>
-	<ground_light>Ground glowing</ground_light>
 	<deltaL>LUT light mapping curve derivative</deltaL>
-	<lengthL>LUT light mapping curve range</lengthL>
 	<deltaW>LUT viewing mapping curve derivative</deltaW>
+	<lengthL>LUT light mapping curve range</lengthL>
 	<lengthW>LUT viewing mapping curve range</lengthW>
 	<H_Reayleigh>Reayleigh exp(-1) scale</H_Reayleigh>
 	<H_Mie>Mie exp(-1) scale</H_Mie>
 	<H_OZone>OZone Height</H_OZone>
 	<D_OZone>OZone Range</D_OZone>
-	<translucentLUTSize>translucent LUT Size(VAng,Height) x16</translucentLUTSize>
+	<translucentLUTSize>translucent LUT Size(VAng,Height)</translucentLUTSize>
+	<outSunLightLUTSize>Out Sun Light LUT Size(VAng,Height)</outSunLightLUTSize>
+	<inSunLightLUTSize>In Sun Light LUT Size(VAng,Height)</inSunLightLUTSize>
+	<scatterLUTSize>Scatter LUT Size(VAng,LightAng,HAng,Height)</scatterLUTSize>
+	<postion>Postion</postion>
+	<normal>Normal</normal>
+	<tangent>Tangent</tangent>
+	<cloudTexturePath>Cloud Texture Path</cloudTexturePath>
+	<ringMapPath>Ring Map Path</ringMapPath>
+	<ringFromTo>Ring From To</ringFromTo>
+	<minh>Min Radius</minh>
+	<maxh>Max Radius</maxh>
+	<radius>Radius</radius>
+	<reayleigh_scatter>Reayleigh scatter factor(R,G,B,UV)</reayleigh_scatter>
+	<molecule_absorb>Molecule absorb factor(R,G,B,UV)</molecule_absorb>
+	<OZone_absorb>OZone absorb factor(R,G,B,UV)</OZone_absorb>
 	<mie_scatter>Mie scatter amount(R,G,B,UV)</mie_scatter>
 	<mie_absorb>Mie absorb amount(R,G,B,UV)</mie_absorb>
 	<mie_eccentricity>Mie eccentricity(R,G,B,UV)</mie_eccentricity>
-	<reayleigh_scatter>Reayleigh scatter factor(R,G,B,UV)</reayleigh_scatter>
-	<OZone_absorb>OZone absorb factor(R,G,B,UV)</OZone_absorb>
 	<sunColor>Sun color(R,G,B,UV)</sunColor>
-	<scatterLUTSize>Scatter LUT Size(VAng,LightAng,HAng,Height) x16</scatterLUTSize>
-	<cloudTexPath>Cloud Texture</cloudTexPath>
-	<cloudTexValue>(refract,glowing,opacity,height)</cloudTexValue>
-	<noiseTexPath>Noise Texture</noiseTexPath>
-	<noiseTexValue>(flowing direction angle,flowing speed)</noiseTexValue>
 	<new>new</new>
 	<reset>Reset</reset>
+	<TransparentObject_Atmosphere>Atmosphere Object</TransparentObject_Atmosphere>
+	<TransparentObject_Cloud>Cloud Object</TransparentObject_Cloud>
+	<TransparentObject_Ring>Ring Object</TransparentObject_Ring>
 </LanguageData>

@@ -65,6 +65,8 @@ namespace RW_PlanetAtmosphere
             objects.RemoveAll(x => x == null);
             Widgets.DrawLineHorizontal(0,31,inRect.width);
             Vector2 ScrollViewSize = new Vector2(inRect.width,sizeY);
+            TextAnchor anchor = Text.Anchor;
+            Text.Anchor = TextAnchor.MiddleLeft;
             if(ScrollViewSize.y > inRect.height-64) ScrollViewSize.x -= GUI.skin.verticalScrollbar.fixedWidth+1;
             Widgets.BeginScrollView(new Rect(0,32,inRect.width,inRect.height-64),ref scrollPos,new Rect(Vector2.zero, ScrollViewSize));
 
@@ -85,7 +87,7 @@ namespace RW_PlanetAtmosphere
             Text.Font = GameFont.Medium;
             Widgets.DrawBoxSolid(new Rect(0,sizeY,ScrollViewSize.x,48),Widgets.MenuSectionBGFillColor);
             dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(8,sizeY+8),dropDownOpened,32);
-            Widgets.Label(new Rect(48,sizeY,ScrollViewSize.x-48,48),"TransparentObject_Atmosphere".Translate());
+            Widgets.Label(new Rect(48,sizeY,ScrollViewSize.x-48,48),"TransparentObjects".Translate());
             Text.Font = GameFont.Small;
             sizeY += 48;
 
@@ -109,10 +111,9 @@ namespace RW_PlanetAtmosphere
                     Widgets.Label(new Rect(48,sizeY,ScrollViewSize.x-96,48),transparentObject.GetType().Name.Translate());
 
                     Rect rect = new Rect(ScrollViewSize.x-40,sizeY+8,32,32);
-                    TextAnchor anchor = Text.Anchor;
                     Text.Anchor = TextAnchor.MiddleCenter;
                     HelperMethod_GUI.GUILabelInFontSize(rect,"-");
-                    Text.Anchor = anchor;
+                    Text.Anchor = TextAnchor.MiddleLeft;
                     if (Widgets.ButtonInvisible(rect))
                     {
                         objects.RemoveAt(i);
@@ -185,6 +186,7 @@ namespace RW_PlanetAtmosphere
                 }
                 Find.WindowStack.Add(new FloatMenu(options));
             }
+            Text.Anchor = anchor;
 
         }
     }
