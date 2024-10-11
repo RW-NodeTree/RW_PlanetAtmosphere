@@ -7,7 +7,7 @@
         luminescen ("luminescen", Range(0, 1)) = 0.0
         // sunRadius("sun Radius", Float) = 6960
         // sunDistance("sun Distance", Float) = 1495978.92
-        exposure ("exposure", Float) = 16.0
+        // exposure ("exposure", Float) = 16.0
         // flowDir ("flow dir", Float) = 0.0
         radius ("cloud layer radius", Float) = 63.76393
         normal ("cloud normal", Vector) = (0,1,0,0)
@@ -34,7 +34,7 @@
     float luminescen;
     // float playRange;
     // float flowDir;
-    float exposure;
+    // float exposure;
 
     // float4 sampleSphere(float2 uv)
     // {
@@ -218,7 +218,7 @@
                 getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosA.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosA.xyz + i.worldSpaceZeroPoint);
-                o.reflection.xyz = max(cloudColorA.xyz * _LightColor0.xyz * cloudColorA.w * refraction * exposure,0) * saturate(dot(cloudPosA.xyz,sun));
+                o.reflection.xyz = max(cloudColorA.xyz * _LightColor0.xyz * cloudColorA.w * refraction,0) * saturate(dot(cloudPosA.xyz,sun));
                 o.reflection.w = cloudColorA.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
@@ -260,7 +260,7 @@
                 getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosB.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosB.xyz + i.worldSpaceZeroPoint);
-                o.reflection.xyz = max(cloudColorB.xyz * _LightColor0.xyz * cloudColorB.w * refraction * exposure, 0) * saturate(dot(cloudPosB.xyz,sun));
+                o.reflection.xyz = max(cloudColorB.xyz * _LightColor0.xyz * cloudColorB.w * refraction, 0) * saturate(dot(cloudPosB.xyz,sun));
                 o.reflection.w = cloudColorB.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
@@ -301,7 +301,7 @@
                 getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosA.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosA.xyz + i.worldSpaceZeroPoint);
-                o.reflection.xyz = max(cloudColorA.xyz * cloudColorA.w * luminescen * exposure, 0);
+                o.reflection.xyz = max(cloudColorA.xyz * cloudColorA.w * luminescen, 0);
                 o.reflection.w = 0;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
@@ -342,7 +342,7 @@
                 getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosB.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosB.xyz + i.worldSpaceZeroPoint);
-                o.reflection.xyz = max(cloudColorB.xyz * cloudColorB.w * luminescen * exposure, 0);
+                o.reflection.xyz = max(cloudColorB.xyz * cloudColorB.w * luminescen, 0);
                 o.reflection.w = 0;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;

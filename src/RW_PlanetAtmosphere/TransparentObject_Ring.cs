@@ -17,7 +17,7 @@ namespace RW_PlanetAtmosphere
         public Vector2 ringFromTo   = new Vector2(100, 150) * AtmosphereSettings.scale;
         public Vector3 normal       = Vector3.up;
         public Vector3 postion      = Vector3.zero;
-        public string ringMapPath   = null;
+        public string ringMapPath   = "Ring/2k_saturn_ring_alpha";
 
 
         private Texture2D ringMap;
@@ -153,7 +153,13 @@ namespace RW_PlanetAtmosphere
 
         public override void ExposeData()
         {
-            
+            Scribe_Values.Look(ref renderingShadow,"renderingShadow",true,true);
+            Scribe_Values.Look(ref ringMapPath,"ringMapPath","Ring/2k_saturn_ring_alpha",true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction,"refraction",6,1,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen,"luminescen",6,0,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref ringFromTo,"ringFromTo",6,new Vector2(100, 150) * AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref normal,"normal",6,Vector3.up,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion,"postion",6,Vector3.zero,true);
         }
 
         ~TransparentObject_Ring()

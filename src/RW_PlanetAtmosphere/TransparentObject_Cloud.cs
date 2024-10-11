@@ -12,8 +12,7 @@ namespace RW_PlanetAtmosphere
     public class TransparentObject_Cloud : TransparentObject
     {
         public bool renderingShadow     = true;
-        public float exposure           = 2;
-        public float refraction         = 1;
+        public float refraction         = 2;
         public float luminescen         = 0;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
@@ -28,7 +27,6 @@ namespace RW_PlanetAtmosphere
 
         #region propsIDs
 
-        public static readonly int propId_exposure     = Shader.PropertyToID("exposure");
         public static readonly int propId_refraction   = Shader.PropertyToID("refraction");
         public static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
         //public static readonly int propId_playRange    = Shader.PropertyToID("playRange");
@@ -56,7 +54,6 @@ namespace RW_PlanetAtmosphere
             if (cloudDef != null)
             {
                 renderingShadow     = cloudDef.renderingShadow;
-                exposure            = cloudDef.exposure;
                 refraction          = cloudDef.refraction;
                 luminescen          = cloudDef.luminescen;
                 radius              = cloudDef.radius;
@@ -74,7 +71,6 @@ namespace RW_PlanetAtmosphere
         {
             if (material == null) return;
 
-            material.SetFloat(propId_exposure, exposure);
             material.SetFloat(propId_refraction, refraction);
             material.SetFloat(propId_luminescen, luminescen);
             // material.SetFloat(propId_playRange, playRange);
@@ -194,7 +190,6 @@ namespace RW_PlanetAtmosphere
         public override float SettingGUI(float posY, float width, Vector2 outFromTo)
         {
             HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, "renderingShadow".Translate(),width,outFromTo);
-            HelperMethod_GUI.GUIFloat(ref posY, ref exposure, "exposure".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref radius, "radius".Translate(),width,outFromTo,6);
@@ -207,7 +202,15 @@ namespace RW_PlanetAtmosphere
 
         public override void ExposeData()
         {
-            
+            Scribe_Values.Look(ref renderingShadow,"renderingShadow",true,true);
+            Scribe_Values.Look(ref cloudTexturePath,"cloudTexturePath","EarthCloudTex/8k_earth_clouds",true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction,"refraction",6,2,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen,"luminescen",6,0,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref radius,"radius",6,63.76393f * AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref normal,"normal",6,Vector3.up,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref tangent,"tangent",6,Vector3.right,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion,"postion",6,Vector3.zero,true);
+
         }
 
         ~TransparentObject_Cloud()

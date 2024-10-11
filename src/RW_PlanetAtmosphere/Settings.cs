@@ -35,6 +35,7 @@ namespace RW_PlanetAtmosphere
         public override void ExposeData()
         {
             base.ExposeData();
+            Scribe_Values.Look(ref sunFlareTexturePath,"sunFlareTexturePath","Effect/sunFlare",true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref gamma, "gamma", 6, 1, true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction, "refraction", 6, 1.75f, true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen, "luminescen", 6, 0.25f, true);
@@ -76,6 +77,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_GUI.GUIFloat(ref sizeY, ref sunDistance, "sunDistance".Translate(), ScrollViewSize.x, viewingFromTo, 6);
             HelperMethod_GUI.GUIFloat(ref sizeY, ref planetRadius, "planetRadius".Translate(), ScrollViewSize.x, viewingFromTo, 6);
             HelperMethod_GUI.GUIFloat(ref sizeY, ref renderingSizeFactor, "renderingSizeFactor".Translate(), ScrollViewSize.x, viewingFromTo, 6);
+            HelperMethod_GUI.GUIVec4(ref sizeY, ref sunColor, "sunColor".Translate(), ScrollViewSize.x, viewingFromTo, 6);
             HelperMethod_GUI.GUIEnum(ref sizeY, tonemapType, "tonemapType".Translate(), ScrollViewSize.x, viewingFromTo, x=>tonemapType=x);
             HelperMethod_GUI.GUIString(ref sizeY, ref sunFlareTexturePath, "sunFlareTexturePath".Translate(), ScrollViewSize.x, viewingFromTo);
 

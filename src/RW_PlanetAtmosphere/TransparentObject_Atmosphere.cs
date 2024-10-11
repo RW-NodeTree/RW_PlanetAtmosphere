@@ -370,7 +370,28 @@ namespace RW_PlanetAtmosphere
 
         public override void ExposeData()
         {
-            
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref translucentLUTSize,"translucentLUTSize",6,new Vector2(256, 256),true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref outSunLightLUTSize,"outSunLightLUTSize",6,new Vector2(256, 256),true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref inSunLightLUTSize,"inSunLightLUTSize",6,new Vector2(256, 256),true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref scatterLUTSize,"scatterLUTSize",6,new Vector4(128, 32, 8, 32),true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion,"postion",6,Vector3.zero,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref exposure,"exposure",6,16,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref deltaL,"deltaL",6,8,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref deltaW,"deltaW",6,2,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref lengthL,"lengthL",6,1,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref lengthW,"lengthW",6,1,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref minh,"minh",6,63.71393f * AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref maxh,"maxh",6,64.71393f * AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref H_Reayleigh,"H_Reayleigh",6,0.08f * AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref H_Mie,"H_Mie",6,0.02f * AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref H_OZone,"H_OZone",6,0.25f * AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref D_OZone,"D_OZone",6,0.15f * AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref reayleigh_scatter,"reayleigh_scatter",6,new Vector4(0.46278f, 1.25945f, 3.10319f, 11.69904f) / AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref molecule_absorb,"molecule_absorb",6,Vector4.zero / AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref OZone_absorb,"OZone_absorb",6,new Vector4(0.21195f, 0.20962f, 0.01686f, 6.4f) / AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_scatter,"mie_scatter",6,new Vector4(3.996f, 3.996f, 3.996f, 3.996f) / AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_absorb,"mie_absorb",6,new Vector4(4.44f, 4.44f, 4.44f, 4.44f) / AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_eccentricity,"mie_eccentricity",6,new Vector4(0.618f, 0.618f, 0.618f, 0.618f),true);
         }
 
         ~TransparentObject_Atmosphere()

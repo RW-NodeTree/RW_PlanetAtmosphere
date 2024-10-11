@@ -3,7 +3,7 @@ using Verse;
 
 namespace RW_PlanetAtmosphere
 {
-    [CreateAssetMenu(fileName = "AtmosphereDef", menuName = "Scriptable Object/AtmosphereDef", order = 0)]
+    // [CreateAssetMenu(fileName = "AtmosphereDef", menuName = "Scriptable Object/AtmosphereDef", order = 0)]
     public class AtmosphereDef : ObjectDef
     {
         public Vector2Int translucentLUTSize    = new Vector2Int(256, 256);

@@ -11,8 +11,7 @@ namespace RW_PlanetAtmosphere
     public class CloudDef : Def
     {
         public bool renderingShadow     = true;
-        public float exposure           = 16f;
-        public float refraction         = 1;
+        public float refraction         = 2;
         public float luminescen         = 0;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;

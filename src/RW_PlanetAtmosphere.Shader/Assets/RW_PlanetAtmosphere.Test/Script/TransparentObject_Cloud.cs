@@ -10,8 +10,7 @@ namespace RW_PlanetAtmosphere
     public class TransparentObject_Cloud : TransparentObject
     {
         public bool renderingShadow     = true;
-        public float exposure           = 2;
-        public float refraction         = 1;
+        public float refraction         = 2;
         public float luminescen         = 0;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
@@ -32,7 +31,6 @@ namespace RW_PlanetAtmosphere
 
         #region propsIDs
 
-        private static readonly int propId_exposure     = Shader.PropertyToID("exposure");
         private static readonly int propId_refraction   = Shader.PropertyToID("refraction");
         private static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
         //private static readonly int propId_playRange    = Shader.PropertyToID("playRange");
@@ -54,7 +52,6 @@ namespace RW_PlanetAtmosphere
             if (cloudDef != null)
             {
                 renderingShadow     = cloudDef.renderingShadow;
-                exposure            = cloudDef.exposure;
                 refraction          = cloudDef.refraction;
                 luminescen          = cloudDef.luminescen;
                 radius              = cloudDef.radius;
@@ -73,7 +70,6 @@ namespace RW_PlanetAtmosphere
         {
             if (material == null) return;
 
-            material.SetFloat(propId_exposure, exposure);
             material.SetFloat(propId_refraction, refraction);
             material.SetFloat(propId_luminescen, luminescen);
             //material.SetFloat(propId_playRange, playRange);
