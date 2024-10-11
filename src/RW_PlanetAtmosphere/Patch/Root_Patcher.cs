@@ -24,8 +24,8 @@ namespace RW_PlanetAtmosphere.Patch
         {
             if(WorldRendererUtility.WorldRenderedNow)
             {
-                WorldCameraManager.WorldCamera.targetTexture = ShaderLoader.cameraOverride;
-                WorldCameraManager.WorldSkyboxCamera.targetTexture = ShaderLoader.cameraOverride;
+                WorldCameraManager.WorldCamera.targetTexture = null;
+                WorldCameraManager.WorldSkyboxCamera.targetTexture = null;
                 if(ShaderLoader.cameraOverride != null)
                 {
                     GUI.DrawTexture(new Rect(0,0,Screen.width,Screen.height), ShaderLoader.cameraOverride);

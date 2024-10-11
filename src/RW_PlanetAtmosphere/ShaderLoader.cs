@@ -93,26 +93,28 @@ namespace RW_PlanetAtmosphere
                 }
                 shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/RemoveAlpha.shader");
                 if(shader) materialRemoveAlpha = new Material(shader);
-                if(AtmosphereSettings.renderingSizeFactor != 1)
-                {
-                    int width = (int)(Screen.width * AtmosphereSettings.renderingSizeFactor);
-                    int height = (int)(Screen.height * AtmosphereSettings.renderingSizeFactor);
-                    if(cameraOverride == null || cameraOverride.width != width || cameraOverride.height != height)
-                    {
-                        if(cameraOverride != null) GameObject.Destroy(cameraOverride);
-                        cameraOverride = new RenderTexture(width,height,24,RenderTextureFormat.ARGBFloat)
-                        {
-                            useMipMap = false
-                        };
-                        cameraOverride.Create();
-                    }
-                }
-                else
+            }
+            if(AtmosphereSettings.renderingSizeFactor != 1)
+            {
+                int width = (int)(Screen.width * AtmosphereSettings.renderingSizeFactor);
+                int height = (int)(Screen.height * AtmosphereSettings.renderingSizeFactor);
+                if(cameraOverride == null || cameraOverride.width != width || cameraOverride.height != height)
                 {
                     if(cameraOverride != null) GameObject.Destroy(cameraOverride);
-                    cameraOverride = null;
+                    cameraOverride = new RenderTexture(width,height,24,RenderTextureFormat.ARGBFloat)
+                    {
+                        useMipMap = false
+                    };
+                    cameraOverride.Create();
                 }
             }
+            else
+            {
+                if(cameraOverride != null) GameObject.Destroy(cameraOverride);
+                cameraOverride = null;
+            }
+            WorldCameraManager.WorldCamera.targetTexture = cameraOverride;
+            WorldCameraManager.WorldSkyboxCamera.targetTexture = cameraOverride;
         }
 
 
