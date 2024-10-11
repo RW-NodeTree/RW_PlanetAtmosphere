@@ -15,6 +15,7 @@ namespace RW_PlanetAtmosphere
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
         public float radius             = 63.76393f;
+        public float diffusePower       = 16;
         //public float sunRadius          = 6960;
         //public float sunDistance        = 1495978.92f;
         public Vector3 normal           = Vector3.up;
@@ -36,6 +37,7 @@ namespace RW_PlanetAtmosphere
         //private static readonly int propId_playRange    = Shader.PropertyToID("playRange");
         //private static readonly int propId_flowDir      = Shader.PropertyToID("flowDir");
         private static readonly int propId_radius       = Shader.PropertyToID("radius");
+        private static readonly int propId_diffusePower = Shader.PropertyToID("diffusePower");
         private static readonly int propId_normal       = Shader.PropertyToID("normal");
         private static readonly int propId_tangent      = Shader.PropertyToID("tangent");
         private static readonly int propId_cloudTexture = Shader.PropertyToID("cloudTexture");
@@ -55,6 +57,7 @@ namespace RW_PlanetAtmosphere
                 refraction          = cloudDef.refraction;
                 luminescen          = cloudDef.luminescen;
                 radius              = cloudDef.radius;
+                diffusePower        = cloudDef.diffusePower;
                 normal              = cloudDef.normal;
                 tangent             = cloudDef.tangent;
                 postion             = cloudDef.postion;
@@ -75,6 +78,7 @@ namespace RW_PlanetAtmosphere
             //material.SetFloat(propId_playRange, playRange);
             //material.SetFloat(propId_flowDir, flowDir);
             material.SetFloat(propId_radius, radius);
+            material.SetFloat(propId_diffusePower, diffusePower);
             //material.SetFloat(propId_sunRadius, sunRadius);
             //material.SetFloat(propId_sunDistance, sunDistance);
 

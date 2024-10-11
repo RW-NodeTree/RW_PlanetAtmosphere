@@ -38,31 +38,24 @@ struct f2bTrans
 v2f basicVert (appdata v)
 {
     v2f o;
-    o.screenNear = float4(
-        v.vertex.x * _ProjectionParams.y,
-        v.vertex.y * _ProjectionParams.y * _ProjectionParams.x,
-        (1.0 - _ZBufferParams.w * _ProjectionParams.y) / _ZBufferParams.z,
-        _ProjectionParams.y
-    );
-    o.screenFar = float4(
-        v.vertex.x * _ProjectionParams.z,
-        v.vertex.y * _ProjectionParams.z * _ProjectionParams.x,
-        (1.0 - _ZBufferParams.w * _ProjectionParams.z) / _ZBufferParams.z,
-        _ProjectionParams.z
-    );
+    o.screenNear.zw = mul(unity_CameraProjection,float4(0,0,-_ProjectionParams.y,1)).zw;
+    o.screenNear.xy = v.vertex.xy * o.screenNear.w;
+    o.screenNear.y *= _ProjectionParams.x;
+
+    o.screenFar.zw = mul(unity_CameraProjection,float4(0,0,-_ProjectionParams.z,1)).zw;
+    o.screenFar.xy = v.vertex.xy * o.screenFar.w;
+    o.screenFar.y *= _ProjectionParams.x;
+
     o.cameraSpaceNearPos = mul(unity_CameraInvProjection, o.screenNear);
-    o.cameraSpaceNearPos.z = -o.cameraSpaceNearPos.z;
+    o.cameraSpaceNearPos.z = _ProjectionParams.y;
     o.cameraSpaceFarPos = mul(unity_CameraInvProjection, o.screenFar);
-    o.cameraSpaceFarPos.z = -o.cameraSpaceFarPos.z;
+    o.cameraSpaceFarPos.z = _ProjectionParams.z;
     o.worldSpaceNearPos = mul(unity_CameraToWorld,float4(o.cameraSpaceNearPos,1));
     o.worldSpaceFarPos = mul(unity_CameraToWorld,float4(o.cameraSpaceFarPos,1));
     o.worldSpaceZeroPoint = mul(unity_ObjectToWorld,float4(0,0,0,1));
     float mid = 0.5 * (_ProjectionParams.y + _ProjectionParams.z);
-    o.vertex = float4(
-        v.vertex.xy * mid,
-        (1.0 - _ZBufferParams.w * mid) / _ZBufferParams.z,
-        mid
-    );
+    o.vertex.zw = mul(unity_CameraProjection,float4(0,0,-mid,1)).zw;
+    o.vertex.xy = v.vertex.xy * o.vertex.w;
     return o;
 }
 

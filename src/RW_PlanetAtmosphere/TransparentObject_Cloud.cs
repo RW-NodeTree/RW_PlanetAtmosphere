@@ -17,6 +17,7 @@ namespace RW_PlanetAtmosphere
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
         public float radius             = 63.76393f * AtmosphereSettings.scale;
+        public float diffusePower       = 16;
         //public float sunRadius          = 6960;
         //public float sunDistance        = 1495978.92f;
         public Vector3 normal           = Vector3.up;
@@ -32,6 +33,7 @@ namespace RW_PlanetAtmosphere
         //public static readonly int propId_playRange    = Shader.PropertyToID("playRange");
         //public static readonly int propId_flowDir      = Shader.PropertyToID("flowDir");
         public static readonly int propId_radius       = Shader.PropertyToID("radius");
+        public static readonly int propId_diffusePower = Shader.PropertyToID("diffusePower");
         public static readonly int propId_normal       = Shader.PropertyToID("normal");
         public static readonly int propId_tangent      = Shader.PropertyToID("tangent");
         public static readonly int propId_cloudTexture = Shader.PropertyToID("cloudTexture");
@@ -57,6 +59,7 @@ namespace RW_PlanetAtmosphere
                 refraction          = cloudDef.refraction;
                 luminescen          = cloudDef.luminescen;
                 radius              = cloudDef.radius;
+                diffusePower        = cloudDef.diffusePower;
                 normal              = cloudDef.normal;
                 tangent             = cloudDef.tangent;
                 postion             = cloudDef.postion;
@@ -76,6 +79,7 @@ namespace RW_PlanetAtmosphere
             // material.SetFloat(propId_playRange, playRange);
             // material.SetFloat(propId_flowDir, flowDir);
             material.SetFloat(propId_radius, radius);
+            material.SetFloat(propId_diffusePower, diffusePower);
             //material.SetFloat(propId_sunRadius, sunRadius);
             //material.SetFloat(propId_sunDistance, sunDistance);
 
@@ -193,6 +197,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref radius, "radius".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref diffusePower, "diffusePower".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIVec3(ref posY, ref normal, "normal".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIVec3(ref posY, ref tangent, "tangent".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIVec3(ref posY, ref postion, "postion".Translate(),width,outFromTo,6);
@@ -207,6 +212,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction,"refraction",6,2,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen,"luminescen",6,0,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref radius,"radius",6,63.76393f * AtmosphereSettings.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref diffusePower,"diffusePower",6,16,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref normal,"normal",6,Vector3.up,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref tangent,"tangent",6,Vector3.right,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion,"postion",6,Vector3.zero,true);

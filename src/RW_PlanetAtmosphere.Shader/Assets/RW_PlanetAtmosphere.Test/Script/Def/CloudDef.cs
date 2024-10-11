@@ -16,6 +16,7 @@ namespace RW_PlanetAtmosphere
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
         public float radius             = 63.76393f;
+        public float diffusePower       = 16;
         //public float sunRadius          = 6960;
         //public float sunDistance        = 1495978.92f;
         public Vector3 normal           = Vector3.up;

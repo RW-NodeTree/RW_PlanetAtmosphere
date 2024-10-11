@@ -10,6 +10,7 @@ namespace RW_PlanetAtmosphere
         public float refraction         = 2;
         public float luminescen         = 0;
         public float radius             = 63.76393f * AtmosphereSettings.scale;
+        public float diffusePower       = 16;
         public Vector3 normal           = Vector3.up;
         public Vector3 tangent          = Vector3.right;
         public Vector3 postion          = Vector3.zero;

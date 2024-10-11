@@ -98,6 +98,7 @@
 
         Pass
         {
+            Tags { "LightMode" = "ShadowCaster" }
             Blend One Zero
             // ZWrite Off
             CGPROGRAM
