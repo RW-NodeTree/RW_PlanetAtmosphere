@@ -82,13 +82,14 @@ namespace RW_PlanetAtmosphere
 
             Text.Font = GameFont.Medium;
             Widgets.DrawBoxSolid(new Rect(0,sizeY,ScrollViewSize.x,48),Widgets.MenuSectionBGFillColor);
-            Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x,48),"TransparentObject_Atmosphere".Translate());
-            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(ScrollViewSize.x-40,sizeY+8),dropDownOpened,32);
+            dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(8,sizeY+8),dropDownOpened,32);
+            Widgets.Label(new Rect(48,sizeY,ScrollViewSize.x-48,48),"TransparentObject_Atmosphere".Translate());
             Text.Font = GameFont.Small;
             sizeY += 48;
 
             if(dropDownOpened)
             {
+                float lineStart = sizeY;
                 ScrollViewSize.x -= GUI.skin.verticalScrollbar.fixedWidth;
                 Widgets.BeginGroup(new Rect(GUI.skin.verticalScrollbar.fixedWidth,0,ScrollViewSize.x,ScrollViewSize.y));
 
@@ -98,18 +99,26 @@ namespace RW_PlanetAtmosphere
                     TransparentObject transparentObject = objects[i];
                     bool dropDownOpened = subMenuDropDownOpened[i];
                     Text.Font = GameFont.Medium;
+
                     Widgets.DrawBoxSolid(new Rect(0,sizeY,ScrollViewSize.x,48),Widgets.MenuSectionBGFillColor);
-                    Widgets.Label(new Rect(0,sizeY,ScrollViewSize.x,48),transparentObject.GetType().Name.Translate());
-                    HelperMethod_GUI.GUILabelInFontSize(new Rect(ScrollViewSize.x-88, sizeY+8,32,32),"-");
-                    if (Widgets.ButtonInvisible(new Rect(ScrollViewSize.x-88, sizeY+8,32,32)))
+
+                    dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(8,sizeY+8),dropDownOpened,32);
+
+                    Widgets.Label(new Rect(48,sizeY,ScrollViewSize.x-96,48),transparentObject.GetType().Name.Translate());
+
+                    Rect rect = new Rect(ScrollViewSize.x-40,sizeY+8,32,32);
+                    TextAnchor anchor = Text.Anchor;
+                    Text.Anchor = TextAnchor.MiddleCenter;
+                    HelperMethod_GUI.GUILabelInFontSize(rect,"-");
+                    Text.Anchor = anchor;
+                    if (Widgets.ButtonInvisible(rect))
                     {
                         objects.RemoveAt(i);
                         i--;
                         continue;
                     }
-                    else Widgets.DrawHighlightIfMouseover(new Rect(ScrollViewSize.x-88, sizeY+8,32,32));
+                    else Widgets.DrawHighlightIfMouseover(rect);
 
-                    dropDownOpened = HelperMethod_GUI.GUIDragDownButton(new Vector2(ScrollViewSize.x-40,sizeY+8),dropDownOpened,32);
                     Text.Font = GameFont.Small;
                     sizeY += 48;
                     if(dropDownOpened) sizeY = transparentObject.SettingGUI(sizeY,ScrollViewSize.x, viewingFromTo);
@@ -119,7 +128,9 @@ namespace RW_PlanetAtmosphere
                 
                 int fontSize = Text.CurFontStyle.fontSize;
                 Text.CurFontStyle.fontSize = 32;
-                if(Widgets.ButtonText(new Rect(0,sizeY,ScrollViewSize.x,48), "new".Translate()))
+                bool newObjectClicked = Widgets.ButtonText(new Rect(0,sizeY,ScrollViewSize.x,48), "new".Translate());
+                Text.CurFontStyle.fontSize = fontSize;
+                if(newObjectClicked)
                 {
                     List<FloatMenuOption> options = new List<FloatMenuOption>();
                     foreach(Type type in typeof(TransparentObject).AllSubclassesNonAbstract())
@@ -131,12 +142,12 @@ namespace RW_PlanetAtmosphere
                     }
                     Find.WindowStack.Add(new FloatMenu(options));
                 }
-                Text.CurFontStyle.fontSize = fontSize;
                 sizeY += 48;
 
 
                 Widgets.EndGroup();
                 ScrollViewSize.x += GUI.skin.verticalScrollbar.fixedWidth;
+                Widgets.DrawLineVertical(GUI.skin.verticalScrollbar.fixedWidth * 0.5f,lineStart,sizeY-lineStart);
             }
             Widgets.EndScrollView();
 
