@@ -61,12 +61,12 @@ v2f basicVert (appdata v)
 
 
 
-float3 worldPosFromDepthMap(v2f data, out float originDepth)
+float3 worldPosFromDepthMap(v2f data, out float originDepth, out float linear01Depth)
 {
     originDepth = tex2Dlod(_CameraDepthTexture, float4(0.5*data.screenNear.xy/data.screenNear.w + 0.5,0,0)).x;
+    linear01Depth = Linear01Depth(originDepth);
     float3
-    result  = Linear01Depth(originDepth);
-    result += step(1.0,result*1.001) * 1e16;
-    result  = lerp(_WorldSpaceCameraPos.xyz,data.worldSpaceFarPos,result);
+    // result += step(1.0,result*1.001) * 1e16;
+    result  = lerp(_WorldSpaceCameraPos.xyz,data.worldSpaceFarPos,linear01Depth);
     return result;
 }

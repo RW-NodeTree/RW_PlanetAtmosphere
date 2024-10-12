@@ -57,9 +57,11 @@
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
+                float linearDepth;
                 float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 pos = _WorldSpaceCameraPos.xyz;
-                float3 fargPos = worldPosFromDepthMap(i,depth);
+                float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
+                if(linearDepth >= 1) discard;
                 pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
 
@@ -90,9 +92,10 @@
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
+                float linearDepth;
                 float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 pos = i.worldSpaceNearPos;
-                float3 fargPos = worldPosFromDepthMap(i,depth);
+                float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
                 pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
 
@@ -127,9 +130,10 @@
                 // float4 color = _LightColor0;
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
+                float linearDepth;
                 float3 sun = normalize(_WorldSpaceLightPos0.xyz);
                 float3 pos = i.worldSpaceNearPos;
-                float3 fargPos = worldPosFromDepthMap(i,depth);
+                float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
                 pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
 
