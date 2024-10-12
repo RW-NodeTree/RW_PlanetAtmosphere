@@ -31,7 +31,7 @@
     }
     SubShader
     {
-        Tags { "Queue"="Transparent-1" "RenderType"="Transparent"}
+        Tags { "Queue"="Transparent" "RenderType"="Transparent"}
         Cull Off
         ZWrite Off
         CGINCLUDE
