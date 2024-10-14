@@ -326,7 +326,11 @@ namespace RW_PlanetAtmosphere
 
         void OnGUI()
         {
-            if (screenTexture) GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), screenTexture);
+            if (screenTexture && cam != null)
+            {
+                cam.targetTexture = null;
+                GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), screenTexture);
+            }
             //GUI.DrawTexture(new Rect(0, 0, targetD.width, targetD.height), targetD);
             // GUI.DrawTexture(new Rect(0, translucentLUT.height, scatterLUT.width, scatterLUT.height), scatterLUT);
             //GUI.Label(new Rect(0, 0, 128, 32), 1f / Time.deltaTime + "FPS");
