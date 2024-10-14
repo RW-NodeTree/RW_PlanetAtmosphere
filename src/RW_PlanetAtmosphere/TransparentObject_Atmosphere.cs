@@ -309,9 +309,8 @@ namespace RW_PlanetAtmosphere
 
         public override void GenBaseColor(CommandBuffer commandBuffer, Camera camera, object signal)
         {
-            if(initObject())
+            if(initObject() && IsVolum)
             {
-                if (!IsVolum) return;
                 //commandBuffer.ClearRenderTarget(false, true,new Color(0,0,0,1));
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 2);
             }
@@ -332,9 +331,8 @@ namespace RW_PlanetAtmosphere
 
         public override void BlendTrans(CommandBuffer commandBuffer, TransparentObject target, Camera camera, object signal)
         {
-            if (initObject())
+            if (initObject() && IsVolum)
             {
-                if (!IsVolum) return;
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 1);
             }
         }
