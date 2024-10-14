@@ -38,11 +38,11 @@ struct f2bTrans
 v2f basicVert (appdata v)
 {
     v2f o;
-    o.screenNear.zw = mul(unity_CameraProjection,float4(0,0,-_ProjectionParams.y,1)).zw;
+    o.screenNear.zw = UnityViewToClipPos(float3(0,0,-_ProjectionParams.y)).zw;
     o.screenNear.xy = v.vertex.xy * o.screenNear.w;
     o.screenNear.y *= _ProjectionParams.x;
 
-    o.screenFar.zw = mul(unity_CameraProjection,float4(0,0,-_ProjectionParams.z,1)).zw;
+    o.screenFar.zw = UnityViewToClipPos(float3(0,0,-_ProjectionParams.z)).zw;
     o.screenFar.xy = v.vertex.xy * o.screenFar.w;
     o.screenFar.y *= _ProjectionParams.x;
 
@@ -54,7 +54,7 @@ v2f basicVert (appdata v)
     o.worldSpaceFarPos = mul(unity_CameraToWorld,float4(o.cameraSpaceFarPos,1));
     o.worldSpaceZeroPoint = mul(unity_ObjectToWorld,float4(0,0,0,1));
     float mid = 0.5 * (_ProjectionParams.y + _ProjectionParams.z);
-    o.vertex.zw = mul(unity_CameraProjection,float4(0,0,-mid,1)).zw;
+    o.vertex.zw = UnityViewToClipPos(float3(0,0,-mid)).zw;
     o.vertex.xy = v.vertex.xy * o.vertex.w;
     return o;
 }
@@ -65,8 +65,5 @@ float3 worldPosFromDepthMap(v2f data, out float originDepth, out float linear01D
 {
     originDepth = tex2Dlod(_CameraDepthTexture, float4(0.5*data.screenNear.xy/data.screenNear.w + 0.5,0,0)).x;
     linear01Depth = Linear01Depth(originDepth);
-    float3
-    // result += step(1.0,result*1.001) * 1e16;
-    result  = lerp(_WorldSpaceCameraPos.xyz,data.worldSpaceFarPos,linear01Depth);
-    return result;
+    return lerp(_WorldSpaceCameraPos.xyz,data.worldSpaceFarPos,linear01Depth);
 }
