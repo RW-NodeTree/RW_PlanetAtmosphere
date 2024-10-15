@@ -12,6 +12,7 @@ namespace RW_PlanetAtmosphere
         public bool renderingShadow     = true;
         public float refraction         = 2;
         public float luminescen         = 0;
+        public float opacity            = 1;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
         public float radius             = 63.76393f;
@@ -34,6 +35,7 @@ namespace RW_PlanetAtmosphere
 
         private static readonly int propId_refraction   = Shader.PropertyToID("refraction");
         private static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
+        private static readonly int propId_opacity      = Shader.PropertyToID("opacity");
         //private static readonly int propId_playRange    = Shader.PropertyToID("playRange");
         //private static readonly int propId_flowDir      = Shader.PropertyToID("flowDir");
         private static readonly int propId_radius       = Shader.PropertyToID("radius");
@@ -56,6 +58,7 @@ namespace RW_PlanetAtmosphere
                 renderingShadow     = cloudDef.renderingShadow;
                 refraction          = cloudDef.refraction;
                 luminescen          = cloudDef.luminescen;
+                opacity             = cloudDef.opacity;
                 radius              = cloudDef.radius;
                 diffusePower        = cloudDef.diffusePower;
                 normal              = cloudDef.normal;
@@ -75,6 +78,7 @@ namespace RW_PlanetAtmosphere
 
             material.SetFloat(propId_refraction, refraction);
             material.SetFloat(propId_luminescen, luminescen);
+            material.SetFloat(propId_opacity, opacity);
             //material.SetFloat(propId_playRange, playRange);
             //material.SetFloat(propId_flowDir, flowDir);
             material.SetFloat(propId_radius, radius);

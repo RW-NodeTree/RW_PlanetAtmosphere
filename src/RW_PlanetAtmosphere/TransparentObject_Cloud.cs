@@ -14,6 +14,7 @@ namespace RW_PlanetAtmosphere
         public bool renderingShadow     = true;
         public float refraction         = 2;
         public float luminescen         = 0;
+        public float opacity            = 1;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
         public float radius             = 63.76393f * AtmosphereSettings.scale;
@@ -28,18 +29,19 @@ namespace RW_PlanetAtmosphere
 
         #region propsIDs
 
-        public static readonly int propId_refraction   = Shader.PropertyToID("refraction");
-        public static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
-        //public static readonly int propId_playRange    = Shader.PropertyToID("playRange");
-        //public static readonly int propId_flowDir      = Shader.PropertyToID("flowDir");
-        public static readonly int propId_radius       = Shader.PropertyToID("radius");
-        public static readonly int propId_diffusePower = Shader.PropertyToID("diffusePower");
-        public static readonly int propId_normal       = Shader.PropertyToID("normal");
-        public static readonly int propId_tangent      = Shader.PropertyToID("tangent");
-        public static readonly int propId_cloudTexture = Shader.PropertyToID("cloudTexture");
-        //public static readonly int propId_sunRadius    = Shader.PropertyToID("sunRadius");
-        //public static readonly int propId_sunDistance  = Shader.PropertyToID("sunDistance");
-        //public static int propId_noiseTexture = Shader.PropertyToID("noiseTexture");
+        public static readonly int propId_refraction    = Shader.PropertyToID("refraction");
+        public static readonly int propId_luminescen    = Shader.PropertyToID("luminescen");
+        public static readonly int propId_opacity       = Shader.PropertyToID("opacity");
+        //public static readonly int propId_playRange     = Shader.PropertyToID("playRange");
+        //public static readonly int propId_flowDir       = Shader.PropertyToID("flowDir");
+        public static readonly int propId_radius        = Shader.PropertyToID("radius");
+        public static readonly int propId_diffusePower  = Shader.PropertyToID("diffusePower");
+        public static readonly int propId_normal        = Shader.PropertyToID("normal");
+        public static readonly int propId_tangent       = Shader.PropertyToID("tangent");
+        public static readonly int propId_cloudTexture  = Shader.PropertyToID("cloudTexture");
+        //public static readonly int propId_sunRadius     = Shader.PropertyToID("sunRadius");
+        //public static readonly int propId_sunDistance   = Shader.PropertyToID("sunDistance");
+        //public static int propId_noiseTexture           = Shader.PropertyToID("noiseTexture");
 
         #endregion
 
@@ -58,6 +60,7 @@ namespace RW_PlanetAtmosphere
                 renderingShadow     = cloudDef.renderingShadow;
                 refraction          = cloudDef.refraction;
                 luminescen          = cloudDef.luminescen;
+                opacity             = cloudDef.opacity;
                 radius              = cloudDef.radius;
                 diffusePower        = cloudDef.diffusePower;
                 normal              = cloudDef.normal;
@@ -76,6 +79,7 @@ namespace RW_PlanetAtmosphere
 
             material.SetFloat(propId_refraction, refraction);
             material.SetFloat(propId_luminescen, luminescen);
+            material.SetFloat(propId_opacity, opacity);
             // material.SetFloat(propId_playRange, playRange);
             // material.SetFloat(propId_flowDir, flowDir);
             material.SetFloat(propId_radius, radius);
@@ -196,6 +200,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, "renderingShadow".Translate(),width,outFromTo);
             HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref opacity, "opacity".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref radius, "radius".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref diffusePower, "diffusePower".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIVec3(ref posY, ref normal, "normal".Translate(),width,outFromTo,6);
@@ -211,6 +216,7 @@ namespace RW_PlanetAtmosphere
             Scribe_Values.Look(ref cloudTexturePath,"cloudTexturePath","EarthCloudTex/8k_earth_clouds",true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction,"refraction",6,2,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen,"luminescen",6,0,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref opacity,"opacity",6,1,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref radius,"radius",6,63.76393f * AtmosphereSettings.scale,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref diffusePower,"diffusePower",6,16,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref normal,"normal",6,Vector3.up,true);

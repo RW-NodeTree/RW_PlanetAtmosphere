@@ -9,6 +9,7 @@ namespace RW_PlanetAtmosphere
         public bool renderingShadow     = true;
         public float refraction         = 2;
         public float luminescen         = 0;
+        public float opacity            = 1;
         public float radius             = 63.76393f * AtmosphereSettings.scale;
         public float diffusePower       = 16;
         public Vector3 normal           = Vector3.up;

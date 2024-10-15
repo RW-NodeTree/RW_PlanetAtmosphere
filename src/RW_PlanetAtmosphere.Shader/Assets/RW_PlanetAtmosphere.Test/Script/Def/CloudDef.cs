@@ -13,6 +13,7 @@ namespace RW_PlanetAtmosphere
         public bool renderingShadow     = true;
         public float refraction         = 2;
         public float luminescen         = 0;
+        public float opacity            = 1;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
         public float radius             = 63.76393f;

@@ -25,13 +25,13 @@ namespace RW_PlanetAtmosphere
 
         #region propsIDs
 
-        public static readonly int propId_refraction   = Shader.PropertyToID("refraction");
-        public static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
-        public static readonly int propId_ringFromTo   = Shader.PropertyToID("ringFromTo");
-        public static readonly int propId_sunRadius    = Shader.PropertyToID("sunRadius");
-        public static readonly int propId_sunDistance  = Shader.PropertyToID("sunDistance");
-        public static readonly int propId_normal       = Shader.PropertyToID("normal");
-        public static readonly int propId_ringMap      = Shader.PropertyToID("ringMap");
+        public static readonly int propId_refraction    = Shader.PropertyToID("refraction");
+        public static readonly int propId_luminescen    = Shader.PropertyToID("luminescen");
+        public static readonly int propId_ringFromTo    = Shader.PropertyToID("ringFromTo");
+        public static readonly int propId_sunRadius     = Shader.PropertyToID("sunRadius");
+        public static readonly int propId_sunDistance   = Shader.PropertyToID("sunDistance");
+        public static readonly int propId_normal        = Shader.PropertyToID("normal");
+        public static readonly int propId_ringMap       = Shader.PropertyToID("ringMap");
 
         #endregion
 

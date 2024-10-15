@@ -3,8 +3,8 @@
         ringMap ("Map", 2D) = "gary" {}
         ringFromTo ("Ring From To", Vector) = (110,130,0,0)
         normal ("Ring Normal", Vector) = (0,1,0,0)
-        refraction ("refraction", Range(0, 1)) = 1.0
-        luminescen ("luminescen", Range(0, 1)) = 0.0
+        refraction ("refraction", Float) = 1.0
+        luminescen ("luminescen", Float) = 0.0
         sunRadius("sun Radius", Float) = 6960
         sunDistance("sun Distance", Float) = 1495978.92
     }

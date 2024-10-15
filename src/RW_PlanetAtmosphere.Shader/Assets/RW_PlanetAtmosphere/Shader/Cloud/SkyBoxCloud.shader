@@ -3,8 +3,9 @@
     Properties
     {
         // playRange ("play speed", Range(0, 1)) = 0.015625
-        refraction ("refraction", Range(0, 1)) = 1.0
-        luminescen ("luminescen", Range(0, 1)) = 0.0
+        opacity ("opacity", Range(0, 1)) = 1.0
+        refraction ("refraction", Float) = 1.0
+        luminescen ("luminescen", Float) = 0.0
         // sunRadius("sun Radius", Float) = 6960
         // sunDistance("sun Distance", Float) = 1495978.92
         diffusePower ("diffuse power", Float) = 16.0
@@ -32,6 +33,7 @@
     
     float refraction;
     float luminescen;
+    float opacity;
     // float playRange;
     // float flowDir;
     float diffusePower;
@@ -56,7 +58,9 @@
 
     float4 sampleSphere(float2 uv)
     {
-        return tex2Dlod(cloudTexture,float4(uv,0,0));
+        float4 result = tex2Dlod(cloudTexture,float4(uv,0,0));
+        result.w *= opacity;
+        return result;
     }
     ENDCG
     SubShader
