@@ -34,6 +34,7 @@
 	<minh>最小半径</minh>
 	<maxh>最大半径</maxh>
 	<radius>半径</radius>
+	<opacity>不透明度</opacity>
 	<diffusePower>漫反射强度</diffusePower>
 	<reayleigh_scatter>瑞利散射系数(R,G,B,UV)</reayleigh_scatter>
 	<molecule_absorb>分子吸收系数(R,G,B,UV)</molecule_absorb>
