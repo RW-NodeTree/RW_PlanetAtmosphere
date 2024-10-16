@@ -22,7 +22,7 @@ namespace RW_PlanetAtmosphere.Patch
             )]
         private static void PreRoot_OnGUI()
         {
-            if(WorldRendererUtility.WorldRenderedNow)
+            if(Find.World?.renderer != null && WorldRendererUtility.WorldRenderedNow)
             {
                 WorldCameraManager.WorldCamera.targetTexture = null;
                 WorldCameraManager.WorldSkyboxCamera.targetTexture = null;
