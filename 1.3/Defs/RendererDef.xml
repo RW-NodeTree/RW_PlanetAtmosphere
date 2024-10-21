@@ -1,6 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Defs>
+    <RW_PlanetAtmosphere.AtmosphereDef>
+        <defName>defaultAtmosphere</defName>
+        <maxh>100.8</maxh>
+    </RW_PlanetAtmosphere.AtmosphereDef>
+
+    <RW_PlanetAtmosphere.CloudDef>
+        <defName>realisticCloud</defName>
+    </RW_PlanetAtmosphere.CloudDef>
+
+    <RW_PlanetAtmosphere.CloudDef>
+        <defName>balanceCloud</defName>
+        <opacity>0.25</opacity>
+    </RW_PlanetAtmosphere.CloudDef>
+
+    <RW_PlanetAtmosphere.RingDef>
+        <defName>defaultRing</defName>
+    </RW_PlanetAtmosphere.RingDef>
+
     <RW_PlanetAtmosphere.RendererDef>
-        <defName>default</defName>
+        <defName>realisticRenderer_NoRing</defName>
+        <label>realistic without ring</label>
+        <refraction>2.0</refraction>
+        <luminescen>0.0</luminescen>
+        <objects>
+            <li>defaultAtmosphere</li>
+            <li>realisticCloud</li>
+        </objects>
+    </RW_PlanetAtmosphere.RendererDef>
+
+    <RW_PlanetAtmosphere.RendererDef>
+        <defName>realisticRenderer_HasRing</defName>
+        <label>realistic with ring</label>
+        <refraction>2.0</refraction>
+        <luminescen>0.0</luminescen>
+        <objects>
+            <li>defaultAtmosphere</li>
+            <li>realisticCloud</li>
+            <li>defaultRing</li>
+        </objects>
+    </RW_PlanetAtmosphere.RendererDef>
+
+    <RW_PlanetAtmosphere.RendererDef>
+        <defName>balanceRenderer_NoRing</defName>
+        <label>balance without ring</label>
+        <refraction>1.5</refraction>
+        <luminescen>0.5</luminescen>
+        <objects>
+            <li>defaultAtmosphere</li>
+            <li>balanceCloud</li>
+        </objects>
+    </RW_PlanetAtmosphere.RendererDef>
+
+    <RW_PlanetAtmosphere.RendererDef>
+        <defName>balanceRenderer_HasRing</defName>
+        <label>balance without ring</label>
+        <refraction>1.5</refraction>
+        <luminescen>0.5</luminescen>
+        <objects>
+            <li>defaultAtmosphere</li>
+            <li>balanceCloud</li>
+            <li>defaultRing</li>
+        </objects>
     </RW_PlanetAtmosphere.RendererDef>
 </Defs>
