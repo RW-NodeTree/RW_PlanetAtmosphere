@@ -16,11 +16,13 @@
 
     <RW_PlanetAtmosphere.RingDef>
         <defName>defaultRing</defName>
+        <ringFromTo>(125.0,225.0)</ringFromTo>
     </RW_PlanetAtmosphere.RingDef>
 
     <RW_PlanetAtmosphere.RendererDef>
         <defName>realisticRenderer_NoRing</defName>
         <label>realistic without ring</label>
+        <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
         <refraction>2.0</refraction>
         <luminescen>0.0</luminescen>
         <objects>
@@ -32,6 +34,7 @@
     <RW_PlanetAtmosphere.RendererDef>
         <defName>realisticRenderer_HasRing</defName>
         <label>realistic with ring</label>
+        <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
         <refraction>2.0</refraction>
         <luminescen>0.0</luminescen>
         <objects>
@@ -44,6 +47,7 @@
     <RW_PlanetAtmosphere.RendererDef>
         <defName>balanceRenderer_NoRing</defName>
         <label>balance without ring</label>
+        <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
         <refraction>1.5</refraction>
         <luminescen>0.5</luminescen>
         <objects>
@@ -55,6 +59,7 @@
     <RW_PlanetAtmosphere.RendererDef>
         <defName>balanceRenderer_HasRing</defName>
         <label>balance without ring</label>
+        <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
         <refraction>1.5</refraction>
         <luminescen>0.5</luminescen>
         <objects>
