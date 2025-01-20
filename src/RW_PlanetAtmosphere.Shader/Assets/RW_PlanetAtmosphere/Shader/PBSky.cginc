@@ -5,6 +5,7 @@ sampler2D outSunLightLUT;
 sampler2D inSunLightLUT;
 sampler2D scatterLUT_Reayleigh;
 sampler2D scatterLUT_Mie;
+
 float4 translucentLUT_TexelSize;
 float4 outSunLightLUT_TexelSize;
 float4 inSunLightLUT_TexelSize;
@@ -25,12 +26,18 @@ float deltaL;
 float deltaW;
 float lengthL;
 float lengthW;
-float sunRadius;
-float sunDistance;
+uniform float sunRadius;
+uniform float sunDistance;
 
+#ifndef ingCount
 #define ingCount 4096
+#endif
+#ifndef ingCountDyn
 #define ingCountDyn 32
+#endif
+#ifndef ingLightCount
 #define ingLightCount 64
+#endif
 
 
 float bright(float3 L)
@@ -129,21 +136,18 @@ float2 Map2AD(float2 map)
 
     sunDistance = abs(sunDistance);
     sunRadius = abs(sunRadius);
+    
+    map.y = maxh / map.y;
+    map.y = max(map.y,maxh);
 
-    float maxDistance = maxh * sunDistance * ingLightCount / (sunRadius - maxh * ingLightCount);
-    maxDistance = sqrt(maxDistance * maxDistance + maxh * maxh);
-    float a = (maxDistance + maxh) / maxDistance;
-    float b = 1.0 - a;
-    a *= maxh;
-    map.y = a / (map.y - b);
-    map.y = clamp(map.y,maxh,maxDistance);
 
-    float offsetedSunDistance = map.y * map.y + sunDistance * sunDistance - 2.0 * maxh * maxh;
-    float maxRange = sqrt(max(offsetedSunDistance - sunRadius * sunRadius,0.0));
-    offsetedSunDistance = sqrt(offsetedSunDistance);
-    maxRange /= offsetedSunDistance;
-    maxRange = maxRange * sqrt(max(map.y * map.y - maxh * maxh,0.0)) / map.y - sunRadius * maxh / (offsetedSunDistance * map.y);
-    maxRange = min(maxRange,1.0);
+    float maxRange = maxh + sunRadius;
+    maxRange *= maxRange;
+    maxRange = sqrt(sunDistance * sunDistance - maxRange);
+    float cameraPlanetTangent = sqrt(map.y * map.y - maxh * maxh);
+    maxRange += cameraPlanetTangent;
+    float camera2Sun = sqrt(maxRange * maxRange + sunRadius * sunRadius);
+    maxRange = (cameraPlanetTangent * maxRange - maxh * sunRadius) / (map.y * camera2Sun);
     map.x = sqrt(map.x);
     // map.x = sqrt(map.x);
     map.x = lerp(1.0, maxRange,map.x);
@@ -163,13 +167,29 @@ float4 Map2AHLW(float4 map)
     map.xy = fMap2AH(map.xy);
     // result.xy = Map2AH(result.xy);
     // result.w *= PI;
-    float2 deltaAHLW = float2(deltaL, deltaW);
-    map.zw *= float2(lengthL, lengthW);
+    float2 deltaLW = float2(deltaL, deltaW);
+    deltaLW *= 4.0 * deltaLW;
+    deltaLW = 1.0 / deltaLW;
+    float2 startLW = sqrt(deltaLW);
+    float2 scaleLW = 2.0 * startLW + 1.0;
+    float2 lengthLW = float2(lengthL, lengthW);
+
+    // ahlw.zw = (sqrt(abs(ahlw.zw) * scaleLW + deltaLW) - startLW) * sign(ahlw.zw);
+    // ahlw.zw += 1.0;
+    // ahlw.zw *= 0.5;
+    // ahlw.zw /= lengthLW;
+    // ahlw.zw -= (1.0 / lengthLW) - 1.0;
+    map.zw += (1.0 / lengthLW) - 1.0;
+    map.zw *= lengthLW;
     map.zw *= 2.0;
     map.zw -= 1.0;
-    map.zw *= sign(deltaAHLW) * (1.0 - exp(-abs(deltaAHLW)));
-    map.zw = -sign(map.zw)*log(max(0.0,1.0-abs(map.zw)));
-    map.zw /= -deltaAHLW;
+    float2 signLW = sign(map.zw);
+    map.zw = abs(map.zw) + startLW;
+    map.zw *= map.zw;
+    map.zw -= deltaLW;
+    map.zw /= scaleLW;
+    map.zw *= signLW;
+
     map.zw = clamp(map.zw,-1.0,1.0);
     return map;
 }
@@ -229,21 +249,18 @@ float2 AD2Map(float2 ad, out float2 valid, out float allValid)
 {
     sunDistance = abs(sunDistance);
     sunRadius = abs(sunRadius);
+    
+    valid.y = step(maxh, ad.y);
+    ad.y = max(ad.y,maxh);
 
-    float maxDistance = maxh * sunDistance * ingLightCount / (sunRadius - maxh * ingLightCount);
-    maxDistance = sqrt(maxDistance * maxDistance + maxh * maxh);
-    float a = (maxDistance + maxh) / maxDistance;
-    float b = 1.0 - a;
-    a *= maxh;
-    valid.y = step(maxh, ad.y) * step(ad.y,maxDistance);
-    ad.y = clamp(ad.y,maxh,maxDistance);
-
-    float offsetedSunDistance = ad.y * ad.y + sunDistance * sunDistance - 2.0 * maxh * maxh;
-    float maxRange = sqrt(max(offsetedSunDistance - sunRadius * sunRadius,0.0));
-    offsetedSunDistance = sqrt(offsetedSunDistance);
-    maxRange /= offsetedSunDistance;
-    maxRange = maxRange * sqrt(max(ad.y * ad.y - maxh * maxh,0.0)) / ad.y - sunRadius * maxh / (offsetedSunDistance * ad.y);
-    maxRange = min(maxRange,1.0);
+    float maxRange = maxh + sunRadius;
+    maxRange *= maxRange;
+    maxRange = sqrt(sunDistance * sunDistance - maxRange);
+    float cameraPlanetTangent = sqrt(ad.y * ad.y - maxh * maxh);
+    maxRange += cameraPlanetTangent;
+    float camera2Sun = sqrt(maxRange * maxRange + sunRadius * sunRadius);
+    maxRange = (cameraPlanetTangent * maxRange - maxh * sunRadius) / (ad.y * camera2Sun);
+    
     valid.x = step(maxRange, ad.y) * step(ad.y,1.0);
     ad.x = clamp(ad.x,maxRange,1.0);
 
@@ -251,7 +268,7 @@ float2 AD2Map(float2 ad, out float2 valid, out float allValid)
     ad.x *= ad.x;
     // ad.x *= ad.x;
 
-    ad.y = a / ad.y + b;
+    ad.y = maxh / ad.y;
 
 
     valid *= step(0.0,ad.xy) * step(ad.xy,1.0);
@@ -264,14 +281,20 @@ float2 AD2Map(float2 ad, out float2 valid, out float allValid)
 float4 AHLW2Map(float4 ahlw, out float4 valid, out float allValid)
 {
     float2 deltaLW = float2(deltaL, deltaW);
+    deltaLW *= 4.0 * deltaLW;
+    deltaLW = 1.0 / deltaLW;
+    float2 startLW = sqrt(deltaLW);
+    float2 scaleLW = 2.0 * startLW + 1.0;
+    float2 lengthLW = float2(lengthL, lengthW);
     valid.zw = step(-1.0,ahlw.zw) * step(ahlw.zw,1.0);
     ahlw.zw = clamp(ahlw.zw,-1.0,1.0);
-    ahlw.zw *= -deltaLW;
-    ahlw.zw = sign(ahlw.zw) * (1.0 - exp(-abs(ahlw.zw)));
-    ahlw.zw /= sign(deltaLW) * (1.0 - exp(-abs(deltaLW)));
+
+    ahlw.zw = (sqrt(abs(ahlw.zw) * scaleLW + deltaLW) - startLW) * sign(ahlw.zw);
     ahlw.zw += 1.0;
     ahlw.zw *= 0.5;
-    ahlw.zw /= float2(lengthL, lengthW);
+    ahlw.zw /= lengthLW;
+    ahlw.zw -= (1.0 / lengthLW) - 1.0;
+
     valid.zw *= step(ahlw.zw,1.0);
     ahlw.zw = saturate(ahlw.zw);
     // float outFlag = 1.0 - step(1.0, ahlw.z);
@@ -479,7 +502,6 @@ void IngAirDensity(in float viewZenith, in float height, out float reayleigh, ou
 
 float4 IngSunLight(float2 ad)
 {
-    float sunPerspective = asin(saturate(sunRadius/sunDistance));
     float3 baseDir = float3(ad.x,0,0);
     baseDir.y = sqrt(1.0 - ad.x * ad.x);
     float3 d1 = abs(baseDir);
@@ -490,6 +512,9 @@ float4 IngSunLight(float2 ad)
     );
     float4 result = 0.0;
     float3x3 mat = Crossfloat3x3_W2L(baseDir, d1);
+    float sunPerspective = ad.y * baseDir.y;
+    sunPerspective *= sunPerspective;
+    sunPerspective = asin(saturate(sunRadius/(ad.y * baseDir.x + sqrt(sunPerspective + sunDistance * sunDistance))));
     for(int i = 0; i < ingLightCount; i++)
     {
         float ratioI = (float(i) + 0.5) / ingLightCount;
@@ -664,7 +689,7 @@ struct AtmospherePropInfo
 {
     float4 ahlwS;
     float4 ahlwE;
-    float3 shadowReciverPos;
+    // float3 shadowReciverPos;
 };
 
 AtmospherePropInfo getAtmospherePropInfoByRelPos(inout float3 startPos, inout float3 endPos, inout float3 lightDir)

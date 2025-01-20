@@ -12,8 +12,6 @@ namespace RW_PlanetAtmosphere
         public bool renderingShadow = true;
         public float refraction     = 1;
         public float luminescen     = 0;
-        public float sunRadius      = 6960;
-        public float sunDistance    = 1495978.92f;
         public Vector2 ringFromTo   = new Vector2(100, 150);
         public Vector3 normal       = Vector3.up;
         public Vector3 postion      = Vector3.zero;
@@ -29,8 +27,6 @@ namespace RW_PlanetAtmosphere
         private static readonly int propId_refraction   = Shader.PropertyToID("refraction");
         private static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
         private static readonly int propId_ringFromTo   = Shader.PropertyToID("ringFromTo");
-        private static readonly int propId_sunRadius    = Shader.PropertyToID("sunRadius");
-        private static readonly int propId_sunDistance  = Shader.PropertyToID("sunDistance");
         private static readonly int propId_normal       = Shader.PropertyToID("normal");
         private static readonly int propId_ringMap      = Shader.PropertyToID("ringMap");
 
@@ -45,8 +41,6 @@ namespace RW_PlanetAtmosphere
                 renderingShadow = ringDef.renderingShadow;
                 refraction      = ringDef.refraction;
                 luminescen      = ringDef.luminescen ;   
-                sunRadius       = ringDef.sunRadius;   
-                sunDistance     = ringDef.sunDistance;   
                 ringFromTo      = ringDef.ringFromTo ;   
                 normal          = ringDef.normal;   
                 postion         = ringDef.postion;
@@ -64,8 +58,6 @@ namespace RW_PlanetAtmosphere
 
             material.SetFloat(propId_refraction, refraction);
             material.SetFloat(propId_luminescen, luminescen);
-            material.SetFloat(propId_sunRadius, sunRadius);
-            material.SetFloat(propId_sunDistance, sunDistance);
 
             material.SetVector(propId_ringFromTo, ringFromTo);
             material.SetVector(propId_normal, normal);
@@ -97,7 +89,7 @@ namespace RW_PlanetAtmosphere
             return false;
         }
         
-        public override void GenBaseColor(CommandBuffer commandBuffer, Camera camera, object signal)
+        public override void GenBaseColor(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
@@ -105,17 +97,21 @@ namespace RW_PlanetAtmosphere
             }
         }
 
-        public override void BlendShadow(CommandBuffer commandBuffer, TransparentObject target, Camera camera, object signal)
+        public override void BlendShadow(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
                 if (!renderingShadow || target == this) return;
+                TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
+                if (cloud != null && cloud.refraction <= 0) return;
+                TransparentObject_Ring ring = target as TransparentObject_Ring;
+                if (ring != null && ring.refraction <= 0) return;
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 0);
             }
         }
 
 
-        public override void BlendLumen(CommandBuffer commandBuffer, Camera camera, object signal)
+        public override void BlendLumen(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
@@ -125,11 +121,15 @@ namespace RW_PlanetAtmosphere
         }
 
 
-        public override void BlendTrans(CommandBuffer commandBuffer, TransparentObject target, Camera camera, object signal)
+        public override void BlendTrans(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
                 if (target != null && target.IsVolum) return;
+                TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
+                if (cloud != null && cloud.refraction <= 0 && cloud.luminescen <= 0) return;
+                TransparentObject_Ring ring = target as TransparentObject_Ring;
+                if (ring != null && ring.refraction <= 0 && cloud.luminescen <= 0) return;
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 1);
             }
         }

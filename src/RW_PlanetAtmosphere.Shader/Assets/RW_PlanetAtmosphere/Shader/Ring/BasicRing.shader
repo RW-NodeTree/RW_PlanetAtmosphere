@@ -5,8 +5,6 @@
         normal ("Ring Normal", Vector) = (0,1,0,0)
         refraction ("refraction", Float) = 1.0
         luminescen ("luminescen", Float) = 0.0
-        sunRadius("sun Radius", Float) = 6960
-        sunDistance("sun Distance", Float) = 1495978.92
     }
 
     SubShader {
@@ -44,12 +42,14 @@
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
                 float linearDepth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
+                float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 // float3 pos = i.worldSpaceNearPos;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
                 if(linearDepth >= 1) discard;
                 // pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
+                sun -= i.worldSpaceZeroPoint;
+                sun = normalize(sun);
 
                 float radius = max(ringFromTo.x,ringFromTo.y);
                 float maxDistance = radius * sunDistance * ingLightCount / (sunRadius - radius * ingLightCount);

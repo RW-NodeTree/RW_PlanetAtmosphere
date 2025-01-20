@@ -21,8 +21,8 @@ namespace RW_PlanetAtmosphere
 
         public static readonly int propId_gamma             = Shader.PropertyToID("gamma");
         public static readonly int propId_radius            = Shader.PropertyToID("radius");
-        public static readonly int propId_sunRadius         = Shader.PropertyToID("sunRadius");
-        public static readonly int propId_sunDistance       = Shader.PropertyToID("sunDistance");
+        // public static readonly int propId_sunRadius         = Shader.PropertyToID("sunRadius");
+        // public static readonly int propId_sunDistance       = Shader.PropertyToID("sunDistance");
         public static readonly int propId_sunFlareTexture   = Shader.PropertyToID("sunFlareTexture");
         public static readonly int propId_backgroundTexture = Shader.PropertyToID("backgroundTexture");
 
@@ -75,8 +75,6 @@ namespace RW_PlanetAtmosphere
                 if(shader)
                 {
                     materialSunFlear = new Material(shader);
-                    materialSunFlear.SetFloat(propId_sunRadius, AtmosphereSettings.sunRadius);
-                    materialSunFlear.SetFloat(propId_sunDistance, AtmosphereSettings.sunDistance);
                     materialSunFlear.SetTexture(propId_sunFlareTexture, sunFlareTexture);
                 }
                 shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/Tonemaps.shader");
@@ -192,15 +190,16 @@ namespace RW_PlanetAtmosphere
                     }
                     void AfterTrans(CommandBuffer cb)
                     {
-                        if (materialSunFlear)
-                        {
-                            cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
-                            cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
-                        }
+                        if (!materialSunFlear) return;
+                        cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
+                        cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                     }
+                    TransparentObject.sunRadius = AtmosphereSettings.sunRadius;
+                    TransparentObject.sunDistance = AtmosphereSettings.sunDistance;
                     TransparentObject.DrawTransparentObjects(AtmosphereSettings.objects, commandBufferAfterAlpha, WorldCameraManager.WorldCamera, BeforeShadow, BackgroundBlendLumen, AfterTrans);
                     if (materialSunFlear)
                     {
+                        commandBufferAfterAlpha.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
                         commandBufferAfterAlpha.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 1);
                         commandBufferAfterAlpha.ReleaseTemporaryRT(propId_backgroundTexture);
                     }

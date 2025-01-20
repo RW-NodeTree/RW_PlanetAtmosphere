@@ -8,7 +8,7 @@ using UnityEngine.UIElements;
 namespace RW_PlanetAtmosphere
 {
     [CreateAssetMenu(fileName = "AtmosphereDef", menuName = "Scriptable Object/AtmosphereDef", order = 0)]
-    public class AtmosphereDef : Def
+    public class AtmosphereDef : RendererDef
     {
         public Vector2Int translucentLUTSize    = new Vector2Int(256, 256);
         public Vector2Int outSunLightLUTSize    = new Vector2Int(256, 256);
@@ -22,8 +22,6 @@ namespace RW_PlanetAtmosphere
         public float deltaW                     = 2;
         public float lengthL                    = 1;
         public float lengthW                    = 1;
-        public float sunRadius                  = 6960;
-        public float sunDistance                = 1495978.92f;
         public float minh                       = 63.71393f;
         public float maxh                       = 64.21393f;
         public float H_Reayleigh                = 0.08f;

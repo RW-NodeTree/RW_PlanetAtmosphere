@@ -17,8 +17,6 @@ namespace RW_PlanetAtmosphere
         //public float flowDir            = 0;
         public float radius             = 63.76393f;
         public float diffusePower       = 16;
-        //public float sunRadius          = 6960;
-        //public float sunDistance        = 1495978.92f;
         public Vector3 normal           = Vector3.up;
         public Vector3 tangent          = Vector3.right;
         public Vector3 postion          = Vector3.zero;
@@ -43,9 +41,6 @@ namespace RW_PlanetAtmosphere
         private static readonly int propId_normal       = Shader.PropertyToID("normal");
         private static readonly int propId_tangent      = Shader.PropertyToID("tangent");
         private static readonly int propId_cloudTexture = Shader.PropertyToID("cloudTexture");
-        //private static readonly int propId_sunRadius    = Shader.PropertyToID("sunRadius");
-        //private static readonly int propId_sunDistance  = Shader.PropertyToID("sunDistance");
-        //private static int propId_noiseTexture = Shader.PropertyToID("noiseTexture");
 
         #endregion
 
@@ -83,8 +78,6 @@ namespace RW_PlanetAtmosphere
             //material.SetFloat(propId_flowDir, flowDir);
             material.SetFloat(propId_radius, radius);
             material.SetFloat(propId_diffusePower, diffusePower);
-            //material.SetFloat(propId_sunRadius, sunRadius);
-            //material.SetFloat(propId_sunDistance, sunDistance);
 
             material.SetVector(propId_normal, normal);
             material.SetVector(propId_tangent, tangent);
@@ -119,7 +112,7 @@ namespace RW_PlanetAtmosphere
             return false;
         }
 
-        public override void GenBaseColor(CommandBuffer commandBuffer, Camera camera, object signal)
+        public override void GenBaseColor(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
@@ -135,11 +128,15 @@ namespace RW_PlanetAtmosphere
             }
         }
 
-        public override void BlendShadow(CommandBuffer commandBuffer, TransparentObject target, Camera camera, object signal)
+        public override void BlendShadow(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
                 if (!renderingShadow || target == this || target is TransparentObject_Atmosphere) return;
+                TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
+                if (cloud != null && cloud.refraction <= 0) return;
+                TransparentObject_Ring ring = target as TransparentObject_Ring;
+                if (ring != null && ring.refraction <= 0) return;
                 bool signalTranslated = (bool)signal;
                 if (signalTranslated)
                 {
@@ -149,7 +146,7 @@ namespace RW_PlanetAtmosphere
         }
 
 
-        public override void BlendLumen(CommandBuffer commandBuffer, Camera camera, object signal)
+        public override void BlendLumen(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
@@ -167,11 +164,15 @@ namespace RW_PlanetAtmosphere
         }
 
 
-        public override void BlendTrans(CommandBuffer commandBuffer, TransparentObject target, Camera camera, object signal)
+        public override void BlendTrans(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
                 if(target != null && target.IsVolum) return;
+                TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
+                if (cloud != null && cloud.refraction <= 0 && cloud.luminescen <= 0) return;
+                TransparentObject_Ring ring = target as TransparentObject_Ring;
+                if (ring != null && ring.refraction <= 0 && cloud.luminescen <= 0) return;
                 bool signalTranslated = (bool)signal;
                 if (signalTranslated)
                 {

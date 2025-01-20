@@ -22,8 +22,6 @@ namespace RW_PlanetAtmosphere
         public float deltaW                     = 2;
         public float lengthL                    = 1;
         public float lengthW                    = 1;
-        public float sunRadius                  = 6960;
-        public float sunDistance                = 1495978.92f;
         public float minh                       = 63.71393f;
         public float maxh                       = 64.21393f;
         public float H_Reayleigh                = 0.08f;
@@ -48,6 +46,13 @@ namespace RW_PlanetAtmosphere
         private RenderTexture scatterLUT_Reayleigh = null;
         private RenderTexture scatterLUT_Mie = null;
 
+
+        private readonly Dictionary<(long distanceID, float sunRadius), (RenderTexture outSunLightLUT, RenderTexture inSunLightLUT, RenderTexture scatterLUT_Reayleigh, RenderTexture scatterLUT_Mie)> distanceLUTs = new Dictionary<(long distanceID, float sunRadius), (RenderTexture outSunLightLUT, RenderTexture inSunLightLUT, RenderTexture scatterLUT_Reayleigh, RenderTexture scatterLUT_Mie)>();
+
+        // private bool forceReset = true;
+        // private object currentCoveredSignal = null;
+        // private TransparentObject currentCoveredObject = null;
+
         private static Shader AtmosphereLUT = null;
         private static Shader TranslucentGenrater = null;
         private static Shader OutSunLightLUTGenrater = null;
@@ -63,8 +68,6 @@ namespace RW_PlanetAtmosphere
         private static readonly int propId_deltaW                = Shader.PropertyToID("deltaW");
         private static readonly int propId_lengthL               = Shader.PropertyToID("lengthL");
         private static readonly int propId_lengthW               = Shader.PropertyToID("lengthW");
-        private static readonly int propId_sunRadius             = Shader.PropertyToID("sunRadius");
-        private static readonly int propId_sunDistance           = Shader.PropertyToID("sunDistance");
         private static readonly int propId_minh                  = Shader.PropertyToID("minh");
         private static readonly int propId_maxh                  = Shader.PropertyToID("maxh");
         private static readonly int propId_H_Reayleigh           = Shader.PropertyToID("H_Reayleigh");
@@ -83,6 +86,9 @@ namespace RW_PlanetAtmosphere
         private static readonly int propId_inSunLightLUT         = Shader.PropertyToID("inSunLightLUT");
         private static readonly int propId_scatterLUT_Reayleigh  = Shader.PropertyToID("scatterLUT_Reayleigh");
         private static readonly int propId_scatterLUT_Mie        = Shader.PropertyToID("scatterLUT_Mie");
+        // private static readonly int propId_ahlwStartInfo         = Shader.PropertyToID("ahlwStartInfo");
+        // private static readonly int propId_ahlwEndInfo           = Shader.PropertyToID("ahlwEndInfo");
+        // private static readonly int propId_startDepthInfo        = Shader.PropertyToID("startDepthInfo");
 
         #endregion
 
@@ -102,8 +108,6 @@ namespace RW_PlanetAtmosphere
                 deltaW              = atmosphereDef.deltaW;
                 lengthL             = atmosphereDef.lengthL;
                 lengthW             = atmosphereDef.lengthW;
-                sunRadius           = atmosphereDef.sunRadius;
-                sunDistance         = atmosphereDef.sunDistance;
                 minh                = atmosphereDef.minh;
                 maxh                = atmosphereDef.maxh;
                 H_Reayleigh         = atmosphereDef.H_Reayleigh;
@@ -140,8 +144,6 @@ namespace RW_PlanetAtmosphere
             material.SetFloat(propId_deltaW, deltaW);
             material.SetFloat(propId_lengthL, lengthL);
             material.SetFloat(propId_lengthW, lengthW);
-            material.SetFloat(propId_sunRadius, sunRadius);
-            material.SetFloat(propId_sunDistance, sunDistance);
             material.SetFloat(propId_minh, minh);
             material.SetFloat(propId_maxh, maxh);
             material.SetFloat(propId_H_Reayleigh, H_Reayleigh);
@@ -210,6 +212,23 @@ namespace RW_PlanetAtmosphere
                     materialScatterGenrater
                     )
                 {
+                    if(needUpdate)
+                    {
+                        foreach(var value in distanceLUTs.Values)
+                        {
+                            if(value.inSunLightLUT) GameObject.Destroy(value.inSunLightLUT);
+                            if(value.outSunLightLUT) GameObject.Destroy(value.outSunLightLUT);
+                            if(value.scatterLUT_Mie) GameObject.Destroy(value.scatterLUT_Mie);
+                            if(value.scatterLUT_Reayleigh) GameObject.Destroy(value.scatterLUT_Reayleigh);
+                        }
+                        distanceLUTs.Clear();
+                    }
+                    long id = (long)Math.Round(Math.Log(sunDistance, 1.0625f));
+                    bool needUpdateLight = !distanceLUTs.TryGetValue((id, sunRadius), out var luts);
+                    outSunLightLUT = luts.outSunLightLUT;
+                    inSunLightLUT = luts.inSunLightLUT;
+                    scatterLUT_Reayleigh = luts.scatterLUT_Reayleigh;
+                    scatterLUT_Mie = luts.scatterLUT_Mie;
                     if(IsVolum)
                     {
                         if (!translucentLUT)
@@ -219,14 +238,14 @@ namespace RW_PlanetAtmosphere
                                 // enableRandomWrite = true,
                                 useMipMap = false,
                                 format = RenderTextureFormat.ARGBFloat,
-                                wrapMode = TextureWrapMode.Clamp
+                                wrapMode = TextureWrapMode.Clamp,
                             };
                             translucentLUT.Create();
                         }
-                        Vector2Int scatterLUTSize2D = new Vector2Int((int)scatterLUTSize.x * (int)scatterLUTSize.z, (int)scatterLUTSize.y * (int)scatterLUTSize.w);
+                        Vector2Int scatterLutSize2D = new Vector2Int((int)scatterLUTSize.x * (int)scatterLUTSize.z, (int)scatterLUTSize.y * (int)scatterLUTSize.w);
                         if (!scatterLUT_Reayleigh)
                         {
-                            scatterLUT_Reayleigh = new RenderTexture(scatterLUTSize2D.x, scatterLUTSize2D.y, 0)
+                            scatterLUT_Reayleigh = new RenderTexture(scatterLutSize2D.x, scatterLutSize2D.y, 0)
                             {
                                 // enableRandomWrite = true,
                                 useMipMap = false,
@@ -237,7 +256,7 @@ namespace RW_PlanetAtmosphere
                         }
                         if (!scatterLUT_Mie)
                         {
-                            scatterLUT_Mie = new RenderTexture(scatterLUTSize2D.x, scatterLUTSize2D.y, 0)
+                            scatterLUT_Mie = new RenderTexture(scatterLutSize2D.x, scatterLutSize2D.y, 0)
                             {
                                 // enableRandomWrite = true,
                                 useMipMap = false,
@@ -269,34 +288,36 @@ namespace RW_PlanetAtmosphere
                         };
                         outSunLightLUT.Create();
                     }
+                    distanceLUTs[(id, sunRadius)] = (outSunLightLUT, inSunLightLUT, scatterLUT_Reayleigh, scatterLUT_Mie);
 
-                    if (needUpdate)
+                    if (needUpdate || needUpdateLight)
                     {
-                        needUpdate = false;
-                        if (IsVolum)
+                        CommandBuffer blitBuffer = new CommandBuffer();
+                        if (IsVolum && needUpdate)
                         {
                             UpdateMaterialLUT(materialTranslucentGenrater);
                             UpdateMaterialStatic(materialTranslucentGenrater);
-                            Graphics.Blit(null, translucentLUT, materialTranslucentGenrater);
+                            blitBuffer.Blit(null, translucentLUT, materialTranslucentGenrater);
                         }
+                        needUpdate = false;
 
                         UpdateMaterialLUT(materialInSunLightLUTGenrater);
                         UpdateMaterialStatic(materialInSunLightLUTGenrater);
-                        Graphics.Blit(null, inSunLightLUT, materialInSunLightLUTGenrater);
+                        blitBuffer.Blit(null, inSunLightLUT, materialInSunLightLUTGenrater);
 
                         UpdateMaterialLUT(materialOutSunLightLUTGenrater);
                         UpdateMaterialStatic(materialOutSunLightLUTGenrater);
-                        Graphics.Blit(null, outSunLightLUT, materialOutSunLightLUTGenrater);
+                        blitBuffer.Blit(null, outSunLightLUT, materialOutSunLightLUTGenrater);
 
                         if (IsVolum)
                         {
                             UpdateMaterialLUT(materialScatterGenrater);
                             UpdateMaterialStatic(materialScatterGenrater);
-                            RenderTexture actived = RenderTexture.active;
-                            Graphics.SetRenderTarget(new RenderBuffer[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, scatterLUT_Reayleigh.depthBuffer);
-                            Graphics.Blit(null, materialScatterGenrater);
-                            RenderTexture.active = actived;
+                            blitBuffer.SetRenderTarget(new RenderTargetIdentifier[] { scatterLUT_Reayleigh.colorBuffer, scatterLUT_Mie.colorBuffer }, scatterLUT_Reayleigh.depthBuffer);
+                            blitBuffer.Blit(null,new RenderTargetIdentifier(BuiltinRenderTextureType.CurrentActive), materialScatterGenrater);
                         }
+                        
+                        Graphics.ExecuteCommandBuffer(blitBuffer);
 
                         UpdateMaterialLUT(materialAtmosphereLUT);
                         UpdateMaterialDyn(materialAtmosphereLUT);
@@ -309,34 +330,41 @@ namespace RW_PlanetAtmosphere
             return false;
         }
 
-        public override void GenBaseColor(CommandBuffer commandBuffer, Camera camera, object signal)
+        public override void GenBaseColor(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if(initObject())
             {
                 if (!IsVolum) return;
-                //commandBuffer.ClearRenderTarget(false, true,new Color(0,0,0,1));
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 2);
             }
         }
 
-        public override void BlendShadow(CommandBuffer commandBuffer, TransparentObject target, Camera camera, object signal)
+        public override void BlendShadow(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
+                TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
+                if (cloud != null && cloud.refraction <= 0) return;
+                TransparentObject_Ring ring = target as TransparentObject_Ring;
+                if (ring != null && ring.refraction <= 0) return;
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 0);
             }
         }
 
-        public override void BlendLumen(CommandBuffer commandBuffer, Camera camera, object signal)
+        public override void BlendLumen(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             initObject();
         }
 
-        public override void BlendTrans(CommandBuffer commandBuffer, TransparentObject target, Camera camera, object signal)
+        public override void BlendTrans(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (initObject())
             {
                 if (!IsVolum) return;
+                TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
+                if (cloud != null && cloud.refraction <= 0 && cloud.luminescen <= 0) return;
+                TransparentObject_Ring ring = target as TransparentObject_Ring;
+                if (ring != null && ring.refraction <= 0 && cloud.luminescen <= 0) return;
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 1);
             }
         }

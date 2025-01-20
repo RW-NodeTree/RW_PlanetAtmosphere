@@ -6,8 +6,6 @@
         opacity ("opacity", Range(0, 1)) = 1.0
         refraction ("refraction", Float) = 1.0
         luminescen ("luminescen", Float) = 0.0
-        // sunRadius("sun Radius", Float) = 6960
-        // sunDistance("sun Distance", Float) = 1495978.92
         diffusePower ("diffuse power", Float) = 16.0
         // flowDir ("flow dir", Float) = 0.0
         radius ("cloud layer radius", Float) = 63.76393
@@ -24,7 +22,7 @@
 
     #include "../BaseInc.cginc"
     #include "../PBAttach.cginc"
-    // #include "../PBSky.cginc"
+    #include "../PBSky.cginc"
 
 
     sampler2D cloudTexture;
@@ -85,10 +83,12 @@
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
                 float linearDepth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
+                float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
                 if(linearDepth >= 1) discard;
                 fargPos -= i.worldSpaceZeroPoint;
+                sun -= i.worldSpaceZeroPoint;
+                sun = normalize(sun);
         
                 float4 cloudColorA;
                 float4 cloudPosA;
@@ -211,12 +211,14 @@
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
                 float linearDepth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
+                float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 float3 eye = i.worldSpaceFarPos - i.worldSpaceNearPos;
                 float3 pos = i.worldSpaceNearPos;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
                 pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
+                sun -= i.worldSpaceZeroPoint;
+                sun = normalize(sun);
         
                 float4 cloudColorA;
                 float4 cloudPosA;
@@ -254,12 +256,14 @@
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
                 float linearDepth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
+                float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 float3 eye = i.worldSpaceFarPos - i.worldSpaceNearPos;
                 float3 pos = i.worldSpaceNearPos;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
                 pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
+                sun -= i.worldSpaceZeroPoint;
+                sun = normalize(sun);
         
                 float4 cloudColorA;
                 float4 cloudPosA;

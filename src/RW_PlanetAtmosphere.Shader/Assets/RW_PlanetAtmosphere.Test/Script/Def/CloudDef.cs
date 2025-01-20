@@ -8,18 +8,14 @@ using UnityEngine.UIElements;
 namespace RW_PlanetAtmosphere
 {
     [CreateAssetMenu(fileName = "CloudDef", menuName = "Scriptable Object/CloudDef", order = 1)]
-    public class CloudDef : Def
+    public class CloudDef : RendererDef
     {
         public bool renderingShadow     = true;
-        public float refraction         = 2;
-        public float luminescen         = 0;
         public float opacity            = 1;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
         public float radius             = 63.76393f;
         public float diffusePower       = 16;
-        //public float sunRadius          = 6960;
-        //public float sunDistance        = 1495978.92f;
         public Vector3 normal           = Vector3.up;
         public Vector3 tangent          = Vector3.right;
         public Vector3 postion          = Vector3.zero;

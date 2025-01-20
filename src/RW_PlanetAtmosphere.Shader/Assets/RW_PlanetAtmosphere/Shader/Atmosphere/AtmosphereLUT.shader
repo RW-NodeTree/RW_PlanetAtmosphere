@@ -6,8 +6,6 @@
         deltaW ("scatterLUT light curve max derivative(p)", Range(1.0,20.0)) = 2.0
         lengthL ("scatterLUT light curve max range(v)", Range(0.5,1.0)) = 1.0
         lengthW ("scatterLUT light curve max range(p)", Range(0.5,1.0)) = 1.0
-        sunRadius("sun Radius", Float) = 6960
-        sunDistance("sun Distance", Float) = 1495978.92
         exposure ("exposure", Float) = 16.0
         minh ("planet ground radius", Float) = 63.71393
         maxh ("planet sky radius", float) = 64.21393
@@ -58,12 +56,14 @@
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
                 float linearDepth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
+                float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 float3 pos = _WorldSpaceCameraPos.xyz;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
                 if(linearDepth >= 1) discard;
                 pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
+                sun -= i.worldSpaceZeroPoint;
+                sun = normalize(sun);
 
                 AtmospherePropInfo infos = getAtmospherePropInfoByRelPos(pos,fargPos,sun);
                 // if(infos.ahlwS.y > maxh) discard;
@@ -93,11 +93,13 @@
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
                 float linearDepth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
+                float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 float3 pos = i.worldSpaceNearPos;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
                 pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
+                sun -= i.worldSpaceZeroPoint;
+                sun = normalize(sun);
 
                 AtmospherePropInfo infos = getAtmospherePropInfoByRelPos(pos,fargPos,sun);
                 if(infos.ahlwS.y > maxh) discard;
@@ -131,11 +133,13 @@
                 // float4 color = UNITY_SHADOW_ATTENUATION(i,i.world);
                 float depth;
                 float linearDepth;
-                float3 sun = normalize(_WorldSpaceLightPos0.xyz);
+                float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 float3 pos = i.worldSpaceNearPos;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
                 pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
+                sun -= i.worldSpaceZeroPoint;
+                sun = normalize(sun);
 
                 AtmospherePropInfo infos = getAtmospherePropInfoByRelPos(pos,fargPos,sun);
                 if(infos.ahlwS.y > maxh) discard;
@@ -170,3 +174,4 @@
 
     }
 }
+
