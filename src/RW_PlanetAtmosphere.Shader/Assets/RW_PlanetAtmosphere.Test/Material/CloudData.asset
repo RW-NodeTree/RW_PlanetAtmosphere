@@ -15,9 +15,10 @@ MonoBehaviour:
   renderingShadow: 1
   refraction: 2
   luminescen: 0
+  opacity: 1
   radius: 63.76393
   diffusePower: 16
   normal: {x: 0, y: 1, z: 0}
-  tangent: {x: 1, y: 0, z: 0}
+  tangent: {x: 0, y: 0, z: 1}
   postion: {x: 0, y: 0, z: 0}
   cloudTexturePath: cloud

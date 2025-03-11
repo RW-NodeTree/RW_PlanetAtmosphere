@@ -20,6 +20,7 @@ namespace RW_PlanetAtmosphere
             ACESTonemap = 3,
             ACESTonemap2 = 4,
             LottesTonemap = 5,
+            AGXTonemap = 6,
         }
 
         public float gamma = 1;

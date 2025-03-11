@@ -76,8 +76,8 @@ void getColorFromSphere(
         d3 = normalize(mul(mat,crossPointB.xyz));
         // resultA = tex2Dlod(sphereMap,float4(atan2(d2.z, d2.y), acos(clamp(-d2.x,-1.0,1.0)),0,0));
         // resultB = tex2Dlod(sphereMap,float4(atan2(d3.z, d3.y), acos(clamp(-d3.x,-1.0,1.0)),0,0));
-        resultA = sampleSphere(float2(0.5 * atan2(d2.z, d2.y), acos(clamp(-d2.x,-1.0,1.0))) * UNITY_INV_PI);
-        resultB = sampleSphere(float2(0.5 * atan2(d3.z, d3.y), acos(clamp(-d3.x,-1.0,1.0))) * UNITY_INV_PI);
+        resultA = sampleSphere(float2(0.5 * atan2(d2.y, d2.z), acos(clamp(-d2.x,-1.0,1.0))) * UNITY_INV_PI);
+        resultB = sampleSphere(float2(0.5 * atan2(d3.y, d3.z), acos(clamp(-d3.x,-1.0,1.0))) * UNITY_INV_PI);
         resultA *= crossPointA.w;
         resultB *= crossPointB.w;
     }

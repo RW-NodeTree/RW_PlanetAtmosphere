@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45e0ff12f03312e4496454a4137178ee, type: 3}
+  m_Name: Titan
+  m_EditorClassIdentifier: 
+  translucentLUTSize: {x: 256, y: 256}
+  outSunLightLUTSize: {x: 256, y: 256}
+  inSunLightLUTSize: {x: 256, y: 256}
+  scatterLUTSize: {x: 128, y: 32, z: 8, w: 32}
+  postion: {x: 0, y: 0, z: 0}
+  exposure: 16
+  deltaL: 8
+  deltaW: 2
+  lengthL: 1
+  lengthW: 1
+  minh: 25.75
+  maxh: 45.75
+  H_Reayleigh: 2.15
+  H_Mie: 0.5
+  H_OZone: 5
+  D_OZone: 0.5
+  reayleigh_scatter: {x: 2.144197, y: 5.8354053, z: 14.377999, w: 54.20512}
+  molecule_absorb: {x: 0, y: 0, z: 0, w: 0}
+  OZone_absorb: {x: 0, y: 0, z: 0, w: 0}
+  mie_scatter: {x: 3.996, y: 3.996, z: 3.996, w: 3.996}
+  mie_absorb: {x: 4.44, y: 4.44, z: 4.44, w: 4.44}
+  mie_eccentricity: {x: 0.618, y: 0.618, z: 0.618, w: 0.618}
