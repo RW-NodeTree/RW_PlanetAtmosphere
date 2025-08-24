@@ -14,4 +14,9 @@
 		<xpath>*/GlobalWorldDrawLayerDef[worldDrawLayer="WorldLayer_Sun" or worldDrawLayer="WorldLayer_Glow"]</xpath>
 	</Operation>
 
+	<Operation Class="PatchOperationRemove">
+		<success>Always</success>
+		<xpath>*/PlanetLayerDef/worldDrawLayers/[.="WorldDrawLayer_Glow" or .="WorldDrawLayer_Clouds"]</xpath>
+	</Operation>
+
 </Patch>

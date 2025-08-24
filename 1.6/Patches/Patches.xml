@@ -11,7 +11,17 @@
 
 	<Operation Class="PatchOperationRemove">
 		<success>Always</success>
-		<xpath>*/GlobalWorldDrawLayerDef[worldDrawLayer="WorldDrawLayer_Clouds" or worldDrawLayer="WorldDrawLayer_Glow or worldDrawLayer="GlobalDrawLayer_Sun"]</xpath>
+		<xpath>*/GlobalWorldDrawLayerDef[worldDrawLayer="GlobalDrawLayer_Sun"]</xpath>
+	</Operation>
+
+	<Operation Class="PatchOperationRemove">
+		<success>Always</success>
+		<xpath>*/PlanetLayerDef/worldDrawLayers/[.="WorldDrawLayer_Glow"]</xpath>
+	</Operation>
+
+	<Operation Class="PatchOperationRemove">
+		<success>Always</success>
+		<xpath>*/PlanetLayerDef/worldDrawLayers/[.="WorldDrawLayer_Clouds"]</xpath>
 	</Operation>
 
 </Patch>
