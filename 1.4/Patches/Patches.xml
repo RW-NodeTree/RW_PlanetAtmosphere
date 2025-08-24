@@ -8,10 +8,4 @@
 			<texture>TerrainReplace/Water</texture>
 		</value>
 	</Operation>
-
-	<Operation Class="PatchOperationRemove">
-		<success>Always</success>
-		<xpath>*/GlobalWorldDrawLayerDef[worldDrawLayer="WorldLayer_Sun" or worldDrawLayer="WorldLayer_Glow"]</xpath>
-	</Operation>
-
 </Patch>
