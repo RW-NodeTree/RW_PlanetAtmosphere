@@ -189,7 +189,10 @@ namespace RW_PlanetAtmosphere
                         {
                             Color color = new Color(AtmosphereSettings.luminescen, AtmosphereSettings.luminescen, AtmosphereSettings.luminescen, 0);
 #else
-                        targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Math.Max(AtmosphereSettings.luminescen, WorldRendererUtility.WorldBackgroundNow ? 0 : 1), ref luminescenVel, 0.15f);
+                        if(ModsConfig.OdysseyActive)
+                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Math.Max(AtmosphereSettings.luminescen, WorldRendererUtility.WorldBackgroundNow ? 0 : 1), ref luminescenVel, 0.15f);
+                        else
+                            targetLuminescen = AtmosphereSettings.luminescen;
                         if (targetLuminescen != 0)
                         {
                             Color color = new Color(targetLuminescen, targetLuminescen, targetLuminescen, 0);

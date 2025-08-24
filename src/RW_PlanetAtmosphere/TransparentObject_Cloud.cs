@@ -83,7 +83,10 @@ namespace RW_PlanetAtmosphere
 #if V13 || V14 || V15
             material.SetFloat(propId_opacity, opacity);
 #else
-            targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Min(opacity, WorldRendererUtility.WorldBackgroundNow ? 1 : 0), ref opacityVel, 0.15f);
+            if (ModsConfig.OdysseyActive)
+                targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Min(opacity, WorldRendererUtility.WorldBackgroundNow ? 1 : 0), ref opacityVel, 0.15f);
+            else
+                targetOpacity = opacity;
             material.SetFloat(propId_opacity, targetOpacity);
 #endif
             //material.SetFloat(propId_playRange, playRange);
