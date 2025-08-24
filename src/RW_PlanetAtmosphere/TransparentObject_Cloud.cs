@@ -5,11 +5,17 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UIElements;
 using Verse;
+using RimWorld.Planet;
 
 namespace RW_PlanetAtmosphere
 {
     public class TransparentObject_Cloud : TransparentObject
     {
+#if V13 || V14 || V15
+#else
+        float opacityVel = 0;
+        float targetOpacity = 0;
+#endif
         public bool renderingShadow     = true;
         public float refraction         = 2;
         public float luminescen         = 0;
@@ -74,7 +80,12 @@ namespace RW_PlanetAtmosphere
 
             material.SetFloat(propId_refraction, refraction);
             material.SetFloat(propId_luminescen, luminescen);
+#if V13 || V14 || V15
             material.SetFloat(propId_opacity, opacity);
+#else
+            targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Min(opacity, WorldRendererUtility.WorldBackgroundNow ? 1 : 0), ref opacityVel, 0.15f);
+            material.SetFloat(propId_opacity, targetOpacity);
+#endif
             //material.SetFloat(propId_playRange, playRange);
             //material.SetFloat(propId_flowDir, flowDir);
             material.SetFloat(propId_radius, radius);

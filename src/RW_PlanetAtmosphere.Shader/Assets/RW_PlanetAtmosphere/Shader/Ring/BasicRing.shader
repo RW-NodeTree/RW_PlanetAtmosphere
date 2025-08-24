@@ -3,6 +3,7 @@
         ringMap ("Map", 2D) = "gary" {}
         ringFromTo ("Ring From To", Vector) = (110,130,0,0)
         normal ("Ring Normal", Vector) = (0,1,0,0)
+        opacity ("opacity", Range(0, 1)) = 1.0
         refraction ("refraction", Float) = 1.0
         luminescen ("luminescen", Float) = 0.0
     }
@@ -16,10 +17,13 @@
 
         float refraction;
         float luminescen;
+        float opacity;
 
         float4 sampleRing(float u)
         {
-            return sampleRingBasic(u);
+            float4 result = sampleRingBasic(u);
+            result.a *= opacity;
+            return result;
         }
         ENDCG
         

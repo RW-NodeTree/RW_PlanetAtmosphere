@@ -5,12 +5,19 @@ using System.Collections.Generic;
 using System.Collections;
 using UnityEngine.UIElements;
 using Verse;
+using RimWorld.Planet;
 
 namespace RW_PlanetAtmosphere
 {
     public class TransparentObject_Ring : TransparentObject
     {
+#if V13 || V14 || V15
+#else
+        float opacityVel = 0;
+        float targetOpacity = 1;
+#endif
         public bool renderingShadow = true;
+        public float opacity        = 1;
         public float refraction     = 1;
         public float luminescen     = 0;
         public Vector2 ringFromTo   = new Vector2(100, 150);
@@ -27,6 +34,7 @@ namespace RW_PlanetAtmosphere
 
         private static readonly int propId_refraction   = Shader.PropertyToID("refraction");
         private static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
+        private static readonly int propId_opacity      = Shader.PropertyToID("opacity");
         private static readonly int propId_ringFromTo   = Shader.PropertyToID("ringFromTo");
         private static readonly int propId_normal       = Shader.PropertyToID("normal");
         private static readonly int propId_ringMap      = Shader.PropertyToID("ringMap");
@@ -41,8 +49,9 @@ namespace RW_PlanetAtmosphere
             {
                 renderingShadow = ringDef.renderingShadow;
                 refraction      = ringDef.refraction;
-                luminescen      = ringDef.luminescen ;   
-                ringFromTo      = ringDef.ringFromTo ;   
+                luminescen      = ringDef.luminescen;
+                opacity         = ringDef.opacity;
+                ringFromTo      = ringDef.ringFromTo;
                 normal          = ringDef.normal;   
                 postion         = ringDef.postion;
                 ringMapPath     = ringDef.ringMapPath;
@@ -62,6 +71,12 @@ namespace RW_PlanetAtmosphere
 
             material.SetVector(propId_ringFromTo, ringFromTo);
             material.SetVector(propId_normal, normal);
+#if V13 || V14 || V15
+            material.SetFloat(propId_opacity, opacity);
+#else
+            targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Min(opacity, WorldRendererUtility.WorldBackgroundNow ? 1 : 0), ref opacityVel, 0.15f);
+            material.SetFloat(propId_opacity, targetOpacity);
+#endif
 
             if (ringMap) material.SetTexture(propId_ringMap, ringMap);
         }
@@ -140,6 +155,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, "renderingShadow".Translate(),width,outFromTo);
             HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref opacity, "opacity".Translate(), width, outFromTo, 6);
             HelperMethod_GUI.GUIVec2(ref posY, ref ringFromTo, "ringFromTo".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIVec3(ref posY, ref normal, "normal".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIVec3(ref posY, ref postion, "postion".Translate(),width,outFromTo,6);
@@ -153,6 +169,7 @@ namespace RW_PlanetAtmosphere
             Scribe_Values.Look(ref ringMapPath,"ringMapPath","Ring/2k_saturn_ring_alpha",true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction,"refraction",6,1,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen,"luminescen",6,0,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref opacity, "opacity", 6, 1, true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref ringFromTo,"ringFromTo",6,new Vector2(100, 150) * AtmosphereSettings.scale,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref normal,"normal",6,Vector3.up,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion,"postion",6,Vector3.zero,true);
