@@ -111,7 +111,7 @@ namespace RW_PlanetAtmosphere
             else
 #endif
                 targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Min(opacity, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? 1 : 0), ref opacityVel, 0.15f);
-            if (initObject())
+            if (initObject() && targetOpacity > 0)
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 2);
             }
@@ -124,7 +124,7 @@ namespace RW_PlanetAtmosphere
             if (cloud != null && cloud.refraction <= 0) return;
             TransparentObject_Ring ring = target as TransparentObject_Ring;
             if (ring != null && ring.refraction <= 0) return;
-            if (initObject())
+            if (initObject() && targetOpacity > 0)
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 0);
             }
@@ -134,7 +134,7 @@ namespace RW_PlanetAtmosphere
         public override void BlendLumen(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             if (luminescen <= 0) return;
-            if (initObject())
+            if (initObject() && targetOpacity > 0)
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 3);
             }
@@ -148,7 +148,7 @@ namespace RW_PlanetAtmosphere
             if (cloud != null && cloud.refraction <= 0 && cloud.luminescen <= 0) return;
             TransparentObject_Ring ring = target as TransparentObject_Ring;
             if (ring != null && ring.refraction <= 0 && cloud.luminescen <= 0) return;
-            if (initObject())
+            if (initObject() && targetOpacity > 0)
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 1);
             }
