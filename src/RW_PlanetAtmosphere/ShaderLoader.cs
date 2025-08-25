@@ -136,7 +136,6 @@ namespace RW_PlanetAtmosphere
                 commandBufferAfterAlpha.name = "RW_PlanetAtmosphere.AfterAlpha";
                 Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterDepthTexture,commandBufferAfterDepth);
                 Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfterAlpha);
-
             }
             void Update()
             {
@@ -192,7 +191,7 @@ namespace RW_PlanetAtmosphere
                         if(ModsConfig.OdysseyActive)
                             targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Math.Max(AtmosphereSettings.luminescen, WorldRendererUtility.WorldBackgroundNow ? 0 : 1), ref luminescenVel, 0.15f);
                         else
-                            targetLuminescen = AtmosphereSettings.luminescen;
+                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Math.Max(AtmosphereSettings.luminescen, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? 0 : 1), ref luminescenVel, 0.15f);
                         if (targetLuminescen != 0)
                         {
                             Color color = new Color(targetLuminescen, targetLuminescen, targetLuminescen, 0);
