@@ -121,6 +121,8 @@ namespace RW_PlanetAtmosphere
             // CommandBuffer commandBufferBeforeTransparent;
             float luminescenVel = 0;
             float targetLuminescen = 0;
+            float refractionVel = 0;
+            float targetRefraction = 0;
             CommandBuffer commandBufferAfterDepth;
             CommandBuffer commandBufferAfterAlpha;
             // public readonly List<Material> materialsTest = new List<Material>();
@@ -148,6 +150,8 @@ namespace RW_PlanetAtmosphere
                 if(Find.PlaySettings.usePlanetDayNightSystem)
                 {
                     checkAndUpdate();
+                    AtmosphereSettings.refraction = Math.Abs(AtmosphereSettings.refraction);
+                    AtmosphereSettings.luminescen = Math.Abs(AtmosphereSettings.luminescen);
                     void BeforeShadow(CommandBuffer cb)
                     {
                         cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
@@ -158,10 +162,16 @@ namespace RW_PlanetAtmosphere
                             cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                             // cb.ReleaseTemporaryRT(propId_backgroundTexture);
                         }
-                        AtmosphereSettings.refraction = Math.Abs(AtmosphereSettings.refraction);
-                        if (AtmosphereSettings.refraction != 1)
+#if V13 || V14 || V15
+#else
+                        if (ModsConfig.OdysseyActive)
+                            targetRefraction = Mathf.SmoothDamp(targetRefraction, WorldRendererUtility.WorldBackgroundNow ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
+                        else
+#endif
+                            targetRefraction = Mathf.SmoothDamp(targetRefraction, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
+                        if (targetRefraction != 1)
                         {
-                            Color color = new Color(AtmosphereSettings.refraction,AtmosphereSettings.refraction,AtmosphereSettings.refraction,1);
+                            Color color = new Color(targetRefraction, targetRefraction, targetRefraction, 1);
                             cb.SetGlobalTexture(TransparentObject.ColorTex, propId_backgroundTexture);
                             cb.SetGlobalColor(TransparentObject.MainColor, color);
                             cb.Blit(null, BuiltinRenderTextureType.CameraTarget, TransparentObject.AddToTargetMaterial, 2);
@@ -179,14 +189,13 @@ namespace RW_PlanetAtmosphere
                     }
                     void BackgroundBlendLumen(CommandBuffer cb)
                     {
-                        AtmosphereSettings.luminescen = Math.Abs(AtmosphereSettings.luminescen);
 #if V13 || V14 || V15
 #else
                         if(ModsConfig.OdysseyActive)
-                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Math.Max(AtmosphereSettings.luminescen, WorldRendererUtility.WorldBackgroundNow ? 0 : 1), ref luminescenVel, 0.15f);
+                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, WorldRendererUtility.WorldBackgroundNow ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
                         else
 #endif
-                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Math.Max(AtmosphereSettings.luminescen, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? 0 : 1), ref luminescenVel, 0.15f);
+                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
                         if (targetLuminescen != 0)
                         {
                             Color color = new Color(targetLuminescen, targetLuminescen, targetLuminescen, 0);
