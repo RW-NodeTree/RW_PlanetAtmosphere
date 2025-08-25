@@ -112,7 +112,7 @@ namespace RW_PlanetAtmosphere
             if (ModsConfig.OdysseyActive)
                 targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Min(opacity, WorldRendererUtility.WorldBackgroundNow ? 1 : 0), ref opacityVel, 0.15f);
             else
-                targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Max(opacity, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? 1 : 0), ref opacityVel, 0.15f);
+                targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Min(opacity, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? 1 : 0), ref opacityVel, 0.15f);
 #endif
             if (initObject())
             {
