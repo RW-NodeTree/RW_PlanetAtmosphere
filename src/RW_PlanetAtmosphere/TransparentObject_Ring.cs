@@ -12,7 +12,7 @@ namespace RW_PlanetAtmosphere
     public class TransparentObject_Ring : TransparentObject
     {
         float opacityVel = 0;
-        float targetOpacity = 1;
+        internal float targetOpacity = 0;
         public bool renderingShadow = true;
         public float opacity        = 1;
         public float refraction     = 1;

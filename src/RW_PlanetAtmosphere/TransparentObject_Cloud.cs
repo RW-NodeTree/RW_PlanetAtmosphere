@@ -12,7 +12,7 @@ namespace RW_PlanetAtmosphere
     public class TransparentObject_Cloud : TransparentObject
     {
         float opacityVel = 0;
-        float targetOpacity = 0;
+        internal float targetOpacity = 0;
         public bool renderingShadow     = true;
         public float refraction         = 2;
         public float luminescen         = 0;

@@ -337,15 +337,19 @@ namespace RW_PlanetAtmosphere
             {
                 if (!IsVolum) return;
                 TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
-                if (cloud != null && cloud.refraction <= 0) return;
+                if (cloud != null && cloud.targetOpacity <= 0) return;
                 TransparentObject_Ring ring = target as TransparentObject_Ring;
-                if (ring != null && ring.refraction <= 0) return;
+                if (ring != null && ring.targetOpacity <= 0) return;
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 2);
             }
         }
 
         public override void BlendShadow(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
+            TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
+            if (cloud != null && (cloud.targetOpacity <= 0 || cloud.refraction <= 0)) return;
+            TransparentObject_Ring ring = target as TransparentObject_Ring;
+            if (ring != null && (ring.targetOpacity <= 0 || ring.refraction <= 0)) return;
             if (initObject())
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 0);
@@ -359,13 +363,13 @@ namespace RW_PlanetAtmosphere
 
         public override void BlendTrans(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
+            if (!IsVolum) return;
+            TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
+            if (cloud != null && (cloud.targetOpacity <= 0 || (cloud.refraction <= 0 && cloud.luminescen <= 0))) return;
+            TransparentObject_Ring ring = target as TransparentObject_Ring;
+            if (ring != null && (ring.targetOpacity <= 0 || (ring.refraction <= 0 && ring.luminescen <= 0))) return;
             if (initObject())
             {
-                if (!IsVolum) return;
-                TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
-                if (cloud != null && cloud.refraction <= 0 && cloud.luminescen <= 0) return;
-                TransparentObject_Ring ring = target as TransparentObject_Ring;
-                if (ring != null && ring.refraction <= 0 && cloud.luminescen <= 0) return;
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 1);
             }
         }
