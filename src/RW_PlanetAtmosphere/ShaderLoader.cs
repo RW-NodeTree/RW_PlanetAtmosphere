@@ -119,11 +119,8 @@ namespace RW_PlanetAtmosphere
         private class PlanetAtmosphereRenderer : MonoBehaviour
         {
             // CommandBuffer commandBufferBeforeTransparent;
-#if V13 || V14 || V15
-#else
             float luminescenVel = 0;
             float targetLuminescen = 0;
-#endif
             CommandBuffer commandBufferAfterDepth;
             CommandBuffer commandBufferAfterAlpha;
             // public readonly List<Material> materialsTest = new List<Material>();
@@ -184,18 +181,15 @@ namespace RW_PlanetAtmosphere
                     {
                         AtmosphereSettings.luminescen = Math.Abs(AtmosphereSettings.luminescen);
 #if V13 || V14 || V15
-                        if (AtmosphereSettings.luminescen != 0)
-                        {
-                            Color color = new Color(AtmosphereSettings.luminescen, AtmosphereSettings.luminescen, AtmosphereSettings.luminescen, 0);
 #else
                         if(ModsConfig.OdysseyActive)
                             targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Math.Max(AtmosphereSettings.luminescen, WorldRendererUtility.WorldBackgroundNow ? 0 : 1), ref luminescenVel, 0.15f);
                         else
+#endif
                             targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Math.Max(AtmosphereSettings.luminescen, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? 0 : 1), ref luminescenVel, 0.15f);
                         if (targetLuminescen != 0)
                         {
                             Color color = new Color(targetLuminescen, targetLuminescen, targetLuminescen, 0);
-#endif
                             cb.SetGlobalTexture(TransparentObject.ColorTex, propId_backgroundTexture);
                             cb.SetGlobalColor(TransparentObject.MainColor, color);
                             cb.Blit(null, BuiltinRenderTextureType.CameraTarget, TransparentObject.AddToTargetMaterial, 3);

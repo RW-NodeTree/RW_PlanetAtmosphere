@@ -11,11 +11,8 @@ namespace RW_PlanetAtmosphere
 {
     public class TransparentObject_Cloud : TransparentObject
     {
-#if V13 || V14 || V15
-#else
         float opacityVel = 0;
         float targetOpacity = 0;
-#endif
         public bool renderingShadow     = true;
         public float refraction         = 2;
         public float luminescen         = 0;
@@ -127,16 +124,16 @@ namespace RW_PlanetAtmosphere
         {
             bool signalTranslated = (bool)signal;
 
-#if V13 || V14 || V15
-#else
             if(signalTranslated)
             {
+#if V13 || V14 || V15
+#else
                 if (ModsConfig.OdysseyActive)
                     targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Min(opacity, WorldRendererUtility.WorldBackgroundNow ? 1 : 0), ref opacityVel, 0.15f);
                 else
+#endif
                     targetOpacity = Mathf.SmoothDamp(targetOpacity, Math.Min(opacity, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? 1 : 0), ref opacityVel, 0.15f);
             }
-#endif
             if (initObject())
             {
                 if (signalTranslated)
