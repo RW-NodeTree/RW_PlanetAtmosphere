@@ -43,7 +43,8 @@
 	<mie_absorb>Mie absorb amount(R,G,B,UV)</mie_absorb>
 	<mie_eccentricity>Mie eccentricity(R,G,B,UV)</mie_eccentricity>
 	<sunColor>Sun color(R,G,B,UV)</sunColor>
-	<new>new</new>
+	<new>New</new>
+	<apply>Apply</apply>
 	<reset>Reset</reset>
 	<TransparentObject_Atmosphere>Atmosphere Object</TransparentObject_Atmosphere>
 	<TransparentObject_Cloud>Cloud Object</TransparentObject_Cloud>

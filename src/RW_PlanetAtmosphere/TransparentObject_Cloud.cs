@@ -210,6 +210,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref opacity, "opacity".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref opacityType, "opacityType".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref radius, "radius".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref diffusePower, "diffusePower".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIVec3(ref posY, ref normal, "normal".Translate(),width,outFromTo,6);
@@ -226,6 +227,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction,"refraction",6,2,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen,"luminescen",6,0,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref opacity,"opacity",6,1,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref opacityType,"opacityType",6,0,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref radius,"radius",6,63.76393f * AtmosphereSettings.scale,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref diffusePower,"diffusePower",6,16,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref normal,"normal",6,Vector3.up,true);

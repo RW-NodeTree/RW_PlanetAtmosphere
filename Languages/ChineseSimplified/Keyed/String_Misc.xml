@@ -44,6 +44,7 @@
 	<mie_eccentricity>米氏散射分布(R,G,B,UV)</mie_eccentricity>
 	<sunColor>阳光颜色(R,G,B,UV)</sunColor>
 	<new>新建</new>
+	<apply>应用</apply>
 	<reset>重置</reset>
 	<TransparentObject_Atmosphere>大气层对象</TransparentObject_Atmosphere>
 	<TransparentObject_Cloud>云层对象</TransparentObject_Cloud>
