@@ -15,6 +15,7 @@ namespace RW_PlanetAtmosphere
         internal float targetOpacity = 0;
         public bool renderingShadow = true;
         public float opacity        = 1;
+        public float opacityType    = 0;
         public float refraction     = 1;
         public float luminescen     = 0;
         public Vector2 ringFromTo   = new Vector2(100, 150);
@@ -32,6 +33,7 @@ namespace RW_PlanetAtmosphere
         private static readonly int propId_refraction   = Shader.PropertyToID("refraction");
         private static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
         private static readonly int propId_opacity      = Shader.PropertyToID("opacity");
+        private static readonly int propId_opacityType  = Shader.PropertyToID("opacityType");
         private static readonly int propId_ringFromTo   = Shader.PropertyToID("ringFromTo");
         private static readonly int propId_normal       = Shader.PropertyToID("normal");
         private static readonly int propId_ringMap      = Shader.PropertyToID("ringMap");
@@ -48,6 +50,7 @@ namespace RW_PlanetAtmosphere
                 refraction      = ringDef.refraction;
                 luminescen      = ringDef.luminescen;
                 opacity         = ringDef.opacity;
+                opacityType     = ringDef.opacityType;
                 ringFromTo      = ringDef.ringFromTo;
                 normal          = ringDef.normal;   
                 postion         = ringDef.postion;
@@ -68,11 +71,8 @@ namespace RW_PlanetAtmosphere
 
             material.SetVector(propId_ringFromTo, ringFromTo);
             material.SetVector(propId_normal, normal);
-#if V13 || V14 || V15
-            material.SetFloat(propId_opacity, opacity);
-#else
             material.SetFloat(propId_opacity, targetOpacity);
-#endif
+            material.SetFloat(propId_opacityType, opacityType);
 
             if (ringMap) material.SetTexture(propId_ringMap, ringMap);
         }

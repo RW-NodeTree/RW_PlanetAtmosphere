@@ -8,12 +8,14 @@
     <RW_PlanetAtmosphere.CloudDef>
         <defName>realisticVanillaCloud</defName>
         <cloudTexturePath>World/CloudMap</cloudTexturePath>
+        <opacityType>1</opacityType>
     </RW_PlanetAtmosphere.CloudDef>
 
     <RW_PlanetAtmosphere.CloudDef>
         <defName>balanceVanillaCloud</defName>
         <opacity>0.25</opacity>
         <cloudTexturePath>World/CloudMap</cloudTexturePath>
+        <opacityType>1</opacityType>
     </RW_PlanetAtmosphere.CloudDef>
 
     <RW_PlanetAtmosphere.CloudDef>

@@ -4,6 +4,7 @@
         ringFromTo ("Ring From To", Vector) = (110,130,0,0)
         normal ("Ring Normal", Vector) = (0,1,0,0)
         opacity ("opacity", Range(0, 1)) = 1.0
+        opacityType ("opacity type", Range(0, 1)) = 0.0
         refraction ("refraction", Float) = 1.0
         luminescen ("luminescen", Float) = 0.0
     }
@@ -18,11 +19,13 @@
         float refraction;
         float luminescen;
         float opacity;
+        float opacityType; // 0: alpha, 1: brightness
 
         float4 sampleRing(float u)
         {
             float4 result = sampleRingBasic(u);
-            result.a *= opacity;
+            result.w = lerp(result.w, bright(result.xyz), opacityType);
+            result.w *= opacity;
             return result;
         }
         ENDCG

@@ -17,6 +17,7 @@ namespace RW_PlanetAtmosphere
         public float refraction         = 2;
         public float luminescen         = 0;
         public float opacity            = 1;
+        public float opacityType        = 0;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
         public float radius             = 63.76393f;
@@ -38,6 +39,7 @@ namespace RW_PlanetAtmosphere
         private static readonly int propId_refraction   = Shader.PropertyToID("refraction");
         private static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
         private static readonly int propId_opacity      = Shader.PropertyToID("opacity");
+        private static readonly int propId_opacityType  = Shader.PropertyToID("opacityType");
         //private static readonly int propId_playRange    = Shader.PropertyToID("playRange");
         //private static readonly int propId_flowDir      = Shader.PropertyToID("flowDir");
         private static readonly int propId_radius       = Shader.PropertyToID("radius");
@@ -58,6 +60,7 @@ namespace RW_PlanetAtmosphere
                 refraction          = cloudDef.refraction;
                 luminescen          = cloudDef.luminescen;
                 opacity             = cloudDef.opacity;
+                opacityType         = cloudDef.opacityType;
                 radius              = cloudDef.radius;
                 diffusePower        = cloudDef.diffusePower;
                 normal              = cloudDef.normal;
@@ -77,11 +80,8 @@ namespace RW_PlanetAtmosphere
 
             material.SetFloat(propId_refraction, refraction);
             material.SetFloat(propId_luminescen, luminescen);
-#if V13 || V14 || V15
-            material.SetFloat(propId_opacity, opacity);
-#else
             material.SetFloat(propId_opacity, targetOpacity);
-#endif
+            material.SetFloat(propId_opacityType, opacityType);
             //material.SetFloat(propId_playRange, playRange);
             //material.SetFloat(propId_flowDir, flowDir);
             material.SetFloat(propId_radius, radius);

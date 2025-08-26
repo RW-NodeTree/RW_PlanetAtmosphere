@@ -4,6 +4,7 @@
     {
         // playRange ("play speed", Range(0, 1)) = 0.015625
         opacity ("opacity", Range(0, 1)) = 1.0
+        opacityType ("opacity type", Range(0, 1)) = 0.0
         refraction ("refraction", Float) = 1.0
         luminescen ("luminescen", Float) = 0.0
         diffusePower ("diffuse power", Float) = 16.0
@@ -32,6 +33,7 @@
     float refraction;
     float luminescen;
     float opacity;
+    float opacityType; // 0: alpha, 1: brightness
     // float playRange;
     // float flowDir;
     float diffusePower;
@@ -57,6 +59,7 @@
     float4 sampleSphere(float2 uv)
     {
         float4 result = tex2Dlod(cloudTexture,float4(uv,0,0));
+        result.w = lerp(result.w, bright(result.xyz), opacityType);
         result.w *= opacity;
         return result;
     }
