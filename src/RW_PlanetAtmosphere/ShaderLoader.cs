@@ -145,6 +145,12 @@ namespace RW_PlanetAtmosphere
                 }
                 commandBufferAfterDepth.Clear();
                 commandBufferAfterAlpha.Clear();
+#if V13 || V14 || V15
+                if(Find.World?.renderer == null || !WorldRendererUtility.WorldRenderedNow) return;
+#else
+                if(Find.World?.renderer == null || !WorldRendererUtility.WorldRendered) return;
+#endif
+                    
                 if (materialWriteDepth)
                     commandBufferAfterDepth.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 0);
                 if(Find.PlaySettings.usePlanetDayNightSystem)
@@ -162,13 +168,7 @@ namespace RW_PlanetAtmosphere
                             cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                             // cb.ReleaseTemporaryRT(propId_backgroundTexture);
                         }
-#if V13 || V14 || V15
-#else
-                        if (ModsConfig.OdysseyActive)
-                            targetRefraction = Mathf.SmoothDamp(targetRefraction, WorldRendererUtility.WorldBackgroundNow ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
-                        else
-#endif
-                            targetRefraction = Mathf.SmoothDamp(targetRefraction, Find.WorldCameraDriver.AltitudePercent >= 0.5f ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
+                        targetRefraction = Mathf.SmoothDamp(targetRefraction, Find.WorldCameraDriver.AltitudePercent >= 0.5f ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
                         if (targetRefraction != 1)
                         {
                             Color color = new Color(targetRefraction, targetRefraction, targetRefraction, 1);
@@ -189,13 +189,7 @@ namespace RW_PlanetAtmosphere
                     }
                     void BackgroundBlendLumen(CommandBuffer cb)
                     {
-#if V13 || V14 || V15
-#else
-                        if(ModsConfig.OdysseyActive)
-                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, WorldRendererUtility.WorldBackgroundNow ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
-                        else
-#endif
-                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Find.WorldCameraDriver.AltitudePercent >= 0.5f ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
+                        targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Find.WorldCameraDriver.AltitudePercent >= 0.5f ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
                         if (targetLuminescen != 0)
                         {
                             Color color = new Color(targetLuminescen, targetLuminescen, targetLuminescen, 0);
