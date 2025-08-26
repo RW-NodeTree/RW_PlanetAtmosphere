@@ -58,7 +58,7 @@
 
     <RW_PlanetAtmosphere.RendererDef>
         <defName>balanceRenderer_HasRing</defName>
-        <label>balance without ring</label>
+        <label>balance with ring</label>
         <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
         <refraction>1.5</refraction>
         <luminescen>0.5</luminescen>

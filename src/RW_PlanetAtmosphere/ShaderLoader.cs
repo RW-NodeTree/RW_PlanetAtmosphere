@@ -195,7 +195,7 @@ namespace RW_PlanetAtmosphere
                             targetLuminescen = Mathf.SmoothDamp(targetLuminescen, WorldRendererUtility.WorldBackgroundNow ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
                         else
 #endif
-                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
+                            targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Find.WorldCameraDriver.AltitudePercent >= 0.5f ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
                         if (targetLuminescen != 0)
                         {
                             Color color = new Color(targetLuminescen, targetLuminescen, targetLuminescen, 0);

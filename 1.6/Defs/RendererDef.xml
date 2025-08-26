@@ -6,6 +6,17 @@
     </RW_PlanetAtmosphere.AtmosphereDef>
 
     <RW_PlanetAtmosphere.CloudDef>
+        <defName>realisticVanillaCloud</defName>
+        <cloudTexturePath>World/CloudMap</cloudTexturePath>
+    </RW_PlanetAtmosphere.CloudDef>
+
+    <RW_PlanetAtmosphere.CloudDef>
+        <defName>balanceVanillaCloud</defName>
+        <opacity>0.25</opacity>
+        <cloudTexturePath>World/CloudMap</cloudTexturePath>
+    </RW_PlanetAtmosphere.CloudDef>
+
+    <RW_PlanetAtmosphere.CloudDef>
         <defName>realisticCloud</defName>
     </RW_PlanetAtmosphere.CloudDef>
 
@@ -18,6 +29,31 @@
         <defName>defaultRing</defName>
         <ringFromTo>(125.0,225.0)</ringFromTo>
     </RW_PlanetAtmosphere.RingDef>
+
+    <RW_PlanetAtmosphere.RendererDef>
+        <defName>realisticVanillaRenderer_NoRing</defName>
+        <label>realistic vanilla cloud without ring</label>
+        <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
+        <refraction>2.0</refraction>
+        <luminescen>0.0</luminescen>
+        <objects>
+            <li>defaultAtmosphere</li>
+            <li>realisticVanillaCloud</li>
+        </objects>
+    </RW_PlanetAtmosphere.RendererDef>
+
+    <RW_PlanetAtmosphere.RendererDef>
+        <defName>realisticVanillaRenderer_HasRing</defName>
+        <label>realistic vanilla cloud with ring</label>
+        <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
+        <refraction>2.0</refraction>
+        <luminescen>0.0</luminescen>
+        <objects>
+            <li>defaultAtmosphere</li>
+            <li>realisticVanillaCloud</li>
+            <li>defaultRing</li>
+        </objects>
+    </RW_PlanetAtmosphere.RendererDef>
 
     <RW_PlanetAtmosphere.RendererDef>
         <defName>realisticRenderer_NoRing</defName>
@@ -45,6 +81,31 @@
     </RW_PlanetAtmosphere.RendererDef>
 
     <RW_PlanetAtmosphere.RendererDef>
+        <defName>balanceVanillaRenderer_NoRing</defName>
+        <label>balance vanilla cloud without ring</label>
+        <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
+        <refraction>1.5</refraction>
+        <luminescen>0.5</luminescen>
+        <objects>
+            <li>defaultAtmosphere</li>
+            <li>balanceVanillaCloud</li>
+        </objects>
+    </RW_PlanetAtmosphere.RendererDef>
+
+    <RW_PlanetAtmosphere.RendererDef>
+        <defName>balanceVanillaRenderer_HasRing</defName>
+        <label>balance vanilla cloud with ring</label>
+        <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
+        <refraction>1.5</refraction>
+        <luminescen>0.5</luminescen>
+        <objects>
+            <li>defaultAtmosphere</li>
+            <li>balanceVanillaCloud</li>
+            <li>defaultRing</li>
+        </objects>
+    </RW_PlanetAtmosphere.RendererDef>
+
+    <RW_PlanetAtmosphere.RendererDef>
         <defName>balanceRenderer_NoRing</defName>
         <label>balance without ring</label>
         <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
@@ -58,7 +119,7 @@
 
     <RW_PlanetAtmosphere.RendererDef>
         <defName>balanceRenderer_HasRing</defName>
-        <label>balance without ring</label>
+        <label>balance with ring</label>
         <sunColor>(1.0,1.0,1.0,0.0)</sunColor>
         <refraction>1.5</refraction>
         <luminescen>0.5</luminescen>
