@@ -168,7 +168,7 @@ namespace RW_PlanetAtmosphere
                             targetRefraction = Mathf.SmoothDamp(targetRefraction, WorldRendererUtility.WorldBackgroundNow ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
                         else
 #endif
-                            targetRefraction = Mathf.SmoothDamp(targetRefraction, Find.WorldCameraDriver.AltitudePercent >= 0.75f ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
+                            targetRefraction = Mathf.SmoothDamp(targetRefraction, Find.WorldCameraDriver.AltitudePercent >= 0.5f ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
                         if (targetRefraction != 1)
                         {
                             Color color = new Color(targetRefraction, targetRefraction, targetRefraction, 1);
