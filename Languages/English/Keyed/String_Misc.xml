@@ -35,7 +35,8 @@
 	<maxh>Max Radius</maxh>
 	<radius>Radius</radius>
 	<opacity>Opacity</opacity>
-	<diffusePower>diffuse power</diffusePower>
+	<opacityType>Opacity Type</opacityType>
+	<diffusePower>Diffuse power</diffusePower>
 	<reayleigh_scatter>Reayleigh scatter factor(R,G,B,UV)</reayleigh_scatter>
 	<molecule_absorb>Molecule absorb factor(R,G,B,UV)</molecule_absorb>
 	<OZone_absorb>OZone absorb factor(R,G,B,UV)</OZone_absorb>
