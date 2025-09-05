@@ -126,7 +126,11 @@ namespace RW_PlanetAtmosphere
 
             if(signalTranslated)
             {
+#if V13 || V14 || V15
                 targetOpacity = Mathf.SmoothDamp(targetOpacity, Find.WorldCameraDriver.AltitudePercent >= 0.5f ? opacity : 0, ref opacityVel, 0.15f);
+#else
+                targetOpacity = Mathf.SmoothDamp(targetOpacity, (Find.WorldCameraDriver.AltitudePercent >= 0.5f || WorldRendererUtility.WorldBackgroundNow) ? opacity : 0, ref opacityVel, 0.15f);
+#endif
             }
             if (initObject() && targetOpacity > 0)
             {

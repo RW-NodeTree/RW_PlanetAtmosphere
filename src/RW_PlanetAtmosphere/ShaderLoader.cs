@@ -168,7 +168,11 @@ namespace RW_PlanetAtmosphere
                             cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                             // cb.ReleaseTemporaryRT(propId_backgroundTexture);
                         }
+#if V13 || V14 || V15
                         targetRefraction = Mathf.SmoothDamp(targetRefraction, Find.WorldCameraDriver.AltitudePercent >= 0.5f ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
+#else
+                        targetRefraction = Mathf.SmoothDamp(targetRefraction, (Find.WorldCameraDriver.AltitudePercent >= 0.5f || WorldRendererUtility.WorldBackgroundNow) ? AtmosphereSettings.refraction : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref refractionVel, 0.15f);
+#endif
                         if (targetRefraction != 1)
                         {
                             Color color = new Color(targetRefraction, targetRefraction, targetRefraction, 1);
@@ -189,7 +193,11 @@ namespace RW_PlanetAtmosphere
                     }
                     void BackgroundBlendLumen(CommandBuffer cb)
                     {
+#if V13 || V14 || V15
                         targetLuminescen = Mathf.SmoothDamp(targetLuminescen, Find.WorldCameraDriver.AltitudePercent >= 0.5f ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
+#else
+                        targetLuminescen = Mathf.SmoothDamp(targetLuminescen, (Find.WorldCameraDriver.AltitudePercent >= 0.5f || WorldRendererUtility.WorldBackgroundNow) ? AtmosphereSettings.luminescen : (AtmosphereSettings.luminescen + AtmosphereSettings.refraction) * 0.5f, ref luminescenVel, 0.15f);
+#endif
                         if (targetLuminescen != 0)
                         {
                             Color color = new Color(targetLuminescen, targetLuminescen, targetLuminescen, 0);
