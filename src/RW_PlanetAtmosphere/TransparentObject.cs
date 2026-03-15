@@ -4,6 +4,7 @@ using UnityEngine.Rendering;
 using System.Collections.Generic;
 using System.Collections;
 using Verse;
+using RimWorld.Planet;
 
 namespace RW_PlanetAtmosphere
 {
@@ -293,6 +294,17 @@ namespace RW_PlanetAtmosphere
                 commandBuffer.ReleaseTemporaryRT(DepthTexel_volum);
                 transparentObjects.ForEach(x => x.AfterRendering(commandBuffer, camera));
             }
+        }
+
+
+        public static float LuminescenTransaction(float current, float luminescen, float refraction, ref float vel)
+        {
+            
+#if V13 || V14 || V15
+            return Mathf.SmoothDamp(current, Find.WorldCameraDriver.AltitudePercent >= AtmosphereSettings.closeViewTriger ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
+#else
+            return Mathf.SmoothDamp(current, (Find.WorldCameraDriver.AltitudePercent >= AtmosphereSettings.closeViewTriger || WorldRendererUtility.WorldBackgroundNow) ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
+#endif
         }
     }
 

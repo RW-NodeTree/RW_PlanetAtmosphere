@@ -18,6 +18,7 @@ namespace RW_PlanetAtmosphere
         public static float                     sunDistance         = 1495978.92f * scale;
         public static float                     planetRadius        = 100;
         public static float                     renderingSizeFactor = 1;
+        public static float                     closeViewTriger     = 0.5f;
         public static Vector4                   sunColor            = new Vector4(0.8f,0.72f,0.65f,0);
         public static TonemapType               tonemapType         = TonemapType.SEUSTonemap;
         public static string                    sunFlareTexturePath = "Effect/sunFlare";
@@ -43,6 +44,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref sunDistance, "sunDistance", 6, 1495978.92f * scale, true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref planetRadius, "planetRadius", 6, 100, true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref renderingSizeFactor, "renderingSizeFactor", 6, 1, true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref closeViewTriger, "closeViewTriger", 6, 0.5f, true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref sunColor, "sunColor", 6, new Vector4(0.8f,0.72f,0.65f, 0), true);
             Scribe_Values.Look(ref tonemapType, "tonemapType", TonemapType.SEUSTonemap, true);
             if(objects == null)
@@ -79,6 +81,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_GUI.GUIFloat(ref sizeY, ref sunDistance, "sunDistance".Translate(), ScrollViewSize.x, viewingFromTo, 6);
             HelperMethod_GUI.GUIFloat(ref sizeY, ref planetRadius, "planetRadius".Translate(), ScrollViewSize.x, viewingFromTo, 6);
             HelperMethod_GUI.GUIFloat(ref sizeY, ref renderingSizeFactor, "renderingSizeFactor".Translate(), ScrollViewSize.x, viewingFromTo, 6);
+            HelperMethod_GUI.GUIFloat(ref sizeY, ref closeViewTriger, "closeViewTriger".Translate(), ScrollViewSize.x, viewingFromTo, 6);
             HelperMethod_GUI.GUIVec4(ref sizeY, ref sunColor, "sunColor".Translate(), ScrollViewSize.x, viewingFromTo, 6);
             HelperMethod_GUI.GUIEnum(ref sizeY, tonemapType, "tonemapType".Translate(), ScrollViewSize.x, viewingFromTo, x=>tonemapType=x);
             HelperMethod_GUI.GUIString(ref sizeY, ref sunFlareTexturePath, "sunFlareTexturePath".Translate(), ScrollViewSize.x, viewingFromTo);
