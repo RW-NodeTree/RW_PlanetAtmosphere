@@ -9,6 +9,7 @@
 	<sunDistance>太阳距离</sunDistance>
 	<planetRadius>星球半径</planetRadius>
 	<renderingSizeFactor>渲染大小倍率</renderingSizeFactor>
+	<closeRenderingDistance>关闭渲染触发距离</closeRenderingDistance>
 	<tonemapType>色调类型</tonemapType>
 	<sunFlareTexturePath>太阳炫光纹理</sunFlareTexturePath>
 	<TransparentObjects>半透明物体</TransparentObjects>

@@ -301,9 +301,9 @@ namespace RW_PlanetAtmosphere
         {
             
 #if V13 || V14 || V15
-            return Mathf.SmoothDamp(current, Find.WorldCameraDriver.AltitudePercent >= AtmosphereSettings.closeViewTriger ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
+            return Mathf.SmoothDamp(current, Find.WorldCameraDriver.AltitudePercent >= AtmosphereSettings.closeRenderingDistance ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
 #else
-            return Mathf.SmoothDamp(current, (Find.WorldCameraDriver.AltitudePercent >= AtmosphereSettings.closeViewTriger || WorldRendererUtility.WorldBackgroundNow) ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
+            return Mathf.SmoothDamp(current, (Find.WorldCameraDriver.AltitudePercent >= AtmosphereSettings.closeRenderingDistance || WorldRendererUtility.WorldBackgroundNow) ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
 #endif
         }
     }

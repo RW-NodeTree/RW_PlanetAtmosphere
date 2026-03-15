@@ -9,6 +9,7 @@
 	<sunDistance>Sun Distance</sunDistance>
 	<planetRadius>Planet Radius</planetRadius>
 	<renderingSizeFactor>Rendering Size Factor</renderingSizeFactor>
+	<closeRenderingDistance>Close Rendering Distance</closeRenderingDistance>
 	<tonemapType>Tonemap Type</tonemapType>
 	<sunFlareTexturePath>Sun Flare Texture Path</sunFlareTexturePath>
 	<TransparentObjects>Transparent Objects</TransparentObjects>
