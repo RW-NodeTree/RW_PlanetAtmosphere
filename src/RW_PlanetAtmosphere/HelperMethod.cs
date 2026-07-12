@@ -1,4 +1,5 @@
-﻿using Verse;
+﻿#if !UNITY
+using Verse;
 using RimWorld;
 using RimWorld.Planet;
 using UnityEngine;
@@ -189,3 +190,4 @@ namespace RW_PlanetAtmosphere
         }
     }
 }
+#endif

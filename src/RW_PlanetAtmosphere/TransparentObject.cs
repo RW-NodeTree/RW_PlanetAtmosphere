@@ -1,14 +1,21 @@
 using System;
-using UnityEngine;
-using UnityEngine.Rendering;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.Rendering;
+#if !UNITY
 using Verse;
 using RimWorld.Planet;
+#endif
 
 namespace RW_PlanetAtmosphere
 {
+    #if UNITY
+    public abstract class TransparentObject : IEnumerable
+    #else
     public abstract class TransparentObject : IEnumerable, IExposable
+    #endif
     {
         public bool needUpdate = true;
 
@@ -67,7 +74,7 @@ namespace RW_PlanetAtmosphere
             {
                 if (!copyToDepthMaterial)
                 {
-                    Shader shader = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/CopyToDepth.shader");
+                    Shader shader = GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/CopyToDepth.shader");
                     copyToDepthMaterial = new Material(shader);
                 }
                 return copyToDepthMaterial;
@@ -80,7 +87,7 @@ namespace RW_PlanetAtmosphere
             {
                 if (!addToTargetMaterial)
                 {
-                    Shader shader = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/AddToTarget.shader");
+                    Shader shader = GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/AddToTarget.shader");
                     addToTargetMaterial = new Material(shader);
                 }
                 return addToTargetMaterial;
@@ -90,11 +97,15 @@ namespace RW_PlanetAtmosphere
         public abstract bool IsVolum { get; }
 
         public abstract int Order { get; }
-
+#if UNITY
+#else
         public abstract void ExposeData();
 
         public abstract float SettingGUI(float posY, float width, Vector2 outFromTo);
 
+#endif
+        public virtual void DebugGUI(Rect inRect){}
+        
         public virtual void BeforeRendering(CommandBuffer commandBuffer, Camera camera){}
         // addition
         public abstract void GenBaseColor(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth);
@@ -114,6 +125,20 @@ namespace RW_PlanetAtmosphere
 
         public static Shader GetShader(string path)
         {
+#if UNITY
+            string lowCase = path.ToLower();
+            int pos = lowCase.LastIndexOf("resources/");
+            if (pos >= 0)
+            {
+                path = path.Substring(pos + 10);
+            }
+            if (lowCase.EndsWith(".shader"))
+            {
+                path = path.Substring(0, path.Length - 7);
+            }
+            // Debug.Log(path);
+            return Resources.Load<Shader>(path);
+#else
             ModContentPack modAsset = null;
             foreach (ModContentPack pack in LoadedModManager.RunningModsListForReading)
             {
@@ -134,12 +159,31 @@ namespace RW_PlanetAtmosphere
             Log.Error("Unable to load shader, Path = " + path);
             return null;
             // return shaders.TryGetValue(path, out var shader) ? shader : null;
+#endif
         }
 
         public static Texture2D GetTexture2D(string path)
         {
+#if UNITY
+            string lowCase = path.ToLower();
+            int pos = lowCase.LastIndexOf("resources/");
+            if (pos >= 0)
+            {
+                path = path.Substring(pos + 10);
+            }
+            pos = path.LastIndexOf('/');
+            pos = Math.Max(pos, 0);
+            pos = path.LastIndexOf('.', pos);
+            if(pos >= 0)
+            {
+                path = path.Substring(0, pos);
+            }
+            // Debug.Log(path);
+            return Resources.Load<Texture2D>(path);
+#else
             return ContentFinder<Texture2D>.Get(path);
             // return texture2Ds.TryGetValue(path, out var texture2D) ? texture2D : null;
+#endif
         }
 
 
@@ -299,11 +343,15 @@ namespace RW_PlanetAtmosphere
 
         public static float LuminescenTransaction(float current, float luminescen, float refraction, ref float vel)
         {
-            
-#if V13 || V14 || V15
-            return Mathf.SmoothDamp(current, Find.WorldCameraDriver.AltitudePercent >= AtmosphereSettings.closeRenderingDistance ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
+            AtmosphereSettings setting = AtmosphereSettings.Current;
+#if UNITY
+            return Mathf.SmoothDamp(current, setting.TargetCamera.transform.position.magnitude >= setting.closeRenderingDistance ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
 #else
-            return Mathf.SmoothDamp(current, (Find.WorldCameraDriver.AltitudePercent >= AtmosphereSettings.closeRenderingDistance || WorldRendererUtility.WorldBackgroundNow) ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
+    #if V13 || V14 || V15
+            return Mathf.SmoothDamp(current, Find.WorldCameraDriver.AltitudePercent >= setting.closeRenderingDistance ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
+    #else
+            return Mathf.SmoothDamp(current, (Find.WorldCameraDriver.AltitudePercent >= setting.closeRenderingDistance || WorldRendererUtility.WorldBackgroundNow) ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
+    #endif
 #endif
         }
     }

@@ -130,7 +130,7 @@ namespace RW_PlanetAtmosphere
 
         void UpdateMaterialDyn(Material material)
         {
-            if (material == null) return;
+            if (!material) return;
 
             material.SetFloat(propId_exposure, exposure);
 
@@ -139,7 +139,7 @@ namespace RW_PlanetAtmosphere
 
         void UpdateMaterialStatic(Material material)
         {
-            if (material == null) return;
+            if (!material) return;
 
             material.SetFloat(propId_deltaL, deltaL);
             material.SetFloat(propId_deltaW, deltaW);
@@ -161,7 +161,7 @@ namespace RW_PlanetAtmosphere
 
         void UpdateMaterialLUT(Material material)
         {
-            if (material == null) return;
+            if (!material) return;
 
             material.SetVector(propId_scatterLUTSize, new Vector4((int)scatterLUTSize.x, (int)scatterLUTSize.y, (int)scatterLUTSize.z, (int)scatterLUTSize.w));
             if(translucentLUT)          material.SetTexture(propId_translucentLUT       , translucentLUT        );
@@ -174,15 +174,15 @@ namespace RW_PlanetAtmosphere
         private static bool init()
         {
             if(!AtmosphereLUT)
-                AtmosphereLUT = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/Atmosphere/AtmosphereLUT.shader");
+                AtmosphereLUT = GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/Atmosphere/AtmosphereLUT.shader");
             if (!TranslucentGenrater)
-                TranslucentGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/TranslucentGenrater.shader");
+                TranslucentGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/TranslucentGenrater.shader");
             if (!OutSunLightLUTGenrater)
-                OutSunLightLUTGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/OutSunLightLUTGenrater.shader");
+                OutSunLightLUTGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/OutSunLightLUTGenrater.shader");
             if (!InSunLightLUTGenrater)
-                InSunLightLUTGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/InSunLightLUTGenrater.shader");
+                InSunLightLUTGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/InSunLightLUTGenrater.shader");
             if (!ScatterGenrater)
-                ScatterGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/ScatterGenrater.shader");
+                ScatterGenrater = GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/ScatterGenrater.shader");
             return AtmosphereLUT && TranslucentGenrater && OutSunLightLUTGenrater && InSunLightLUTGenrater && ScatterGenrater;
 
         }
@@ -242,6 +242,7 @@ namespace RW_PlanetAtmosphere
                                 wrapMode = TextureWrapMode.Clamp,
                             };
                             translucentLUT.Create();
+                            // Debug.Log($"{translucentLUT.width}, {translucentLUT.height}, IsCreated = {translucentLUT.IsCreated()}, InstanceID = {translucentLUT.GetInstanceID()}");
                         }
                         Vector2Int scatterLutSize2D = new Vector2Int((int)scatterLUTSize.x * (int)scatterLUTSize.z, (int)scatterLUTSize.y * (int)scatterLUTSize.w);
                         if (!scatterLUT_Reayleigh)
@@ -254,6 +255,7 @@ namespace RW_PlanetAtmosphere
                                 wrapMode = TextureWrapMode.Clamp
                             };
                             scatterLUT_Reayleigh.Create();
+                            // Debug.Log($"{scatterLUT_Reayleigh.width}, {scatterLUT_Reayleigh.height}, IsCreated = {scatterLUT_Reayleigh.IsCreated()}, InstanceID = {scatterLUT_Reayleigh.GetInstanceID()}");
                         }
                         if (!scatterLUT_Mie)
                         {
@@ -265,6 +267,7 @@ namespace RW_PlanetAtmosphere
                                 wrapMode = TextureWrapMode.Clamp
                             };
                             scatterLUT_Mie.Create();
+                            // Debug.Log($"{scatterLUT_Mie.width}, {scatterLUT_Mie.height}, IsCreated = {scatterLUT_Mie.IsCreated()}, InstanceID = {scatterLUT_Mie.GetInstanceID()}");
                         }
                     }
                     if (!inSunLightLUT)
@@ -277,6 +280,7 @@ namespace RW_PlanetAtmosphere
                             wrapMode = TextureWrapMode.Clamp
                         };
                         inSunLightLUT.Create();
+                        // Debug.Log($"{inSunLightLUT.width}, {inSunLightLUT.height}, IsCreated = {inSunLightLUT.IsCreated()}, InstanceID = {inSunLightLUT.GetInstanceID()}");
                     }
                     if (!outSunLightLUT)
                     {
@@ -288,6 +292,7 @@ namespace RW_PlanetAtmosphere
                             wrapMode = TextureWrapMode.Clamp
                         };
                         outSunLightLUT.Create();
+                        // Debug.Log($"{outSunLightLUT.width}, {outSunLightLUT.height}, IsCreated = {outSunLightLUT.IsCreated()}, InstanceID = {outSunLightLUT.GetInstanceID()}");
                     }
                     distanceLUTs[(id, sunRadius)] = (outSunLightLUT, inSunLightLUT, scatterLUT_Reayleigh, scatterLUT_Mie);
 
@@ -323,6 +328,7 @@ namespace RW_PlanetAtmosphere
                         UpdateMaterialLUT(materialAtmosphereLUT);
                         UpdateMaterialDyn(materialAtmosphereLUT);
                         UpdateMaterialStatic(materialAtmosphereLUT);
+                        
                     }
                     return true;
                 }
@@ -337,9 +343,9 @@ namespace RW_PlanetAtmosphere
             {
                 if (!IsVolum) return;
                 TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
-                if (cloud != null && cloud.targetOpacity <= 0) return;
+                if (cloud != null && cloud.targetOpacity <= 0.001) return;
                 TransparentObject_Ring ring = target as TransparentObject_Ring;
-                if (ring != null && ring.targetOpacity <= 0) return;
+                if (ring != null && ring.targetOpacity <= 0.001) return;
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 2);
             }
         }
@@ -347,9 +353,9 @@ namespace RW_PlanetAtmosphere
         public override void BlendShadow(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
             TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
-            if (cloud != null && (cloud.targetOpacity <= 0 || cloud.refraction <= 0)) return;
+            if (cloud != null && (cloud.targetOpacity <= 0.001 || cloud.refraction <= 0.001)) return;
             TransparentObject_Ring ring = target as TransparentObject_Ring;
-            if (ring != null && (ring.targetOpacity <= 0 || ring.refraction <= 0)) return;
+            if (ring != null && (ring.targetOpacity <= 0.001 || ring.refraction <= 0.001)) return;
             if (initObject())
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 0);
@@ -365,15 +371,83 @@ namespace RW_PlanetAtmosphere
         {
             if (!IsVolum) return;
             TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
-            if (cloud != null && (cloud.targetOpacity <= 0 || (cloud.refraction <= 0 && cloud.luminescen <= 0))) return;
+            if (cloud != null && (cloud.targetOpacity <= 0.001 || (cloud.refraction <= 0.001 && cloud.luminescen <= 0.001))) return;
             TransparentObject_Ring ring = target as TransparentObject_Ring;
-            if (ring != null && (ring.targetOpacity <= 0 || (ring.refraction <= 0 && ring.luminescen <= 0))) return;
+            if (ring != null && (ring.targetOpacity <= 0.001 || (ring.refraction <= 0.001 && ring.luminescen <= 0.001))) return;
             if (initObject())
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialAtmosphereLUT, 0, 1);
             }
         }
 
+
+        private Vector2 debugViewScroll;
+        public override void DebugGUI(Rect inRect)
+        {
+            Rect viewRect = default;
+            viewRect.width = translucentLUT?.width ?? 0;
+            viewRect.width = Math.Max(viewRect.width, outSunLightLUT?.width ?? 0);
+            viewRect.width = Math.Max(viewRect.width, inSunLightLUT?.width ?? 0);
+            viewRect.width = Math.Max(viewRect.width, scatterLUT_Reayleigh?.width ?? 0);
+            viewRect.width = Math.Max(viewRect.width, scatterLUT_Mie?.width ?? 0);
+            viewRect.height = 5 * 32;
+            viewRect.height += translucentLUT?.height ?? 0;
+            viewRect.height += outSunLightLUT?.height ?? 0;
+            viewRect.height += inSunLightLUT?.height ?? 0;
+            viewRect.height += scatterLUT_Reayleigh?.height ?? 0;
+            viewRect.height += scatterLUT_Mie?.height ?? 0;
+
+            float y = 0;
+            debugViewScroll = GUI.BeginScrollView(inRect, debugViewScroll, viewRect);
+            GUI.DrawTexture(new Rect(0, y, viewRect.width, 2), Texture2D.whiteTexture);
+            y += 2;
+            if (translucentLUT)
+            {
+                GUI.DrawTexture(new Rect((viewRect.width - translucentLUT.width) * .5f, y, translucentLUT.width, translucentLUT.height), translucentLUT, ScaleMode.ScaleAndCrop, false);
+                y += translucentLUT.height;
+                GUI.Label(new Rect(0, y, viewRect.width, 30), $"translucentLUT : {translucentLUT.width}, {translucentLUT.height}, IsCreated = {translucentLUT.IsCreated()}, InstanceID = {translucentLUT.GetInstanceID()}");
+                y += 30;
+            }
+            GUI.DrawTexture(new Rect(0, y, viewRect.width, 2), Texture2D.whiteTexture);
+            y += 2;
+            if (outSunLightLUT)
+            {
+                GUI.DrawTexture(new Rect((viewRect.width - outSunLightLUT.width) * .5f, y, outSunLightLUT.width, outSunLightLUT.height), outSunLightLUT, ScaleMode.ScaleAndCrop, false);
+                y += outSunLightLUT.height;
+                GUI.Label(new Rect(0, y, viewRect.width, 30), $"outSunLightLUT : {outSunLightLUT.width}, {outSunLightLUT.height}, IsCreated = {outSunLightLUT.IsCreated()}, InstanceID = {outSunLightLUT.GetInstanceID()}");
+                y += 30;
+            }
+            GUI.DrawTexture(new Rect(0, y, viewRect.width, 2), Texture2D.whiteTexture);
+            y += 2;
+            if (inSunLightLUT)
+            {
+                GUI.DrawTexture(new Rect((viewRect.width - inSunLightLUT.width) * .5f, y, inSunLightLUT.width, inSunLightLUT.height), inSunLightLUT, ScaleMode.ScaleAndCrop, false);
+                y += inSunLightLUT.height;
+                GUI.Label(new Rect(0, y, viewRect.width, 30), $"inSunLightLUT : {inSunLightLUT.width}, {inSunLightLUT.height}, IsCreated = {inSunLightLUT.IsCreated()}, InstanceID = {inSunLightLUT.GetInstanceID()}");
+                y += 30;
+            }
+            GUI.DrawTexture(new Rect(0, y, viewRect.width, 2), Texture2D.whiteTexture);
+            y += 2;
+            if (scatterLUT_Reayleigh)
+            {
+                GUI.DrawTexture(new Rect((viewRect.width - scatterLUT_Reayleigh.width) * .5f, y, scatterLUT_Reayleigh.width, scatterLUT_Reayleigh.height), scatterLUT_Reayleigh, ScaleMode.ScaleAndCrop, false);
+                y += scatterLUT_Reayleigh.height;
+                GUI.Label(new Rect(0, y, viewRect.width, 30), $"scatterLUT_Reayleigh : {scatterLUT_Reayleigh.width}, {scatterLUT_Reayleigh.height}, IsCreated = {scatterLUT_Reayleigh.IsCreated()}, InstanceID = {scatterLUT_Reayleigh.GetInstanceID()}");
+                y += 30;
+            }
+            GUI.DrawTexture(new Rect(0, y, viewRect.width, 2), Texture2D.whiteTexture);
+            y += 2;
+            if (scatterLUT_Mie)
+            {
+                GUI.DrawTexture(new Rect((viewRect.width - scatterLUT_Mie.width) * .5f, y, scatterLUT_Mie.width, scatterLUT_Mie.height), scatterLUT_Mie, ScaleMode.ScaleAndCrop, false);
+                y += scatterLUT_Mie.height;
+                GUI.Label(new Rect(0, y, viewRect.width, 30), $"scatterLUT_Mie : {scatterLUT_Mie.width}, {scatterLUT_Mie.height}, IsCreated = {scatterLUT_Mie.IsCreated()}, InstanceID = {scatterLUT_Mie.GetInstanceID()}");
+                y += 30;
+            }
+            GUI.EndScrollView();
+        }
+
+#if !UNITY
         public override float SettingGUI(float posY, float width, Vector2 outFromTo)
         {
             HelperMethod_GUI.GUIVec2(ref posY,ref translucentLUTSize,"translucentLUTSize".Translate(),width,outFromTo,6);
@@ -428,7 +502,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_absorb,"mie_absorb",6,new Vector4(4.44f, 4.44f, 4.44f, 4.44f) / AtmosphereSettings.scale,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_eccentricity,"mie_eccentricity",6,new Vector4(0.618f, 0.618f, 0.618f, 0.618f),true);
         }
-
+#endif
         ~TransparentObject_Atmosphere()
         {
             if(materialAtmosphereLUT) GameObject.Destroy(materialAtmosphereLUT);

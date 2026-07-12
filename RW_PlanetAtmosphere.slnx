@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="DebugV13" />
+    <BuildType Name="DebugV14" />
+    <BuildType Name="DebugV15" />
+    <BuildType Name="DebugV16" />
+    <BuildType Name="ReleaseV13" />
+    <BuildType Name="ReleaseV14" />
+    <BuildType Name="ReleaseV15" />
+    <BuildType Name="ReleaseV16" />
+    <BuildType Name="Unity" />
+  </Configurations>
+  <Project Path="src/RW_PlanetAtmosphere/RW_PlanetAtmosphere.csproj" />
+</Solution>

@@ -38,12 +38,12 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.00913786, g: 0.009902769, b: 0.016797425, a: 1}
+  m_IndirectSpecularColor: {r: 0.009144403, g: 0.009912699, b: 0.016815037, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 11
+  serializedVersion: 12
   m_GIWorkflowMode: 1
   m_GISettings:
     serializedVersion: 2
@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 1
+  m_LightingSettings: {fileID: 0}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -118,6 +118,8 @@ NavMeshSettings:
     manualTileSize: 0
     tileSize: 256
     accuratePlacement: 0
+    maxJobWorkers: 0
+    preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
@@ -197,6 +199,7 @@ Light:
   m_UseColorTemperature: 0
   m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
+  m_UseViewFrustumForShadowCasterCull: 1
   m_ShadowRadius: 0
   m_ShadowAngle: 0
 --- !u!4 &709072426
@@ -211,7 +214,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1070748985
 GameObject:
@@ -260,6 +263,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -284,6 +288,7 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
 --- !u!33 &1070748988
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -304,7 +309,7 @@ Transform:
   m_LocalScale: {x: 127.42786, y: 127.42786, z: 127.42786}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1959794533
 GameObject:
@@ -318,7 +323,7 @@ GameObject:
   - component: {fileID: 1959794535}
   - component: {fileID: 1959794534}
   - component: {fileID: 1959794537}
-  - component: {fileID: 1959794540}
+  - component: {fileID: 1959794538}
   m_Layer: 0
   m_Name: WorldCamera
   m_TagString: Untagged
@@ -357,7 +362,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 1
+  near clip plane: 5
   far clip plane: 1000
   field of view: 26.991467
   orthographic: 0
@@ -389,56 +394,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1959794537
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1959794533}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: db853102666c076408eb71df5aebc5fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gamma: 1
-  sunRadius: 6960
-  sunDistance: 1495978.9
-  refraction: 2
-  luminescen: 0
-  planetRadius: 63.71393
-  tonemapType: 6
-  cam: {fileID: 1959794535}
-  CopyToDepth: {fileID: 4800000, guid: 629651229d39aad418b7c5bb1f3dc11b, type: 3}
-  AddToTarget: {fileID: 4800000, guid: f8b4af443a3da0b4294bb61a4ed0c855, type: 3}
-  AtmosphereLUT: {fileID: 4800000, guid: ee700e90fee0a7743b2f8af49a7bb316, type: 3}
-  TranslucentGenrater: {fileID: 4800000, guid: 01f46df734a8ba54ba4f5b4b2c443013, type: 3}
-  OutSunLightLUTGenrater: {fileID: 4800000, guid: 63c7e00c57bd55142ab4d848bcac8acb,
-    type: 3}
-  InSunLightLUTGenrater: {fileID: 4800000, guid: c7cfc9e8177312546ab7216b674c9edc,
-    type: 3}
-  ScatterGenrater: {fileID: 4800000, guid: ebf0f75afe86e31479b7b2bd2e5960e0, type: 3}
-  SkyBoxCloud: {fileID: 4800000, guid: b04598c89ebb17c48bcf6673e0cbd3bd, type: 3}
-  BasicRing: {fileID: 4800000, guid: 4154437f2c15605429ade0d90374665e, type: 3}
-  SunFlear: {fileID: 4800000, guid: 38ae1516186c7bd49ad375ffecff32d4, type: 3}
-  Tonemaps: {fileID: 4800000, guid: 3c7b00d59950ad44ca14beea08db8882, type: 3}
-  WriteDepth: {fileID: 4800000, guid: 0b46b6a3c0572d7498a543fa98efe2ac, type: 3}
-  RemoveAlpha: {fileID: 4800000, guid: 746390bc2f6ccf5438908da3a8d4e663, type: 3}
-  sunFlareTexture: {fileID: 2800000, guid: 87cfb95c8830b5d4aa7764d2eb2d5f50, type: 3}
-  screenTexture: {fileID: 0}
-  texture2DIds:
-  - cloud
-  - ring
-  texture2DTextures:
-  - {fileID: 2800000, guid: ae55e61be9eddff41b2c80c739f25543, type: 3}
-  - {fileID: 2800000, guid: d12641da0a1bb74449af3d0fb6e00512, type: 3}
-  defs:
-  - {fileID: 11400000, guid: f714c43a99db80f489f75009b9f792fc, type: 2}
-  - {fileID: 11400000, guid: 3a45d485fb3b27d419776fb8e6630137, type: 2}
-  - {fileID: 11400000, guid: 204253560a971f944bfdc582827d95df, type: 2}
---- !u!114 &1959794540
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -451,6 +409,35 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   showData: 0
-  dragPlane: 63.71393
-  heightLimitOffset: 1
+  dragPlane: 64
+  heightLimitOffset: 5
   senceLight: {fileID: 709072425}
+  objects:
+  - {fileID: 11400000, guid: f714c43a99db80f489f75009b9f792fc, type: 2}
+  - {fileID: 11400000, guid: 3a45d485fb3b27d419776fb8e6630137, type: 2}
+  - {fileID: 11400000, guid: 401ed2872d00ec3c785862993b0dc41d, type: 2}
+--- !u!114 &1959794538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1959794533}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -554594532, guid: 854803d126001a63abfe6808ad3dbc12, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  needUpdate: 1
+  gamma: 1
+  refraction: 2
+  luminescen: 0
+  sunRadius: 6960
+  sunDistance: 1495978.9
+  planetRadius: 63.71393
+  renderingSizeFactor: 1
+  closeRenderingDistance: 125
+  sunColor: {x: 0.8, y: 0.72, z: 0.65, w: 0}
+  tonemapType: 6
+  sunFlareTexturePath: Texture/sunFlare
+  EditorCamera: {fileID: 0}

@@ -1,19 +1,22 @@
-﻿using Verse;
+﻿using System;
+using System.Data;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using UnityEngine;
+using UnityEngine.PlayerLoop;
+using UnityEngine.Rendering;
+#if !UNITY
+using Verse;
+using Verse.Noise;
 using RimWorld;
 using RimWorld.Planet;
-using UnityEngine;
-using System.Collections.Generic;
-using UnityEngine.PlayerLoop;
-using Verse.Noise;
-using Verse.AI.Group;
-using System.Runtime.InteropServices;
-using System;
-using System.Data;
-using UnityEngine.Rendering;
+#endif
 
 namespace RW_PlanetAtmosphere
 {
+#if !UNITY
     [StaticConstructorOnStartup]
+#endif
     public static class ShaderLoader
     {
 
@@ -35,67 +38,77 @@ namespace RW_PlanetAtmosphere
         private static Material materialWriteDepth;
         private static Material materialRemoveAlpha;
         private static Texture2D sunFlareTexture;
+        
+#if UNITY
+        public static bool StaticConstructorTriger = true;
+#endif
         static ShaderLoader()
         {
+#if UNITY
+            AtmosphereSettings.Current.TargetCamera.depthTextureMode = DepthTextureMode.Depth;
+            AtmosphereSettings.Current.TargetCamera.gameObject.AddComponent<PlanetAtmosphereRenderer>();
+#else
             WorldCameraManager.WorldCamera.depthTextureMode = DepthTextureMode.Depth;
             WorldCameraManager.WorldCamera.gameObject.AddComponent<PlanetAtmosphereRenderer>();
             WorldCameraManager.WorldSkyboxCamera.depthTextureMode = DepthTextureMode.Depth;
             WorldCameraManager.WorldSkyboxCamera.backgroundColor = Color.black;
             
 
-            WorldMaterials.Rivers.shader = WorldMaterials.WorldTerrain.shader;
-            WorldMaterials.WorldOcean.shader = WorldMaterials.WorldTerrain.shader;
-            WorldMaterials.RiversBorder.shader = WorldMaterials.WorldTerrain.shader;
-            WorldMaterials.UngeneratedPlanetParts.shader = WorldMaterials.WorldTerrain.shader;
+            // WorldMaterials.Rivers.shader = WorldMaterials.WorldTerrain.shader;
+            // WorldMaterials.WorldOcean.shader = WorldMaterials.WorldTerrain.shader;
+            // WorldMaterials.RiversBorder.shader = WorldMaterials.WorldTerrain.shader;
+            // WorldMaterials.UngeneratedPlanetParts.shader = WorldMaterials.WorldTerrain.shader;
 
-            WorldMaterials.Rivers.renderQueue = 3530;
-            WorldMaterials.WorldOcean.renderQueue = 3500;
-            WorldMaterials.RiversBorder.renderQueue = 3520;
-            WorldMaterials.UngeneratedPlanetParts.renderQueue = 3500;
+            // WorldMaterials.Rivers.renderQueue = 3530;
+            // WorldMaterials.WorldOcean.renderQueue = 3500;
+            // WorldMaterials.RiversBorder.renderQueue = 3520;
+            // WorldMaterials.UngeneratedPlanetParts.renderQueue = 3500;
 
             // WorldMaterials.Rivers.color = new Color(-65536,-65536,-65536,1);
             // WorldMaterials.RiversBorder.color = new Color(0,0,0,0);
 
 
-            WorldMaterials.Rivers.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
-            WorldMaterials.WorldOcean.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
-            WorldMaterials.RiversBorder.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
-            WorldMaterials.UngeneratedPlanetParts.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
+            // WorldMaterials.Rivers.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
+            // WorldMaterials.WorldOcean.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
+            // WorldMaterials.RiversBorder.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
+            // WorldMaterials.UngeneratedPlanetParts.mainTexture = ContentFinder<Texture2D>.Get("TerrainReplace/Water");
+#endif
 
         }
 
         static void checkAndUpdate()
         {
-            if(AtmosphereSettings.needUpdate)
+            AtmosphereSettings current = AtmosphereSettings.Current;
+            if(current.needUpdate)
             {
-                AtmosphereSettings.needUpdate = false;
-                sunFlareTexture = TransparentObject.GetTexture2D(AtmosphereSettings.sunFlareTexturePath);
+                current.needUpdate = false;
+                sunFlareTexture = TransparentObject.GetTexture2D(current.sunFlareTexturePath);
                 Shader
-                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/SunFlare.shader");
+                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/SunFlare.shader");
                 if(shader)
                 {
                     materialSunFlear = new Material(shader);
                     materialSunFlear.SetTexture(propId_sunFlareTexture, sunFlareTexture);
                 }
-                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/Tonemaps.shader");
+                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/Tonemaps.shader");
                 if(shader)
                 {
                     materialTonemaps = new Material(shader);
-                    materialTonemaps.SetFloat(propId_gamma, AtmosphereSettings.gamma);
+                    materialTonemaps.SetFloat(propId_gamma, current.gamma);
                 }
-                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/WriteDepth.shader");
+                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/WriteDepth.shader");
                 if(shader)
                 {
                     materialWriteDepth = new Material(shader);
-                    materialWriteDepth.SetFloat(propId_radius,AtmosphereSettings.planetRadius);
+                    materialWriteDepth.SetFloat(propId_radius,current.planetRadius);
                 }
-                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Shader/RemoveAlpha.shader");
+                shader = TransparentObject.GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/RemoveAlpha.shader");
                 if(shader) materialRemoveAlpha = new Material(shader);
             }
-            if(AtmosphereSettings.renderingSizeFactor != 1)
+            if(current.renderingSizeFactor != 1)
             {
-                int width = (int)(Screen.width * AtmosphereSettings.renderingSizeFactor);
-                int height = (int)(Screen.height * AtmosphereSettings.renderingSizeFactor);
+                int width = (int)(Screen.width * current.renderingSizeFactor);
+                int height = (int)(Screen.height * current.renderingSizeFactor);
                 if(cameraOverride == null || cameraOverride.width != width || cameraOverride.height != height)
                 {
                     if(cameraOverride != null) GameObject.Destroy(cameraOverride);
@@ -111,8 +124,12 @@ namespace RW_PlanetAtmosphere
                 if(cameraOverride != null) GameObject.Destroy(cameraOverride);
                 cameraOverride = null;
             }
+#if UNITY
+            current.TargetCamera.targetTexture = cameraOverride;
+#else
             WorldCameraManager.WorldCamera.targetTexture = cameraOverride;
             WorldCameraManager.WorldSkyboxCamera.targetTexture = cameraOverride;
+#endif
         }
 
 
@@ -125,39 +142,52 @@ namespace RW_PlanetAtmosphere
             float targetRefraction = 0;
             CommandBuffer commandBufferAfterDepth;
             CommandBuffer commandBufferAfterAlpha;
+#if UNITY
+            CommandBuffer commandBufferAfterDepth_EditorCamera;
+            CommandBuffer commandBufferAfterAlpha_EditorCamera;
+#endif
             // public readonly List<Material> materialsTest = new List<Material>();
             // private Transform cachedTransform = null;
             void Start()
             {
+                AtmosphereSettings current = AtmosphereSettings.Current;
                 commandBufferAfterDepth = new CommandBuffer();
                 commandBufferAfterDepth.name = "RW_PlanetAtmosphere.AfterDepth";
                 commandBufferAfterAlpha = new CommandBuffer();
                 commandBufferAfterAlpha.name = "RW_PlanetAtmosphere.AfterAlpha";
+#if UNITY
+                current.TargetCamera.AddCommandBuffer(CameraEvent.AfterDepthTexture,commandBufferAfterDepth);
+                current.TargetCamera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfterAlpha);
+#else
                 Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterDepthTexture,commandBufferAfterDepth);
                 Find.WorldCamera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfterAlpha);
+#endif
             }
             void Update()
             {
+                AtmosphereSettings current = AtmosphereSettings.Current;
+#if !UNITY
                 if (Find.World != null)
                 {
                     Shader.SetGlobalVector("_WorldSpaceLightPos0",GenCelestial.CurSunPositionInWorldSpace());
-                    Shader.SetGlobalVector("_LightColor0",AtmosphereSettings.sunColor);
+                    Shader.SetGlobalVector("_LightColor0",current.sunColor);
                 }
+#endif
                 commandBufferAfterDepth.Clear();
                 commandBufferAfterAlpha.Clear();
-#if V13 || V14 || V15
+#if !UNITY
+    #if V13 || V14 || V15
                 if(Find.World?.renderer == null || !WorldRendererUtility.WorldRenderedNow) return;
-#else
+    #else
                 if(Find.World?.renderer == null || !WorldRendererUtility.WorldRendered) return;
+    #endif
+                if(Find.PlaySettings.usePlanetDayNightSystem)
 #endif
                     
-                if (materialWriteDepth)
-                    commandBufferAfterDepth.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 0);
-                if(Find.PlaySettings.usePlanetDayNightSystem)
                 {
                     checkAndUpdate();
-                    AtmosphereSettings.refraction = Math.Abs(AtmosphereSettings.refraction);
-                    AtmosphereSettings.luminescen = Math.Abs(AtmosphereSettings.luminescen);
+                    current.refraction = Math.Abs(current.refraction);
+                    current.luminescen = Math.Abs(current.luminescen);
                     void BeforeShadow(CommandBuffer cb)
                     {
                         cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
@@ -168,7 +198,7 @@ namespace RW_PlanetAtmosphere
                             cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                             // cb.ReleaseTemporaryRT(propId_backgroundTexture);
                         }
-                        targetRefraction = TransparentObject.LuminescenTransaction(targetRefraction, AtmosphereSettings.refraction, AtmosphereSettings.luminescen, ref refractionVel);
+                        targetRefraction = TransparentObject.LuminescenTransaction(targetRefraction, current.refraction, current.luminescen, ref refractionVel);
                         if (targetRefraction != 1)
                         {
                             Color color = new Color(targetRefraction, targetRefraction, targetRefraction, 1);
@@ -190,7 +220,7 @@ namespace RW_PlanetAtmosphere
                     void BackgroundBlendLumen(CommandBuffer cb)
                     {
                         
-                        targetLuminescen = TransparentObject.LuminescenTransaction(targetLuminescen, AtmosphereSettings.luminescen, AtmosphereSettings.refraction, ref luminescenVel);
+                        targetLuminescen = TransparentObject.LuminescenTransaction(targetLuminescen, current.luminescen, current.refraction, ref luminescenVel);
                         if (targetLuminescen != 0)
                         {
                             Color color = new Color(targetLuminescen, targetLuminescen, targetLuminescen, 0);
@@ -206,9 +236,17 @@ namespace RW_PlanetAtmosphere
                         cb.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
                         cb.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                     }
-                    TransparentObject.sunRadius = AtmosphereSettings.sunRadius;
-                    TransparentObject.sunDistance = AtmosphereSettings.sunDistance;
-                    TransparentObject.DrawTransparentObjects(AtmosphereSettings.objects, commandBufferAfterAlpha, WorldCameraManager.WorldCamera, BeforeShadow, BackgroundBlendLumen, AfterTrans);
+                    if (materialWriteDepth)
+                    {
+                        commandBufferAfterDepth.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 0);
+                    }
+                    TransparentObject.sunRadius = current.sunRadius;
+                    TransparentObject.sunDistance = current.sunDistance;
+#if UNITY
+                    TransparentObject.DrawTransparentObjects(current.objects, commandBufferAfterAlpha, current.TargetCamera, BeforeShadow, BackgroundBlendLumen, AfterTrans);
+#else
+                    TransparentObject.DrawTransparentObjects(current.objects, commandBufferAfterAlpha, WorldCameraManager.WorldCamera, BeforeShadow, BackgroundBlendLumen, AfterTrans);
+#endif
                     if (materialSunFlear)
                     {
                         commandBufferAfterAlpha.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
@@ -217,14 +255,56 @@ namespace RW_PlanetAtmosphere
                     }
                     if (materialTonemaps)
                     {
-                        materialTonemaps.SetFloat(propId_gamma, AtmosphereSettings.gamma);
+                        materialTonemaps.SetFloat(propId_gamma, current.gamma);
                         commandBufferAfterAlpha.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
                         commandBufferAfterAlpha.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
                         //commandBufferAfter.SetGlobalTexture(propId_backgroundTexture, BuiltinRenderTextureType.CameraTarget);
-                        commandBufferAfterAlpha.Blit(null, BuiltinRenderTextureType.CameraTarget, materialTonemaps,(int)AtmosphereSettings.tonemapType);
+                        commandBufferAfterAlpha.Blit(null, BuiltinRenderTextureType.CameraTarget, materialTonemaps,(int)current.tonemapType);
                         commandBufferAfterAlpha.ReleaseTemporaryRT(propId_backgroundTexture);
                     }
                     commandBufferAfterAlpha.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+#if UNITY
+                    if (current.EditorCamera)
+                    {
+                        if (commandBufferAfterDepth_EditorCamera == null)
+                        {
+                            commandBufferAfterDepth_EditorCamera = new CommandBuffer();
+                            commandBufferAfterDepth_EditorCamera.name = "RW_PlanetAtmosphere.AfterDepth.EditorCamera";
+                            current.EditorCamera.AddCommandBuffer(CameraEvent.AfterDepthTexture,commandBufferAfterDepth_EditorCamera);
+                        }
+                        if (commandBufferAfterAlpha_EditorCamera == null)
+                        {
+                            commandBufferAfterAlpha_EditorCamera = new CommandBuffer();
+                            commandBufferAfterAlpha_EditorCamera.name = "RW_PlanetAtmosphere.AfterAlpha.EditorCamera";
+                            current.EditorCamera.AddCommandBuffer(CameraEvent.AfterForwardAlpha,commandBufferAfterAlpha_EditorCamera);
+                        }
+                        commandBufferAfterDepth_EditorCamera.Clear();
+                        commandBufferAfterAlpha_EditorCamera.Clear();
+                        if (materialWriteDepth)
+                        {
+                            commandBufferAfterDepth_EditorCamera.DrawMesh(TransparentObject.DefaultRenderingMesh,Matrix4x4.identity,materialWriteDepth, 0, 0);
+                        }
+                        TransparentObject.DrawTransparentObjects(current.objects, commandBufferAfterAlpha_EditorCamera, current.TargetCamera, BeforeShadow, BackgroundBlendLumen, AfterTrans);
+                        if (materialSunFlear)
+                        {
+                            commandBufferAfterAlpha_EditorCamera.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+                            commandBufferAfterAlpha_EditorCamera.DrawMesh(TransparentObject.DefaultRenderingMesh, Matrix4x4.identity, materialSunFlear, 0, 1);
+                            commandBufferAfterAlpha_EditorCamera.ReleaseTemporaryRT(propId_backgroundTexture);
+                        }
+                        if (materialTonemaps)
+                        {
+                            materialTonemaps.SetFloat(propId_gamma, current.gamma);
+                            commandBufferAfterAlpha_EditorCamera.GetTemporaryRT(propId_backgroundTexture, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBFloat);
+                            commandBufferAfterAlpha_EditorCamera.Blit(BuiltinRenderTextureType.CameraTarget, propId_backgroundTexture);
+                            //commandBufferAfter.SetGlobalTexture(propId_backgroundTexture, BuiltinRenderTextureType.CameraTarget);
+                            commandBufferAfterAlpha_EditorCamera.Blit(null, BuiltinRenderTextureType.CameraTarget, materialTonemaps,(int)current.tonemapType);
+                            commandBufferAfterAlpha_EditorCamera.ReleaseTemporaryRT(propId_backgroundTexture);
+                        }
+                        commandBufferAfterAlpha_EditorCamera.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
+                    }
+#endif
+
+                    
                 }
             }
 

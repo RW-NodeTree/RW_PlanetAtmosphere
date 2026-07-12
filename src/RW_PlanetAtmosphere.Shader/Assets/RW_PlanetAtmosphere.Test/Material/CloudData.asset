@@ -9,16 +9,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d6e4de045ddc34419234aabe379ecaa, type: 3}
+  m_Script: {fileID: 770470977, guid: 854803d126001a63abfe6808ad3dbc12, type: 3}
   m_Name: CloudData
   m_EditorClassIdentifier: 
   renderingShadow: 1
+  haidWhenGetColose: 1
   refraction: 2
   luminescen: 0
   opacity: 1
-  radius: 63.76393
-  diffusePower: 16
+  opacityType: 0
+  radius: 63.8
+  diffusePower: 0
   normal: {x: 0, y: 1, z: 0}
   tangent: {x: 0, y: 0, z: 1}
   postion: {x: 0, y: 0, z: 0}
-  cloudTexturePath: cloud
+  cloudTexturePath: Texture/8k_earth_clouds

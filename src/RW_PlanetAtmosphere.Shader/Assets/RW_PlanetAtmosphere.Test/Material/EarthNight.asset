@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 770470977, guid: 854803d126001a63abfe6808ad3dbc12, type: 3}
+  m_Name: EarthNight
+  m_EditorClassIdentifier: 
+  renderingShadow: 0
+  haidWhenGetColose: 0
+  refraction: 4
+  luminescen: 0
+  opacity: 1
+  opacityType: 1
+  radius: 63.715
+  diffusePower: -16
+  normal: {x: 0, y: 1, z: 0}
+  tangent: {x: 0, y: 0, z: 1}
+  postion: {x: 0, y: 0, z: 0}
+  cloudTexturePath: Texture/8k_earth_nightmap

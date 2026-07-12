@@ -1,6 +1,7 @@
-﻿using HarmonyLib;
+﻿#if !UNITY
 using System;
 using System.Reflection;
+using HarmonyLib;
 using Verse;
 
 namespace RW_PlanetAtmosphere.Patch
@@ -17,3 +18,4 @@ namespace RW_PlanetAtmosphere.Patch
         public static Assembly coreAssembly = typeof(Thing).Assembly;
     }
 }
+#endif

@@ -12,16 +12,17 @@ namespace RW_PlanetAtmosphere
     public class TransparentObject_Ring : TransparentObject
     {
         float opacityVel = 0;
-        internal float targetOpacity = 0;
-        public bool renderingShadow = true;
-        public float opacity        = 1;
-        public float opacityType    = 0;
-        public float refraction     = 1;
-        public float luminescen     = 0;
-        public Vector2 ringFromTo   = new Vector2(100, 150);
-        public Vector3 normal       = Vector3.up;
-        public Vector3 postion      = Vector3.zero;
-        public string ringMapPath   = null;
+        internal float targetOpacity    = 0;
+        public bool renderingShadow     = true;
+        public bool haidWhenGetColose   = true;
+        public float opacity            = 1;
+        public float opacityType        = 0;
+        public float refraction         = 1;
+        public float luminescen         = 0;
+        public Vector2 ringFromTo       = new Vector2(100, 150);
+        public Vector3 normal           = Vector3.up;
+        public Vector3 postion          = Vector3.zero;
+        public string ringMapPath       = null;
 
         private Texture2D ringMap;
         private Material materialBasicRing;
@@ -46,15 +47,16 @@ namespace RW_PlanetAtmosphere
         {
             if(ringDef != null)
             {
-                renderingShadow = ringDef.renderingShadow;
-                refraction      = ringDef.refraction;
-                luminescen      = ringDef.luminescen;
-                opacity         = ringDef.opacity;
-                opacityType     = ringDef.opacityType;
-                ringFromTo      = ringDef.ringFromTo;
-                normal          = ringDef.normal;   
-                postion         = ringDef.postion;
-                ringMapPath     = ringDef.ringMapPath;
+                renderingShadow     = ringDef.renderingShadow;
+                haidWhenGetColose   = ringDef.haidWhenGetColose;
+                refraction          = ringDef.refraction;
+                luminescen          = ringDef.luminescen;
+                opacity             = ringDef.opacity;
+                opacityType         = ringDef.opacityType;
+                ringFromTo          = ringDef.ringFromTo;
+                normal              = ringDef.normal;   
+                postion             = ringDef.postion;
+                ringMapPath         = ringDef.ringMapPath;
             }
         }
 
@@ -64,7 +66,7 @@ namespace RW_PlanetAtmosphere
 
         void UpdateMaterial(Material material)
         {
-            if (material == null) return;
+            if (!material) return;
 
             material.SetFloat(propId_refraction, refraction);
             material.SetFloat(propId_luminescen, luminescen);
@@ -80,7 +82,7 @@ namespace RW_PlanetAtmosphere
         private static bool init()
         {
             if (!BasicRing)
-                BasicRing = GetShader(@"Assets/RW_PlanetAtmosphere/Shader/Ring/BasicRing.shader");
+                BasicRing = GetShader(@"Assets/RW_PlanetAtmosphere/Resources/Shader/Ring/BasicRing.shader");
             return BasicRing;
         }
 
@@ -103,8 +105,15 @@ namespace RW_PlanetAtmosphere
         
         public override void GenBaseColor(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
-            targetOpacity = TransparentObject.LuminescenTransaction(targetOpacity, opacity, -opacity, ref opacityVel);
-            if (initObject() && targetOpacity > 0)
+            if (haidWhenGetColose)
+            {
+                targetOpacity = TransparentObject.LuminescenTransaction(targetOpacity, opacity, -opacity, ref opacityVel);
+            }
+            else
+            {
+                targetOpacity = opacity;
+            }
+            if (initObject() && targetOpacity > 0.001)
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 2);
             }
@@ -114,10 +123,10 @@ namespace RW_PlanetAtmosphere
         {
             if (!renderingShadow || target == this) return;
             TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
-            if (cloud != null && cloud.refraction <= 0) return;
+            if (cloud != null && cloud.refraction <= 0.001) return;
             TransparentObject_Ring ring = target as TransparentObject_Ring;
-            if (ring != null && ring.refraction <= 0) return;
-            if (initObject() && targetOpacity > 0)
+            if (ring != null && ring.refraction <= 0.001) return;
+            if (initObject() && targetOpacity > 0.001)
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 0);
             }
@@ -126,8 +135,8 @@ namespace RW_PlanetAtmosphere
 
         public override void BlendLumen(CommandBuffer commandBuffer, TransparentObject target, object targetSignal, Camera camera, object signal, RenderTargetIdentifier[] colors, RenderTargetIdentifier depth)
         {
-            if (luminescen <= 0) return;
-            if (initObject() && targetOpacity > 0)
+            if (luminescen <= 0.001) return;
+            if (initObject() && targetOpacity > 0.001)
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 3);
             }
@@ -138,18 +147,19 @@ namespace RW_PlanetAtmosphere
         {
             if (target != null && target.IsVolum) return;
             TransparentObject_Cloud cloud = target as TransparentObject_Cloud;
-            if (cloud != null && cloud.refraction <= 0 && cloud.luminescen <= 0) return;
+            if (cloud != null && cloud.refraction <= 0.001 && cloud.luminescen <= 0.001) return;
             TransparentObject_Ring ring = target as TransparentObject_Ring;
-            if (ring != null && ring.refraction <= 0 && cloud.luminescen <= 0) return;
-            if (initObject() && targetOpacity > 0)
+            if (ring != null && ring.refraction <= 0.001 && cloud.luminescen <= 0.001) return;
+            if (initObject() && renderingShadow && targetOpacity > 0.001)
             {
                 commandBuffer.DrawMesh(DefaultRenderingMesh, Matrix4x4.Translate(postion), materialBasicRing, 0, 1);
             }
         }
-
+#if !UNITY
         public override float SettingGUI(float posY, float width, Vector2 outFromTo)
         {
             HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, "renderingShadow".Translate(),width,outFromTo);
+            HelperMethod_GUI.GUIBoolean(ref posY, ref haidWhenGetColose, "haidWhenGetColose".Translate(),width,outFromTo);
             HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
             HelperMethod_GUI.GUIFloat(ref posY, ref opacity, "opacity".Translate(), width, outFromTo, 6);
@@ -164,6 +174,7 @@ namespace RW_PlanetAtmosphere
         public override void ExposeData()
         {
             Scribe_Values.Look(ref renderingShadow,"renderingShadow",true,true);
+            Scribe_Values.Look(ref haidWhenGetColose,"haidWhenGetColose",true,true);
             Scribe_Values.Look(ref ringMapPath,"ringMapPath","Ring/2k_saturn_ring_alpha",true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction,"refraction",6,1,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen,"luminescen",6,0,true);
@@ -173,7 +184,7 @@ namespace RW_PlanetAtmosphere
             HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref normal,"normal",6,Vector3.up,true);
             HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion,"postion",6,Vector3.zero,true);
         }
-
+#endif
         ~TransparentObject_Ring()
         {
             if(materialBasicRing) GameObject.Destroy(materialBasicRing);

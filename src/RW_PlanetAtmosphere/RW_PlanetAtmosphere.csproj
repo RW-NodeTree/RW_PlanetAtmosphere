@@ -5,7 +5,7 @@
 		<AssemblyName>RW_PlanetAtmosphere</AssemblyName>
 		<TargetFramework>net48</TargetFramework>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<Configurations>DebugV13;ReleaseV13;DebugV14;ReleaseV14;DebugV15;ReleaseV15;DebugV16;ReleaseV16</Configurations>
+		<Configurations>DebugV13;ReleaseV13;DebugV14;ReleaseV14;DebugV15;ReleaseV15;DebugV16;ReleaseV16;Unity</Configurations>
 	</PropertyGroup>
 	<PropertyGroup Condition="$(Configuration.Contains('Debug'))">
 		<DebugSymbols>true</DebugSymbols>
@@ -24,30 +24,37 @@
 		<DefineConstants>$(DefineConstants);RELEASE</DefineConstants>
 	</PropertyGroup>
 	<PropertyGroup Condition="$(Configuration.Contains('V13'))">
-		<OutputPath>../../1.3/Assemblies</OutputPath>
-		<DefineConstants>$(DefineConstants);V13</DefineConstants>
 		<GameVersion>V13</GameVersion>
+		<GameVersionNum>1.3</GameVersionNum>
 	</PropertyGroup>
 	<PropertyGroup Condition="$(Configuration.Contains('V14'))">
-		<OutputPath>../../1.4/Assemblies</OutputPath>
-		<DefineConstants>$(DefineConstants);V14</DefineConstants>
 		<GameVersion>V14</GameVersion>
+		<GameVersionNum>1.4</GameVersionNum>
 	</PropertyGroup>
 	<PropertyGroup Condition="$(Configuration.Contains('V15'))">
-		<OutputPath>../../1.5/Assemblies</OutputPath>
-		<DefineConstants>$(DefineConstants);V15</DefineConstants>
 		<GameVersion>V15</GameVersion>
+		<GameVersionNum>1.5</GameVersionNum>
 	</PropertyGroup>
 	<PropertyGroup Condition="$(Configuration.Contains('V16'))">
-		<OutputPath>../../1.6/Assemblies</OutputPath>
-		<DefineConstants>$(DefineConstants);V16</DefineConstants>
 		<GameVersion>V16</GameVersion>
+		<GameVersionNum>1.6</GameVersionNum>
 	</PropertyGroup>
+	
+	<PropertyGroup Condition="$(Configuration.Contains('Unity'))">
+		<GameVersion>UNITY</GameVersion>
+		<GameVersionNum>1.6</GameVersionNum>
+		<OutputPath>../RW_PlanetAtmosphere.Shader/Assets/Plugins</OutputPath>
+		<DefineConstants>$(DefineConstants);UNITY</DefineConstants>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="!$(Configuration.Contains('Unity'))">
+		<OutputPath>../../$(GameVersionNum)/Assemblies</OutputPath>
+		<DefineConstants>$(DefineConstants);$(GameVersion)</DefineConstants>
+	</PropertyGroup>
+
 	<ItemGroup>
-		<PackageReference Condition=" '$(GameVersion)' == 'V13'" Include="Krafs.Rimworld.Ref" Version="1.3.*" GeneratePathProperty="true" />
-		<PackageReference Condition=" '$(GameVersion)' == 'V14'" Include="Krafs.Rimworld.Ref" Version="1.4.*" GeneratePathProperty="true" />
-		<PackageReference Condition=" '$(GameVersion)' == 'V15'" Include="Krafs.Rimworld.Ref" Version="1.5.*" GeneratePathProperty="true" />
-		<PackageReference Condition=" '$(GameVersion)' == 'V16'" Include="Krafs.Rimworld.Ref" Version="1.6.*" GeneratePathProperty="true" />
-		<PackageReference Include="Lib.Harmony" Version="2.*" ExcludeAssets="runtime" />
+		<PackageReference Include="Krafs.Rimworld.Ref" Version="$(GameVersionNum).*" GeneratePathProperty="true" />
+		<PackageReference Condition="!$(Configuration.Contains('Unity'))"  Include="Lib.Harmony" Version="2.*" ExcludeAssets="runtime" />
 	</ItemGroup>
+
 </Project>

@@ -9,15 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e56c4d9f48050284ba10149b688c9866, type: 3}
+  m_Script: {fileID: -1598149838, guid: 854803d126001a63abfe6808ad3dbc12, type: 3}
   m_Name: RingData
   m_EditorClassIdentifier: 
   renderingShadow: 1
   refraction: 1
   luminescen: 0
-  sunRadius: 6960
-  sunDistance: 1495978.9
+  opacity: 1
+  opacityType: 0
   ringFromTo: {x: 100, y: 150}
-  normal: {x: 0, y: 1, z: -0.5}
+  normal: {x: 0, y: 1, z: 0}
   postion: {x: 0, y: 0, z: 0}
-  ringMapPath: ring
+  ringMapPath: Texture/2k_saturn_ring_alpha

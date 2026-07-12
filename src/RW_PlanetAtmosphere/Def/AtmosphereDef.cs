@@ -1,9 +1,11 @@
 using UnityEngine;
-using Verse;
 
 namespace RW_PlanetAtmosphere
 {
-    // [CreateAssetMenu(fileName = "AtmosphereDef", menuName = "Scriptable Object/AtmosphereDef", order = 0)]
+    
+#if UNITY
+    [CreateAssetMenu(fileName = "AtmosphereDef", menuName = "Scriptable Object/AtmosphereDef", order = 1)]
+#endif
     public class AtmosphereDef : ObjectDef
     {
         public Vector2Int translucentLUTSize    = new Vector2Int(256, 256);

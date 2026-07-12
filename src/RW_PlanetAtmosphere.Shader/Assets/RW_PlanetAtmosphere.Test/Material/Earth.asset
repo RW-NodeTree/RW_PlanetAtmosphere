@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45e0ff12f03312e4496454a4137178ee, type: 3}
+  m_Script: {fileID: -118443025, guid: 854803d126001a63abfe6808ad3dbc12, type: 3}
   m_Name: Earth
   m_EditorClassIdentifier: 
   translucentLUTSize: {x: 256, y: 256}
@@ -30,7 +30,7 @@ MonoBehaviour:
   D_OZone: 0.15
   reayleigh_scatter: {x: 0.46278, y: 1.25945, z: 3.10319, w: 11.69904}
   molecule_absorb: {x: 0, y: 0, z: 0, w: 0}
-  OZone_absorb: {x: 0, y: 0, z: 0, w: 6.4}
+  OZone_absorb: {x: 0.21195, y: 0.20962, z: 0.01686, w: 6.4}
   mie_scatter: {x: 3.996, y: 3.996, z: 3.996, w: 3.996}
   mie_absorb: {x: 4.44, y: 4.44, z: 4.44, w: 4.44}
   mie_eccentricity: {x: 0.618, y: 0.618, z: 0.618, w: 0.618}

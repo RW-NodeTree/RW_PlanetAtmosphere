@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if V13 || V14 || V15
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using System;
@@ -10,7 +11,6 @@ using Verse;
 
 namespace RW_PlanetAtmosphere.Patch
 {
-#if V13 || V14 || V15
     [HarmonyPatch(typeof(WorldLayer_Glow))]
     internal static class WorldLayer_Glow_Patcher
     {
@@ -64,5 +64,5 @@ namespace RW_PlanetAtmosphere.Patch
         }
 
     }
-#endif
 }
+#endif

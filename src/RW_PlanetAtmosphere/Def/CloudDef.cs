@@ -1,12 +1,14 @@
 using UnityEngine;
-using Verse;
 
 namespace RW_PlanetAtmosphere
 {
-    // [CreateAssetMenu(fileName = "CloudDef", menuName = "Scriptable Object/CloudDef", order = 1)]
+#if UNITY
+    [CreateAssetMenu(fileName = "CloudDef", menuName = "Scriptable Object/CloudDef", order = 2)]
+#endif
     public class CloudDef : ObjectDef
     {
         public bool renderingShadow     = true;
+        public bool haidWhenGetColose   = true;
         public float refraction         = 2;
         public float luminescen         = 0;
         public float opacity            = 1;

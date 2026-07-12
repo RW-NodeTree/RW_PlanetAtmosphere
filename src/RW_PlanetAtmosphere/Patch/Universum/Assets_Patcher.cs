@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿#if !UNITY
+using HarmonyLib;
 using RimWorld;
 using RimWorld.Planet;
 using System;
@@ -12,3 +13,4 @@ namespace RW_PlanetAtmosphere.Patch.Universum
 {
     
 }
+#endif

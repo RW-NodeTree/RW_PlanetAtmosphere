@@ -1,38 +1,134 @@
-﻿using Verse;
-using RimWorld;
-using RimWorld.Planet;
+﻿
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.PlayerLoop;
 using System;
+#if !UNITY
+using Verse;
+using RimWorld;
+using RimWorld.Planet;
+#endif
+
 
 namespace RW_PlanetAtmosphere
 {
+
+
+#if UNITY
+    public class AtmosphereSettings : MonoBehaviour
+#else
     public class AtmosphereSettings : ModSettings
+#endif
     {
-        public static bool                      needUpdate              = true;
-        public static float                     gamma                   = 1;
-        public static float                     refraction              = 1.75f;
-        public static float                     luminescen              = 0.25f;
-        public static float                     sunRadius               = 6960 * scale;
-        public static float                     sunDistance             = 1495978.92f * scale;
-        public static float                     planetRadius            = 100;
-        public static float                     renderingSizeFactor     = 1;
-        public static float                     closeRenderingDistance  = 0.5f;
-        public static Vector4                   sunColor                = new Vector4(0.8f,0.72f,0.65f,0);
-        public static TonemapType               tonemapType             = TonemapType.SEUSTonemap;
-        public static string                    sunFlareTexturePath     = "Effect/sunFlare";
-        public static List<TransparentObject>   objects                 = new List<TransparentObject>() {new TransparentObject_Atmosphere(), new TransparentObject_Cloud()};
+
+        public static AtmosphereSettings Current
+        {
+            get
+            {
+#if UNITY
+                if (!current)
+#else
+                if (current == null)
+#endif
+                {
+#if UNITY
+                    GameObject gameObject = new GameObject(nameof(AtmosphereSettings));
+                    gameObject.AddComponent<AtmosphereSettings>();
+#else
+                    LoadedModManager.GetMod<AtmosphereMod>();
+#endif
+                }
+                return current;
+            }
+        }
+
+        public bool                     needUpdate              = true;
+        public float                    gamma                   = 1;
+        public float                    refraction              = 1.75f;
+        public float                    luminescen              = 0.25f;
+        public float                    sunRadius               = 6960 * scale;
+        public float                    sunDistance             = 1495978.92f * scale;
+        public float                    planetRadius            = 63.71393f * scale;
+        public float                    renderingSizeFactor     = 1;
+        public float                    closeRenderingDistance  = 0.5f;
+        public Vector4                  sunColor                = new Vector4(0.8f,0.72f,0.65f,0);
+        public TonemapType              tonemapType             = TonemapType.SEUSTonemap;
+        public string                   sunFlareTexturePath     = "Effect/sunFlare";
+        public List<TransparentObject>  objects                 = new List<TransparentObject>() {new TransparentObject_Atmosphere(), new TransparentObject_Cloud()};
 
 
-        private static bool dropDownOpened = false;
-        private static float sizeY = 0;
-        private static Vector2 scrollPos = Vector2.zero;
-        private static List<bool> subMenuDropDownOpened = new List<bool>();
+#if UNITY
+        private Camera _camera;
+        public Camera TargetCamera
+        {
+            get
+            {
+                if (!_camera && !gameObject.TryGetComponent<Camera>(out _camera))
+                {
+                    _camera = Camera.main;
+                }
+        
+                return _camera;
+            }
+        }
 
+        public Camera EditorCamera;
+        // public Camera TargetCamera;
+        internal const float scale = 1f;
 
+#else
         internal const float scale = 100f/63.71393f;
 
+#endif
+
+        public AtmosphereSettings()
+        {
+            current = this;
+        }
+        private static AtmosphereSettings current = null;
+
+#if UNITY
+
+        private int debugViewIndex = -1;
+        private void OnGUI()
+        {
+            if (GUI.Button(new Rect(0,0,32,32),"-"))
+            {
+                if(debugViewIndex >= 0) debugViewIndex--;
+            }
+            GUI.Label(new Rect(32, 0, 64, 32), debugViewIndex.ToString());
+            if (GUI.Button(new Rect(96,0,32,32),"+"))
+            {
+                if(debugViewIndex < objects.Count - 1) debugViewIndex++;
+            }
+            if (debugViewIndex >= 0 && debugViewIndex < objects.Count)
+            {
+                objects[debugViewIndex].DebugGUI(new Rect(0,32,1024,768));
+            }
+        }
+#else
+        private bool dropDownOpened = false;
+        private float sizeY = 0;
+        private Vector2 scrollPos = Vector2.zero;
+        private List<bool> subMenuDropDownOpened = new List<bool>();
+        
+        private class DebugViwer : Window
+        {
+            public DebugViwer(TransparentObject transparentObject)
+            {
+                this.transparentObject = transparentObject;
+                base.doCloseX = true;
+                base.draggable = true;
+                base.doWindowBackground = true;
+            }
+            private TransparentObject transparentObject;
+            public override void DoWindowContents(Rect inRect)
+            {
+                inRect.width *= Prefs.UIScale;
+                inRect.height *= Prefs.UIScale;
+                transparentObject.DebugGUI(inRect);
+            }
+        }
         public override void ExposeData()
         {
             base.ExposeData();
@@ -58,7 +154,7 @@ namespace RW_PlanetAtmosphere
             }
         }
 
-        public static void DoWindowContents(Rect inRect)
+        public void DoWindowContents(Rect inRect)
         {
             if(objects == null)
             {
@@ -127,7 +223,19 @@ namespace RW_PlanetAtmosphere
 
                     Text.Font = GameFont.Small;
                     sizeY += 48;
-                    if(dropDownOpened) sizeY = transparentObject.SettingGUI(sizeY,ScrollViewSize.x, viewingFromTo);
+                    if(dropDownOpened)
+                    {
+                        sizeY = transparentObject.SettingGUI(sizeY, ScrollViewSize.x, viewingFromTo);
+                        if (Prefs.DevMode)
+                        {
+                            if (Widgets.ButtonText(new Rect(0, sizeY, ScrollViewSize.x, 32), "Show Dev View"))
+                            {
+                                DebugViwer debugViwer = new DebugViwer(transparentObject);
+                                Find.WindowStack.Add(debugViwer);
+                            }
+                            sizeY += 32;
+                        }
+                    }
                     subMenuDropDownOpened[i] = dropDownOpened;
                 }
                 subMenuDropDownOpened.RemoveRange(objects.Count,subMenuDropDownOpened.Count - objects.Count);
@@ -203,12 +311,13 @@ namespace RW_PlanetAtmosphere
 
         public override void DoSettingsWindowContents(Rect inRect)
         {
-            AtmosphereSettings.DoWindowContents(inRect);
+            AtmosphereSettings.Current.DoWindowContents(inRect);
         }
 
         public override string SettingsCategory()
         {
             return "Atmosphere".Translate();
         }
+#endif
     }
 }

@@ -1,5 +1,4 @@
-﻿using RW_PlanetAtmosphere;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -12,22 +11,45 @@ namespace RW_PlanetAtmosphere
 {
 
     [RequireComponent(typeof(Camera))]
+    [RequireComponent(typeof(AtmosphereSettings))]
     public class CameraDriver : MonoBehaviour
     {
         public bool showData = false;
         public float dragPlane = 64;
         public float heightLimitOffset = 1;
         public Light senceLight;
+        public ObjectDef[] objects;
         private Vector2 mousePos;
         private Vector2 lightDir;
         private Vector3 viewPos;
         private Camera m_camera;
         private Transform m_transform;
         private Transform m_lightTransform;
+        private RenderTexture renderTexture;
+        private CommandBuffer depthCaptherCommandBuffer;
 
         private void Start()
         {
             mousePos = Input.mousePosition;
+            if (objects != null)
+            {
+                AtmosphereSettings settings = AtmosphereSettings.Current;
+                settings.objects.Clear();
+                settings.objects.Capacity = objects.Length;
+                foreach(ObjectDef objectDef in objects) settings.objects.Add(objectDef.TransparentObject);
+                settings.objects.RemoveAll(x => x == null);
+                settings.needUpdate = true;
+#if UNITY_EDITOR
+                settings.EditorCamera = SceneView.lastActiveSceneView?.camera;
+#endif
+                depthCaptherCommandBuffer = new CommandBuffer();
+                depthCaptherCommandBuffer.name = "depthCapther";
+                settings.TargetCamera.AddCommandBuffer(CameraEvent.AfterEverything, depthCaptherCommandBuffer);
+            }
+            if (ShaderLoader.StaticConstructorTriger)
+            {
+                ShaderLoader.StaticConstructorTriger = false;
+            }
         }
         private void Update()
         {
@@ -79,15 +101,35 @@ namespace RW_PlanetAtmosphere
                 ));
             }
             mousePos = Input.mousePosition;
+
+            AtmosphereSettings settings = AtmosphereSettings.Current;
+            if (settings.needUpdate)
+            {
+                foreach(var obj in settings.objects)
+                {
+                    obj.needUpdate = true;
+                }
+            }
+
+            if(!renderTexture || renderTexture.width != Screen.width || renderTexture.height != Screen.height)
+            {
+                if (renderTexture)
+                {
+                    GameObject.Destroy(renderTexture);
+                }
+                renderTexture = new RenderTexture(Screen.width, Screen.height, 0);
+            }
+            BuiltinRenderTextureType cameraDepth = m_camera.actualRenderingPath > RenderingPath.Forward ? BuiltinRenderTextureType.ResolvedDepth : BuiltinRenderTextureType.Depth;
+            depthCaptherCommandBuffer.Clear();
+            if(showData) depthCaptherCommandBuffer.Blit(cameraDepth, renderTexture);
+            
         }
 
         private void OnGUI()
         {
-            if(showData)
+            if (showData)
             {
-                GUI.Label(new Rect(0, 0, 128, 32), viewPos.ToString());
-                GUI.Label(new Rect(0, 32, 128, 32), lightDir.ToString());
-                GUI.Label(new Rect(0, 64, 128, 32), mousePos.ToString());
+                GUI.DrawTexture(new Rect(0,0,512, 512), renderTexture, ScaleMode.ScaleToFit);
             }
         }
     }
