@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.009144403, g: 0.009912699, b: 0.016815037, a: 1}
+  m_IndirectSpecularColor: {r: 0.009211424, g: 0.009972987, b: 0.016872497, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -151,7 +151,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 1, b: 1, a: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 90
@@ -418,8 +418,9 @@ MonoBehaviour:
   renderingSizeFactor: 1
   closeRenderingDistance: 100
   sunColor: {x: 0.8, y: 0.72, z: 0.65, w: 0}
-  tonemapType: 3
+  tonemapType: 6
   sunFlareTexturePath: Texture/sunFlare
+  EditorCamera: {fileID: 0}
 --- !u!114 &1959794540
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -232,7 +232,7 @@
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosA.xyz + i.worldSpaceZeroPoint);
                 o.reflection.xyz = max(cloudColorA.xyz * _LightColor0.xyz * cloudColorA.w * refraction,0);
                 if(abs(diffusePower) >= 0.001) o.reflection.xyz *= saturate(dot(normalize(cloudPosA.xyz) * diffusePower,sun));
-                o.reflection.w = cloudColorA.w;
+                o.reflection.w = diffusePower < -0.001 ? 0 : cloudColorA.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
                 return o;
@@ -278,7 +278,7 @@
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosB.xyz + i.worldSpaceZeroPoint);
                 o.reflection.xyz = max(cloudColorB.xyz * _LightColor0.xyz * cloudColorB.w * refraction, 0);
                 if(abs(diffusePower) >= 0.001) o.reflection.xyz *= saturate(dot(normalize(cloudPosB.xyz) * diffusePower,sun));
-                o.reflection.w = cloudColorB.w;
+                o.reflection.w = diffusePower < -0.001 ? 0 : cloudColorB.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
                 return o;

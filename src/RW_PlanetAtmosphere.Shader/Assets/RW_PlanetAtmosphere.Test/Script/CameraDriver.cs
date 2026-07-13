@@ -111,17 +111,20 @@ namespace RW_PlanetAtmosphere
                 }
             }
 
-            if(!renderTexture || renderTexture.width != Screen.width || renderTexture.height != Screen.height)
-            {
-                if (renderTexture)
-                {
-                    GameObject.Destroy(renderTexture);
-                }
-                renderTexture = new RenderTexture(Screen.width, Screen.height, 0);
-            }
-            BuiltinRenderTextureType cameraDepth = m_camera.actualRenderingPath > RenderingPath.Forward ? BuiltinRenderTextureType.ResolvedDepth : BuiltinRenderTextureType.Depth;
             depthCaptherCommandBuffer.Clear();
-            if(showData) depthCaptherCommandBuffer.Blit(cameraDepth, renderTexture);
+            if (showData)
+            {
+                if (!renderTexture || renderTexture.width != Screen.width || renderTexture.height != Screen.height)
+                {
+                    if (renderTexture)
+                    {
+                        GameObject.Destroy(renderTexture);
+                    }
+                    renderTexture = new RenderTexture(Screen.width, Screen.height, 0);
+                }
+                BuiltinRenderTextureType cameraDepth = m_camera.actualRenderingPath > RenderingPath.Forward ? BuiltinRenderTextureType.ResolvedDepth : BuiltinRenderTextureType.Depth;
+                depthCaptherCommandBuffer.Blit(cameraDepth, renderTexture);
+            }
             
         }
 
