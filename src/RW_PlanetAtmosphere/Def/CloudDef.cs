@@ -8,12 +8,12 @@ namespace RW_PlanetAtmosphere
     public class CloudDef : ObjectDef
     {
         public bool renderingShadow     = true;
-        public bool haidWhenGetColose   = true;
+        public bool hideWhenGetClose    = true;
         public float refraction         = 2;
         public float luminescen         = 0;
         public float opacity            = 1;
         public float opacityType        = 0;
-        public float radius             = 63.76393f * AtmosphereSettings.scale;
+        public float radius             = 63.76393f * PlanetAtmosphereRenderer.scale;
         public float diffusePower       = 16;
         public Vector3 normal           = Vector3.up;
         public Vector3 tangent          = Vector3.right;

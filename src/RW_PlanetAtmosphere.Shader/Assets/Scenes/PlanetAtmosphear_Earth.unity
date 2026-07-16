@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.009144403, g: 0.009912699, b: 0.016815037, a: 1}
+  m_IndirectSpecularColor: {r: 0.009211424, g: 0.009972987, b: 0.016872497, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -214,7 +214,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1070748985
 GameObject:
@@ -309,7 +309,7 @@ Transform:
   m_LocalScale: {x: 127.42786, y: 127.42786, z: 127.42786}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1959794533
 GameObject:
@@ -323,7 +323,7 @@ GameObject:
   - component: {fileID: 1959794535}
   - component: {fileID: 1959794534}
   - component: {fileID: 1959794537}
-  - component: {fileID: 1959794538}
+  - component: {fileID: 1959794539}
   m_Layer: 0
   m_Name: WorldCamera
   m_TagString: Untagged
@@ -394,7 +394,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1959794537
 MonoBehaviour:
@@ -416,7 +416,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f714c43a99db80f489f75009b9f792fc, type: 2}
   - {fileID: 11400000, guid: 3a45d485fb3b27d419776fb8e6630137, type: 2}
   - {fileID: 11400000, guid: 401ed2872d00ec3c785862993b0dc41d, type: 2}
---- !u!114 &1959794538
+--- !u!114 &1959794539
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -425,7 +425,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1959794533}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -554594532, guid: 854803d126001a63abfe6808ad3dbc12, type: 3}
+  m_Script: {fileID: 656065289, guid: 854803d126001a63abfe6808ad3dbc12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   needUpdate: 1
@@ -436,8 +436,7 @@ MonoBehaviour:
   sunDistance: 1495978.9
   planetRadius: 63.71393
   renderingSizeFactor: 1
-  closeRenderingDistance: 125
-  sunColor: {x: 0.8, y: 0.72, z: 0.65, w: 0}
+  closeRenderingDistance: 75
   tonemapType: 6
   sunFlareTexturePath: Texture/sunFlare
   EditorCamera: {fileID: 0}

@@ -3,6 +3,7 @@
 	<gamma>Gamma</gamma>
 	<renderingShadow>Rendering Shadow</renderingShadow>
 	<Atmosphere>Atmosphere</Atmosphere>
+	<hideWhenGetClose>Hide When Get Close</hideWhenGetClose>
 	<refraction>Refraction</refraction>
 	<luminescen>Luminescen</luminescen>
 	<sunRadius>Sun Radius</sunRadius>

@@ -11,7 +11,7 @@ namespace RW_PlanetAtmosphere
 {
 
     [RequireComponent(typeof(Camera))]
-    [RequireComponent(typeof(AtmosphereSettings))]
+    [RequireComponent(typeof(PlanetAtmosphereRenderer))]
     public class CameraDriver : MonoBehaviour
     {
         public bool showData = false;
@@ -27,28 +27,25 @@ namespace RW_PlanetAtmosphere
         private Transform m_lightTransform;
         private RenderTexture renderTexture;
         private CommandBuffer depthCaptherCommandBuffer;
+        private PlanetAtmosphereRenderer  m_planetAtmosphereRenderer;
 
         private void Start()
         {
             mousePos = Input.mousePosition;
             if (objects != null)
             {
-                AtmosphereSettings settings = AtmosphereSettings.Current;
-                settings.objects.Clear();
-                settings.objects.Capacity = objects.Length;
-                foreach(ObjectDef objectDef in objects) settings.objects.Add(objectDef.TransparentObject);
-                settings.objects.RemoveAll(x => x == null);
-                settings.needUpdate = true;
+                m_planetAtmosphereRenderer = PlanetAtmosphereRenderer.CurrentRenderer;
+                m_planetAtmosphereRenderer.objects.Clear();
+                m_planetAtmosphereRenderer.objects.Capacity = objects.Length;
+                foreach(ObjectDef objectDef in objects) m_planetAtmosphereRenderer.objects.Add(objectDef.TransparentObject);
+                m_planetAtmosphereRenderer.objects.RemoveAll(x => x == null);
+                m_planetAtmosphereRenderer.needUpdate = true;
 #if UNITY_EDITOR
-                settings.EditorCamera = SceneView.lastActiveSceneView?.camera;
+                m_planetAtmosphereRenderer.EditorCamera = SceneView.lastActiveSceneView?.camera;
 #endif
                 depthCaptherCommandBuffer = new CommandBuffer();
                 depthCaptherCommandBuffer.name = "depthCapther";
-                settings.TargetCamera.AddCommandBuffer(CameraEvent.AfterEverything, depthCaptherCommandBuffer);
-            }
-            if (ShaderLoader.StaticConstructorTriger)
-            {
-                ShaderLoader.StaticConstructorTriger = false;
+                m_planetAtmosphereRenderer.TargetCamera.AddCommandBuffer(CameraEvent.AfterEverything, depthCaptherCommandBuffer);
             }
         }
         private void Update()
@@ -102,10 +99,9 @@ namespace RW_PlanetAtmosphere
             }
             mousePos = Input.mousePosition;
 
-            AtmosphereSettings settings = AtmosphereSettings.Current;
-            if (settings.needUpdate)
+            if (m_planetAtmosphereRenderer.needUpdate)
             {
-                foreach(var obj in settings.objects)
+                foreach(var obj in m_planetAtmosphereRenderer.objects)
                 {
                     obj.needUpdate = true;
                 }

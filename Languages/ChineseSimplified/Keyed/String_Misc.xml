@@ -3,6 +3,7 @@
 	<gamma>伽马值</gamma>
 	<renderingShadow>渲染阴影</renderingShadow>
 	<Atmosphere>大气层</Atmosphere>
+	<hideWhenGetClose>靠近时隐藏</hideWhenGetClose>
 	<refraction>反射倍数</refraction>
 	<luminescen>自发光亮度</luminescen>
 	<sunRadius>太阳半径</sunRadius>

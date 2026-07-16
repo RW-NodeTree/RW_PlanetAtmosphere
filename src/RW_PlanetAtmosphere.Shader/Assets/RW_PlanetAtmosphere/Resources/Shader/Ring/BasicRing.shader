@@ -16,6 +16,8 @@
         #include "../PBAttach.cginc"
         #include "../PBSky.cginc"
 
+        float3 normal;
+        float2 ringFromTo;
         float refraction;
         float luminescen;
         float opacity;
@@ -52,7 +54,7 @@
                 float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 // float3 pos = i.worldSpaceNearPos;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
-                if(linearDepth >= 1) discard;
+                if(depth >= 1 || depth <= 0) discard;
                 // pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
                 sun -= i.worldSpaceZeroPoint;
@@ -64,7 +66,7 @@
 
                 float t;
                 float3 crossPoint;
-                float4 color = getColorFromRing(fargPos,sun,crossPoint,t);
+                float4 color = getColorFromRing(fargPos,sun,normal,ringFromTo,crossPoint,t);
                 float4 shadowFactor = lerp(1.0 - color.w, 1.0, saturate(max(length(fargPos) / maxDistance, 0)));
                 shadowFactor.w = 1.0;
                 return shadowFactor;
@@ -96,11 +98,12 @@
 
                 float t;
                 float3 crossPoint;
-                float4 color = getColorFromRing(pos,eye,crossPoint,t);
+                float4 color = getColorFromRing(pos,eye,normal,ringFromTo,crossPoint,t);
                 float4 clipSpacePos = UnityWorldToClipPos(crossPoint + i.worldSpaceZeroPoint);
                 o.transFactor = 1.0-color.w;
                 // o.transFactor.w = 1;
                 o.depth = clipSpacePos.z / clipSpacePos.w;
+                if(o.depth > 1 || o.depth <= 0) discard;
                 return o;
             }
 
@@ -130,12 +133,13 @@
 
                 float t;
                 float3 crossPoint;
-                float4 color = getColorFromRing(pos,eye,crossPoint,t);
+                float4 color = getColorFromRing(pos,eye,normal,ringFromTo,crossPoint,t);
                 float4 clipSpacePos = UnityWorldToClipPos(crossPoint + i.worldSpaceZeroPoint);
                 o.reflection.xyz = color.xyz*_LightColor0.xyz*color.w*refraction;
                 o.reflection.w = color.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
+                if(o.depth > 1 || o.depth <= 0) discard;
                 return o;
             }
 
@@ -165,12 +169,13 @@
 
                 float t;
                 float3 crossPoint;
-                float4 color = getColorFromRing(pos,eye,crossPoint,t);
+                float4 color = getColorFromRing(pos,eye,normal,ringFromTo,crossPoint,t);
                 float4 clipSpacePos = UnityWorldToClipPos(crossPoint + i.worldSpaceZeroPoint);
                 o.reflection.xyz = color.xyz*color.w*luminescen;
                 o.reflection.w = 0;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
+                if(o.depth > 1 || o.depth <= 0) discard;
                 return o;
             }
 

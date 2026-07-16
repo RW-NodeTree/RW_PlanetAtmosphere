@@ -18,19 +18,14 @@ namespace RW_PlanetAtmosphere
     #endif
     {
         public bool needUpdate = true;
-
-        public static float sunRadius = 6960;
-        public static float sunDistance = 1495978.92f;
-        public static readonly int Reflection = Shader.PropertyToID("SimpleSpaceFlight_Reflection");
-        public static readonly int DepthTexel = Shader.PropertyToID("SimpleSpaceFlight_DepthTexel");
-        public static readonly int Reflection_volum = Shader.PropertyToID("SimpleSpaceFlight_Reflection_volum");
-        public static readonly int DepthTexel_volum = Shader.PropertyToID("SimpleSpaceFlight_DepthTexel_volum");
+        public static readonly int Reflection = Shader.PropertyToID("RW_PlanetAtmosphere_Reflection");
+        public static readonly int DepthTexel = Shader.PropertyToID("RW_PlanetAtmosphere_DepthTexel");
+        public static readonly int Reflection_volum = Shader.PropertyToID("RW_PlanetAtmosphere_Reflection_volum");
+        public static readonly int DepthTexel_volum = Shader.PropertyToID("RW_PlanetAtmosphere_DepthTexel_volum");
         public static readonly int CameraDepthTexture = Shader.PropertyToID("_CameraDepthTexture");
         public static readonly int ColorTex = Shader.PropertyToID("ColorTex");
         public static readonly int DepthTex = Shader.PropertyToID("DepthTex");
         public static readonly int MainColor = Shader.PropertyToID("MainColor");
-        public static readonly int propId_sunRadius = Shader.PropertyToID("sunRadius");
-        public static readonly int propId_sunDistance = Shader.PropertyToID("sunDistance");
         // public static readonly Dictionary<string, Shader> shaders = new Dictionary<string, Shader>();
         // public static readonly Dictionary<string, Texture2D> texture2Ds = new Dictionary<string, Texture2D>();
         private static Mesh defaultRenderingMesh;
@@ -203,8 +198,6 @@ namespace RW_PlanetAtmosphere
                 transparentObjects.ForEach(x => x.BeforeRendering(commandBuffer, camera));
                 BuiltinRenderTextureType cameraDepth = camera.actualRenderingPath > RenderingPath.Forward ? BuiltinRenderTextureType.ResolvedDepth : BuiltinRenderTextureType.Depth;
 
-                commandBuffer.SetGlobalFloat(propId_sunRadius, sunRadius);
-                commandBuffer.SetGlobalFloat(propId_sunDistance, sunDistance);
                 commandBuffer.SetRenderTarget(BuiltinRenderTextureType.CameraTarget);
                 commandBuffer.SetGlobalTexture(CameraDepthTexture, cameraDepth);
                 if(beforeBackgroundBlendShadow != null) beforeBackgroundBlendShadow(commandBuffer);
@@ -343,7 +336,7 @@ namespace RW_PlanetAtmosphere
 
         public static float LuminescenTransaction(float current, float luminescen, float refraction, ref float vel)
         {
-            AtmosphereSettings setting = AtmosphereSettings.Current;
+            PlanetAtmosphereRenderer setting = PlanetAtmosphereRenderer.CurrentRenderer;
 #if UNITY
             return Mathf.SmoothDamp(current, setting.TargetCamera.transform.position.magnitude >= setting.closeRenderingDistance ? luminescen : (luminescen + refraction) * 0.5f, ref vel, 0.15f);
 #else

@@ -19,8 +19,8 @@ namespace RW_PlanetAtmosphere
         public float            gamma               = 1;
         public float            refraction          = 1.75f;
         public float            luminescen          = 0.25f;
-        public float            sunRadius           = 6960 * AtmosphereSettings.scale;
-        public float            sunDistance         = 1495978.92f * AtmosphereSettings.scale;
+        public float            sunRadius           = 6960 * PlanetAtmosphereRenderer.scale;
+        public float            sunDistance         = 1495978.92f * PlanetAtmosphereRenderer.scale;
         public float            planetRadius        = 100;
         public float            renderingSizeFactor = 1;
         public string           sunFlareTexturePath = "Effect/sunFlare";

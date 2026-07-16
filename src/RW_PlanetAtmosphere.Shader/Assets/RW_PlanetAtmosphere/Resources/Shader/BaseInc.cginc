@@ -79,5 +79,5 @@ float3 worldPosFromDepthMap(v2f data, out float originDepth, out float linear01D
     linear01Depth = uv.x / uv.y;
     linear01Depth -= data.cameraSpaceNearPos.z;
     linear01Depth /= data.cameraSpaceFarPos.z - data.cameraSpaceNearPos.z;
-    return lerp(data.worldSpaceNearPos,data.worldSpaceFarPos,linear01Depth);
+    return lerp(data.worldSpaceNearPos, data.worldSpaceFarPos, linear01Depth);
 }

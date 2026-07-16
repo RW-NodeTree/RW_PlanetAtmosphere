@@ -64,32 +64,33 @@ namespace RW_PlanetAtmosphere
 
         #region propsIDs
 
-        private static readonly int propId_exposure              = Shader.PropertyToID("exposure");
-        private static readonly int propId_deltaL                = Shader.PropertyToID("deltaL");
-        private static readonly int propId_deltaW                = Shader.PropertyToID("deltaW");
-        private static readonly int propId_lengthL               = Shader.PropertyToID("lengthL");
-        private static readonly int propId_lengthW               = Shader.PropertyToID("lengthW");
-        private static readonly int propId_minh                  = Shader.PropertyToID("minh");
-        private static readonly int propId_maxh                  = Shader.PropertyToID("maxh");
-        private static readonly int propId_H_Reayleigh           = Shader.PropertyToID("H_Reayleigh");
-        private static readonly int propId_H_Mie                 = Shader.PropertyToID("H_Mie");
-        private static readonly int propId_H_OZone               = Shader.PropertyToID("H_OZone");
-        private static readonly int propId_D_OZone               = Shader.PropertyToID("D_OZone");
-        private static readonly int propId_reayleigh_scatter     = Shader.PropertyToID("reayleigh_scatter");
-        private static readonly int propId_molecule_absorb       = Shader.PropertyToID("molecule_absorb");
-        private static readonly int propId_OZone_absorb          = Shader.PropertyToID("OZone_absorb");
-        private static readonly int propId_mie_scatter           = Shader.PropertyToID("mie_scatter");
-        private static readonly int propId_mie_absorb            = Shader.PropertyToID("mie_absorb");
-        private static readonly int propId_mie_eccentricity      = Shader.PropertyToID("mie_eccentricity");
-        private static readonly int propId_scatterLUTSize        = Shader.PropertyToID("scatterLUTSize");
-        private static readonly int propId_translucentLUT        = Shader.PropertyToID("translucentLUT");
-        private static readonly int propId_outSunLightLUT        = Shader.PropertyToID("outSunLightLUT");
-        private static readonly int propId_inSunLightLUT         = Shader.PropertyToID("inSunLightLUT");
-        private static readonly int propId_scatterLUT_Reayleigh  = Shader.PropertyToID("scatterLUT_Reayleigh");
-        private static readonly int propId_scatterLUT_Mie        = Shader.PropertyToID("scatterLUT_Mie");
-        // private static readonly int propId_ahlwStartInfo         = Shader.PropertyToID("ahlwStartInfo");
-        // private static readonly int propId_ahlwEndInfo           = Shader.PropertyToID("ahlwEndInfo");
-        // private static readonly int propId_startDepthInfo        = Shader.PropertyToID("startDepthInfo");
+        private static readonly int propId_exposure              = Shader.PropertyToID(nameof(exposure));
+
+        private static readonly int propId_deltaL                = Shader.PropertyToID(nameof(deltaL));
+        private static readonly int propId_deltaW                = Shader.PropertyToID(nameof(deltaW));
+        private static readonly int propId_lengthL               = Shader.PropertyToID(nameof(lengthL));
+        private static readonly int propId_lengthW               = Shader.PropertyToID(nameof(lengthW));
+        private static readonly int propId_minh                  = Shader.PropertyToID(nameof(minh));
+        private static readonly int propId_maxh                  = Shader.PropertyToID(nameof(maxh));
+        private static readonly int propId_H_Reayleigh           = Shader.PropertyToID(nameof(H_Reayleigh));
+        private static readonly int propId_H_Mie                 = Shader.PropertyToID(nameof(H_Mie));
+        private static readonly int propId_H_OZone               = Shader.PropertyToID(nameof(H_OZone));
+        private static readonly int propId_D_OZone               = Shader.PropertyToID(nameof(D_OZone));
+        private static readonly int propId_reayleigh_scatter     = Shader.PropertyToID(nameof(reayleigh_scatter));
+        private static readonly int propId_molecule_absorb       = Shader.PropertyToID(nameof(molecule_absorb));
+        private static readonly int propId_OZone_absorb          = Shader.PropertyToID(nameof(OZone_absorb));
+        private static readonly int propId_mie_scatter           = Shader.PropertyToID(nameof(mie_scatter));
+        private static readonly int propId_mie_absorb            = Shader.PropertyToID(nameof(mie_absorb));
+        private static readonly int propId_mie_eccentricity      = Shader.PropertyToID(nameof(mie_eccentricity));
+        private static readonly int propId_scatterLUTSize        = Shader.PropertyToID(nameof(scatterLUTSize));
+        private static readonly int propId_translucentLUT        = Shader.PropertyToID(nameof(translucentLUT));
+        private static readonly int propId_outSunLightLUT        = Shader.PropertyToID(nameof(outSunLightLUT));
+        private static readonly int propId_inSunLightLUT         = Shader.PropertyToID(nameof(inSunLightLUT));
+        private static readonly int propId_scatterLUT_Reayleigh  = Shader.PropertyToID(nameof(scatterLUT_Reayleigh));
+        private static readonly int propId_scatterLUT_Mie        = Shader.PropertyToID(nameof(scatterLUT_Mie));
+        // private static readonly int propId_ahlwStartInfo         = Shader.PropertyToID(nameof(ahlwStartInfo));
+        // private static readonly int propId_ahlwEndInfo           = Shader.PropertyToID(nameof(ahlwEndInfo));
+        // private static readonly int propId_startDepthInfo        = Shader.PropertyToID(nameof(startDepthInfo));
 
         #endregion
 
@@ -224,8 +225,9 @@ namespace RW_PlanetAtmosphere
                         }
                         distanceLUTs.Clear();
                     }
-                    long id = (long)Math.Round(Math.Log(sunDistance, 1.0625f));
-                    bool needUpdateLight = !distanceLUTs.TryGetValue((id, sunRadius), out var luts);
+                    PlanetAtmosphereRenderer renderer = PlanetAtmosphereRenderer.CurrentRenderer;
+                    long id = (long)Math.Round(Math.Log(renderer.sunDistance, 1.0625f));
+                    bool needUpdateLight = !distanceLUTs.TryGetValue((id, renderer.sunRadius), out var luts);
                     outSunLightLUT = luts.outSunLightLUT;
                     inSunLightLUT = luts.inSunLightLUT;
                     scatterLUT_Reayleigh = luts.scatterLUT_Reayleigh;
@@ -294,7 +296,7 @@ namespace RW_PlanetAtmosphere
                         outSunLightLUT.Create();
                         // Debug.Log($"{outSunLightLUT.width}, {outSunLightLUT.height}, IsCreated = {outSunLightLUT.IsCreated()}, InstanceID = {outSunLightLUT.GetInstanceID()}");
                     }
-                    distanceLUTs[(id, sunRadius)] = (outSunLightLUT, inSunLightLUT, scatterLUT_Reayleigh, scatterLUT_Mie);
+                    distanceLUTs[(id, renderer.sunRadius)] = (outSunLightLUT, inSunLightLUT, scatterLUT_Reayleigh, scatterLUT_Mie);
 
                     if (needUpdate || needUpdateLight)
                     {
@@ -450,57 +452,57 @@ namespace RW_PlanetAtmosphere
 #if !UNITY
         public override float SettingGUI(float posY, float width, Vector2 outFromTo)
         {
-            HelperMethod_GUI.GUIVec2(ref posY,ref translucentLUTSize,"translucentLUTSize".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec2(ref posY,ref outSunLightLUTSize,"outSunLightLUTSize".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec2(ref posY,ref inSunLightLUTSize,"inSunLightLUTSize".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec4(ref posY,ref scatterLUTSize,"scatterLUTSize".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec3(ref posY,ref postion,"postion".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec2(ref posY,ref translucentLUTSize, nameof(translucentLUTSize).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec2(ref posY,ref outSunLightLUTSize, nameof(outSunLightLUTSize).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec2(ref posY,ref inSunLightLUTSize, nameof(inSunLightLUTSize).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref scatterLUTSize, nameof(scatterLUTSize).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec3(ref posY,ref postion, nameof(postion).Translate(),width,outFromTo,6);
 
-            HelperMethod_GUI.GUIFloat(ref posY,ref exposure,"exposure".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref deltaL,"deltaL".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref deltaW,"deltaW".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref lengthL,"lengthL".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref lengthW,"lengthW".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref minh,"minh".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref maxh,"maxh".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref H_Reayleigh,"H_Reayleigh".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref H_Mie,"H_Mie".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref H_OZone,"H_OZone".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY,ref D_OZone,"D_OZone".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref exposure, nameof(exposure).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref deltaL, nameof(deltaL).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref deltaW, nameof(deltaW).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref lengthL, nameof(lengthL).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref lengthW, nameof(lengthW).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref minh, nameof(minh).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref maxh, nameof(maxh).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref H_Reayleigh, nameof(H_Reayleigh).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref H_Mie, nameof(H_Mie).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref H_OZone, nameof(H_OZone).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY,ref D_OZone, nameof(D_OZone).Translate(),width,outFromTo,6);
 
-            HelperMethod_GUI.GUIVec4(ref posY,ref reayleigh_scatter,"reayleigh_scatter".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec4(ref posY,ref molecule_absorb,"molecule_absorb".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec4(ref posY,ref OZone_absorb,"OZone_absorb".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec4(ref posY,ref mie_scatter,"mie_scatter".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec4(ref posY,ref mie_absorb,"mie_absorb".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec4(ref posY,ref mie_eccentricity,"mie_eccentricity".Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref reayleigh_scatter, nameof(reayleigh_scatter).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref molecule_absorb, nameof(molecule_absorb).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref OZone_absorb, nameof(OZone_absorb).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref mie_scatter, nameof(mie_scatter).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref mie_absorb, nameof(mie_absorb).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec4(ref posY,ref mie_eccentricity, nameof(mie_eccentricity).Translate(),width,outFromTo,6);
             return posY;
         }
 
         public override void ExposeData()
         {
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref translucentLUTSize,"translucentLUTSize",6,new Vector2(256, 256),true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref outSunLightLUTSize,"outSunLightLUTSize",6,new Vector2(256, 256),true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref inSunLightLUTSize,"inSunLightLUTSize",6,new Vector2(256, 256),true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref scatterLUTSize,"scatterLUTSize",6,new Vector4(128, 32, 8, 32),true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion,"postion",6,Vector3.zero,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref exposure,"exposure",6,16,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref deltaL,"deltaL",6,8,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref deltaW,"deltaW",6,2,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref lengthL,"lengthL",6,1,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref lengthW,"lengthW",6,1,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref minh,"minh",6,63.71393f * AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref maxh,"maxh",6,64.71393f * AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref H_Reayleigh,"H_Reayleigh",6,0.08f * AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref H_Mie,"H_Mie",6,0.02f * AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref H_OZone,"H_OZone",6,0.25f * AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref D_OZone,"D_OZone",6,0.15f * AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref reayleigh_scatter,"reayleigh_scatter",6,new Vector4(0.46278f, 1.25945f, 3.10319f, 11.69904f) / AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref molecule_absorb,"molecule_absorb",6,Vector4.zero / AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref OZone_absorb,"OZone_absorb",6,new Vector4(0.21195f, 0.20962f, 0.01686f, 6.4f) / AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_scatter,"mie_scatter",6,new Vector4(3.996f, 3.996f, 3.996f, 3.996f) / AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_absorb,"mie_absorb",6,new Vector4(4.44f, 4.44f, 4.44f, 4.44f) / AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_eccentricity,"mie_eccentricity",6,new Vector4(0.618f, 0.618f, 0.618f, 0.618f),true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref translucentLUTSize, nameof(translucentLUTSize),6,new Vector2(256, 256),true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref outSunLightLUTSize, nameof(outSunLightLUTSize),6,new Vector2(256, 256),true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec2(ref inSunLightLUTSize, nameof(inSunLightLUTSize),6,new Vector2(256, 256),true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref scatterLUTSize, nameof(scatterLUTSize),6,new Vector4(128, 32, 8, 32),true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion, nameof(postion),6,Vector3.zero,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref exposure, nameof(exposure),6,16,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref deltaL, nameof(deltaL),6,8,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref deltaW, nameof(deltaW),6,2,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref lengthL, nameof(lengthL),6,1,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref lengthW, nameof(lengthW),6,1,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref minh, nameof(minh),6,63.71393f * PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref maxh, nameof(maxh),6,64.71393f * PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref H_Reayleigh, nameof(H_Reayleigh),6,0.08f * PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref H_Mie, nameof(H_Mie),6,0.02f * PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref H_OZone, nameof(H_OZone),6,0.25f * PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref D_OZone, nameof(D_OZone),6,0.15f * PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref reayleigh_scatter, nameof(reayleigh_scatter),6,new Vector4(0.46278f, 1.25945f, 3.10319f, 11.69904f) / PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref molecule_absorb, nameof(molecule_absorb),6,Vector4.zero / PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref OZone_absorb, nameof(OZone_absorb),6,new Vector4(0.21195f, 0.20962f, 0.01686f, 6.4f) / PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_scatter, nameof(mie_scatter),6,new Vector4(3.996f, 3.996f, 3.996f, 3.996f) / PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_absorb, nameof(mie_absorb),6,new Vector4(4.44f, 4.44f, 4.44f, 4.44f) / PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec4(ref mie_eccentricity, nameof(mie_eccentricity),6,new Vector4(0.618f, 0.618f, 0.618f, 0.618f),true);
         }
 #endif
         ~TransparentObject_Atmosphere()

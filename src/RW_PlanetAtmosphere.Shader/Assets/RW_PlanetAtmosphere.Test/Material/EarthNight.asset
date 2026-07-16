@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   renderingShadow: 0
   haidWhenGetColose: 0
-  refraction: 4
+  refraction: 1.5
   luminescen: 0
   opacity: 1
   opacityType: 1

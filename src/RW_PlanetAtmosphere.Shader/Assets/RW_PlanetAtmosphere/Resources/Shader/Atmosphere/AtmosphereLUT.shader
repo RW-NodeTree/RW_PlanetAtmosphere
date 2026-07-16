@@ -59,7 +59,7 @@
                 float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 float3 pos = _WorldSpaceCameraPos.xyz;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
-                if(linearDepth >= 1) discard;
+                if(depth >= 1 || depth <= 0) discard;
                 pos -= i.worldSpaceZeroPoint;
                 fargPos -= i.worldSpaceZeroPoint;
                 sun -= i.worldSpaceZeroPoint;
@@ -110,6 +110,7 @@
     
                 float4 clipSpacePos = UnityWorldToClipPos(pos + i.worldSpaceZeroPoint);
                 o.depth = clipSpacePos.z / clipSpacePos.w;
+                // if(o.depth >= 1 || o.depth <= 0) discard;
                 // o.depth = abs(min(depth * _ProjectionParams.x,o.depth * _ProjectionParams.x));
                 return o;
             }
@@ -167,6 +168,7 @@
                 float4 clipSpacePos = UnityWorldToClipPos(pos + i.worldSpaceZeroPoint);
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
+                // if(o.depth >= 1 || o.depth <= 0) discard;
                 return o;
             }
             ENDCG

@@ -14,7 +14,7 @@ namespace RW_PlanetAtmosphere
         float opacityVel = 0;
         internal float targetOpacity = 0;
         public bool renderingShadow     = true;
-        public bool haidWhenGetColose   = true;
+        public bool hideWhenGetClose    = true;
         public float refraction         = 2;
         public float luminescen         = 0;
         public float opacity            = 1;
@@ -37,17 +37,17 @@ namespace RW_PlanetAtmosphere
 
         #region propsIDs
 
-        private static readonly int propId_refraction   = Shader.PropertyToID("refraction");
-        private static readonly int propId_luminescen   = Shader.PropertyToID("luminescen");
-        private static readonly int propId_opacity      = Shader.PropertyToID("opacity");
-        private static readonly int propId_opacityType  = Shader.PropertyToID("opacityType");
-        //private static readonly int propId_playRange    = Shader.PropertyToID("playRange");
-        //private static readonly int propId_flowDir      = Shader.PropertyToID("flowDir");
-        private static readonly int propId_radius       = Shader.PropertyToID("radius");
-        private static readonly int propId_diffusePower = Shader.PropertyToID("diffusePower");
-        private static readonly int propId_normal       = Shader.PropertyToID("normal");
-        private static readonly int propId_tangent      = Shader.PropertyToID("tangent");
-        private static readonly int propId_cloudTexture = Shader.PropertyToID("cloudTexture");
+        private static readonly int propId_refraction   = Shader.PropertyToID(nameof(refraction));
+        private static readonly int propId_luminescen   = Shader.PropertyToID(nameof(luminescen));
+        private static readonly int propId_opacity      = Shader.PropertyToID(nameof(opacity));
+        private static readonly int propId_opacityType  = Shader.PropertyToID(nameof(opacityType));
+        //private static readonly int propId_playRange    = Shader.PropertyToID(nameof(playRange));
+        //private static readonly int propId_flowDir      = Shader.PropertyToID(nameof(flowDir));
+        private static readonly int propId_radius       = Shader.PropertyToID(nameof(radius));
+        private static readonly int propId_diffusePower = Shader.PropertyToID(nameof(diffusePower));
+        private static readonly int propId_normal       = Shader.PropertyToID(nameof(normal));
+        private static readonly int propId_tangent      = Shader.PropertyToID(nameof(tangent));
+        private static readonly int propId_cloudTexture = Shader.PropertyToID(nameof(cloudTexture));
 
         #endregion
 
@@ -58,7 +58,7 @@ namespace RW_PlanetAtmosphere
             if (cloudDef != null)
             {
                 renderingShadow     = cloudDef.renderingShadow;
-                haidWhenGetColose   = cloudDef.haidWhenGetColose;
+                hideWhenGetClose    = cloudDef.hideWhenGetClose;
                 refraction          = cloudDef.refraction;
                 luminescen          = cloudDef.luminescen;
                 opacity             = cloudDef.opacity;
@@ -128,7 +128,7 @@ namespace RW_PlanetAtmosphere
 
             if(signalTranslated)
             {
-                if (haidWhenGetColose)
+                if (hideWhenGetClose)
                 {
                     targetOpacity = TransparentObject.LuminescenTransaction(targetOpacity, opacity, -opacity, ref opacityVel);
                 }
@@ -229,35 +229,35 @@ namespace RW_PlanetAtmosphere
 #if !UNITY
         public override float SettingGUI(float posY, float width, Vector2 outFromTo)
         {
-            HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, "renderingShadow".Translate(),width,outFromTo);
-            HelperMethod_GUI.GUIBoolean(ref posY, ref haidWhenGetColose, "haidWhenGetColose".Translate(),width,outFromTo);
-            HelperMethod_GUI.GUIFloat(ref posY, ref refraction, "refraction".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, "luminescen".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY, ref opacity, "opacity".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY, ref opacityType, "opacityType".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY, ref radius, "radius".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIFloat(ref posY, ref diffusePower, "diffusePower".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec3(ref posY, ref normal, "normal".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec3(ref posY, ref tangent, "tangent".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIVec3(ref posY, ref postion, "postion".Translate(),width,outFromTo,6);
-            HelperMethod_GUI.GUIString(ref posY, ref cloudTexturePath, "cloudTexturePath".Translate(),width,outFromTo);
+            HelperMethod_GUI.GUIBoolean(ref posY, ref renderingShadow, nameof(renderingShadow).Translate(),width,outFromTo);
+            HelperMethod_GUI.GUIBoolean(ref posY, ref hideWhenGetClose, nameof(hideWhenGetClose).Translate(),width,outFromTo);
+            HelperMethod_GUI.GUIFloat(ref posY, ref refraction, nameof(refraction).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref luminescen, nameof(luminescen).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref opacity, nameof(opacity).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref opacityType, nameof(opacityType).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref radius, nameof(radius).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIFloat(ref posY, ref diffusePower, nameof(diffusePower).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec3(ref posY, ref normal, nameof(normal).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec3(ref posY, ref tangent, nameof(tangent).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIVec3(ref posY, ref postion, nameof(postion).Translate(),width,outFromTo,6);
+            HelperMethod_GUI.GUIString(ref posY, ref cloudTexturePath, nameof(cloudTexturePath).Translate(),width,outFromTo);
             return posY;
         }
 
         public override void ExposeData()
         {
-            Scribe_Values.Look(ref renderingShadow,"renderingShadow",true,true);
-            Scribe_Values.Look(ref haidWhenGetColose,"haidWhenGetColose",true,true);
-            Scribe_Values.Look(ref cloudTexturePath,"cloudTexturePath","EarthCloudTex/8k_earth_clouds",true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction,"refraction",6,2,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen,"luminescen",6,0,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref opacity,"opacity",6,1,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref opacityType,"opacityType",6,0,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref radius,"radius",6,63.76393f * AtmosphereSettings.scale,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref diffusePower,"diffusePower",6,16,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref normal,"normal",6,Vector3.up,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref tangent,"tangent",6,Vector3.right,true);
-            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion,"postion",6,Vector3.zero,true);
+            Scribe_Values.Look(ref renderingShadow,nameof(renderingShadow),true,true);
+            Scribe_Values.Look(ref hideWhenGetClose,nameof(hideWhenGetClose),true,true);
+            Scribe_Values.Look(ref cloudTexturePath,nameof(cloudTexturePath),"EarthCloudTex/8k_earth_clouds",true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref refraction,nameof(refraction),6,2,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref luminescen,nameof(luminescen),6,0,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref opacity,nameof(opacity),6,1,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref opacityType,nameof(opacityType),6,0,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref radius,nameof(radius),6,63.76393f * PlanetAtmosphereRenderer.scale,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueFloat(ref diffusePower,nameof(diffusePower),6,16,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref normal,nameof(normal),6,Vector3.up,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref tangent,nameof(tangent),6,Vector3.right,true);
+            HelperMethod_Scribe_Values.SaveAndLoadValueVec3(ref postion,nameof(postion),6,Vector3.zero,true);
 
         }
 #endif

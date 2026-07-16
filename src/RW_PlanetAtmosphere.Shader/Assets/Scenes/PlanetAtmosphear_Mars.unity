@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.009144403, g: 0.009912699, b: 0.016815037, a: 1}
+  m_IndirectSpecularColor: {r: 0.009211424, g: 0.009972987, b: 0.016872497, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -405,7 +405,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1959794533}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: -554594532, guid: 854803d126001a63abfe6808ad3dbc12, type: 3}
+  m_Script: {fileID: 656065289, guid: 854803d126001a63abfe6808ad3dbc12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   needUpdate: 1
@@ -416,10 +416,11 @@ MonoBehaviour:
   sunDistance: 1495978.9
   planetRadius: 33.97
   renderingSizeFactor: 1
-  closeRenderingDistance: 36
+  closeRenderingDistance: 50
   sunColor: {x: 0.8, y: 0.72, z: 0.65, w: 0}
   tonemapType: 6
   sunFlareTexturePath: Texture/sunFlare
+  EditorCamera: {fileID: 0}
 --- !u!114 &1959794540
 MonoBehaviour:
   m_ObjectHideFlags: 0

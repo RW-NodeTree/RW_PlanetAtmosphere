@@ -2,7 +2,7 @@
 {
     Properties
     {
-        radius ("cloud layer radius", Float) = 63.76393
+        planetRadius ("planet radius", Float) = 63.76393
     }
 
 
@@ -20,6 +20,10 @@
 
             #include "./BaseInc.cginc"
             #include "./PBAttach.cginc"
+            
+            
+            float planetRadius;
+            
             float4 sampleSphere(float2 uv)
             {
                 return 0;
@@ -42,7 +46,7 @@
                 float4 cloudPosA;
                 float4 cloudColorB;
                 float4 cloudPosB;
-                getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
+                getColorFromSphere(pos,eye,float3(0,1,0),float3(0,0,1),planetRadius,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosA.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosA.xyz + i.worldSpaceZeroPoint);
                 o.transFactor = clipSpacePos.z / clipSpacePos.w;
@@ -63,6 +67,10 @@
 
             #include "./BaseInc.cginc"
             #include "./PBAttach.cginc"
+            
+            
+            float planetRadius;
+            
             float4 sampleSphere(float2 uv)
             {
                 return 0;
@@ -85,7 +93,7 @@
                 float4 cloudPosA;
                 float4 cloudColorB;
                 float4 cloudPosB;
-                getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
+                getColorFromSphere(pos,eye,float3(0,1,0),float3(0,0,1),planetRadius,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosA.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosA.xyz + i.worldSpaceZeroPoint);
                 o.transFactor = clipSpacePos.z / clipSpacePos.w;

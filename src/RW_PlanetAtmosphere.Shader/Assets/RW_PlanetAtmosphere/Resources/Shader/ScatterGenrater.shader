@@ -6,8 +6,8 @@
         deltaW ("scatterLUT light curve max derivative(p)", Range(1.0,20.0)) = 4.0
         lengthL ("scatterLUT light curve max range(v)", Range(0.5,1.0)) = 1.0
         lengthW ("scatterLUT light curve max range(p)", Range(0.5,1.0)) = 1.0
-        sunRadius("sun Radius", Float) = 6960
-        sunDistance("sun Distance", Float) = 1495978.92
+        // sunRadius("sun Radius", Float) = 6960
+        // sunDistance("sun Distance", Float) = 1495978.92
         minh ("planet ground radius", float) = 63.71393
         maxh ("planet sky radius", float) = 64.71393
         H_Reayleigh ("reayleigh factor scale", float) = 0.08

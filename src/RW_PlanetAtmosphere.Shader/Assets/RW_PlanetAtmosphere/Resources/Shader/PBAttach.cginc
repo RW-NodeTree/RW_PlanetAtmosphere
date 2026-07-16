@@ -1,11 +1,4 @@
-float3 normal;
-float3 tangent;
-
-float2 ringFromTo;
 sampler2D ringMap;
-
-float radius;
-sampler2D sphereMap;
 
 inline float4 sampleRing(float u);
 
@@ -14,7 +7,14 @@ float4 sampleRingBasic(float u)
     return tex2Dlod(ringMap,float4(u,0.5,0.0,0.0));
 }
 
-float4 getColorFromRing(float3 start, float3 dir, out float3 crossPoint, out float t)
+float4 getColorFromRing(
+    float3 start,
+    float3 dir,
+    float3 normal,
+    float2 ringFromTo,
+    out float3 crossPoint,
+    out float t
+    )
 {
     normal = normalize(normal);
     dir = normalize(dir);
@@ -34,6 +34,8 @@ float4 getColorFromRing(float3 start, float3 dir, out float3 crossPoint, out flo
     // return tex2Dlod(ringMap,float4(dis,0.5,0.0,0.0)) * step(0.0, t) * step(0.0, dis) * step(dis, 1.0);
 }
 
+
+sampler2D sphereMap;
 inline float4 sampleSphere(float2 uv);
 
 float4 sampleSphereBasic(float2 uv)
@@ -44,6 +46,9 @@ float4 sampleSphereBasic(float2 uv)
 void getColorFromSphere(
     float3 start,
     float3 dir,
+    float3 normal,
+    float3 tangent,
+    float radius,
     out float4 resultA,
     out float4 crossPointA,
     out float4 resultB,

@@ -2,8 +2,8 @@
 {
     Properties
     {
-        sunRadius("sun Radius", Float) = 6960
-        sunDistance("sun Distance", Float) = 1495978.92
+        // sunRadius("sun Radius", Float) = 6960
+        // sunDistance("sun Distance", Float) = 1495978.92
         minh ("planet ground radius", float) = 63.71393
         maxh ("planet sky radius", float) = 64.71393
         H_Reayleigh ("reayleigh factor scale", float) = 0.08

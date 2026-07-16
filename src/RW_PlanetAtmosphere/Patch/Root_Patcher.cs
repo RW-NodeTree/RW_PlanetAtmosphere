@@ -31,9 +31,10 @@ namespace RW_PlanetAtmosphere.Patch
             {
                 WorldCameraManager.WorldCamera.targetTexture = null;
                 WorldCameraManager.WorldSkyboxCamera.targetTexture = null;
-                if(ShaderLoader.cameraOverride != null)
+                PlanetAtmosphereRenderer renderer = PlanetAtmosphereRenderer.CurrentRenderer;
+                if(renderer.cameraOverride != null)
                 {
-                    GUI.DrawTexture(new Rect(0,0,Screen.width,Screen.height), ShaderLoader.cameraOverride);
+                    GUI.DrawTexture(new Rect(0,0,Screen.width,Screen.height), renderer.cameraOverride);
                 }
             }
         }

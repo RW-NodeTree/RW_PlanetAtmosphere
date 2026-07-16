@@ -2,8 +2,8 @@
 {
     Properties
     {
-        sunRadius("sun Radius", Float) = 6960
-        sunDistance("sun Distance", Float) = 1495978.92
+        // sunRadius("sun Radius", Float) = 6960
+        // sunDistance("sun Distance", Float) = 1495978.92
         sunFlareTexture ("sun Dlare Texture", 2D) = "black"{}
 
     }
@@ -24,8 +24,8 @@
 
             #include "./BaseInc.cginc"
 
-            float sunRadius;
-            float sunDistance;
+            uniform float sunRadius;
+            uniform float sunDistance;
             // sampler2D sunFlareTexture;
             
             f2bTrans frag (v2f i)
@@ -54,8 +54,8 @@
 
             #include "./BaseInc.cginc"
 
-            float sunRadius;
-            float sunDistance;
+            uniform float sunRadius;
+            uniform float sunDistance;
             sampler2D sunFlareTexture;
             sampler2D backgroundTexture;
 

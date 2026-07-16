@@ -29,7 +29,9 @@
     sampler2D cloudTexture;
     float4 cloudTexture_TexelSize;
     // sampler2D noiseTexture;
-    
+    float3 normal;
+    float3 tangent;
+    float radius;
     float refraction;
     float luminescen;
     float opacity;
@@ -88,7 +90,7 @@
                 float linearDepth;
                 float3 sun = normalize(_WorldSpaceLightPos0.xyz) * sunDistance;
                 float3 fargPos = worldPosFromDepthMap(i,depth,linearDepth);
-                if(linearDepth >= 1) discard;
+                if(depth >= 1 || depth <= 0) discard;
                 fargPos -= i.worldSpaceZeroPoint;
                 sun -= i.worldSpaceZeroPoint;
                 sun = normalize(sun);
@@ -99,7 +101,7 @@
                 float4 cloudPosB;
                 float radiusCache = radius;
                 // radius *= 0.999;
-                getColorFromSphere(fargPos,sun,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
+                getColorFromSphere(fargPos,sun,normal,tangent,radius,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 // radius = radiusCache;
                 if(cloudPosA.w == 0 && cloudPosB.w == 0) discard;
                 fargPos += i.worldSpaceZeroPoint;
@@ -142,13 +144,14 @@
                 float4 cloudPosA;
                 float4 cloudColorB;
                 float4 cloudPosB;
-                getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
+                getColorFromSphere(pos,eye,normal,tangent,radius,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosA.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosA.xyz + i.worldSpaceZeroPoint);
                 o.transFactor = 1.0 - cloudColorA.w;
                 // o.reflection = 1.0 - cloudPosA.w;
                 // o.reflection.w = 1;
                 o.depth = clipSpacePos.z / clipSpacePos.w;
+                if(o.depth > 1 || o.depth <= 0) discard;
                 return o;
             }
 
@@ -182,13 +185,14 @@
                 float4 cloudPosA;
                 float4 cloudColorB;
                 float4 cloudPosB;
-                getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
+                getColorFromSphere(pos,eye,normal,tangent,radius,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosB.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosB.xyz + i.worldSpaceZeroPoint);
                 o.transFactor = 1.0 - cloudColorB.w;
                 // o.reflection = 1.0 - cloudPosB.w;
                 // o.reflection.w = 1;
                 o.depth = clipSpacePos.z / clipSpacePos.w;
+                if(o.depth > 1 || o.depth <= 0) discard;
                 return o;
             }
 
@@ -227,7 +231,7 @@
                 float4 cloudPosA;
                 float4 cloudColorB;
                 float4 cloudPosB;
-                getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
+                getColorFromSphere(pos,eye,normal,tangent,radius,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosA.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosA.xyz + i.worldSpaceZeroPoint);
                 o.reflection.xyz = max(cloudColorA.xyz * _LightColor0.xyz * cloudColorA.w * refraction,0);
@@ -235,6 +239,7 @@
                 o.reflection.w = diffusePower < -0.001 ? 0 : cloudColorA.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
+                if(o.depth > 1 || o.depth <= 0) discard;
                 return o;
         
             }
@@ -273,7 +278,7 @@
                 float4 cloudPosA;
                 float4 cloudColorB;
                 float4 cloudPosB;
-                getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
+                getColorFromSphere(pos,eye,normal,tangent,radius,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosB.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosB.xyz + i.worldSpaceZeroPoint);
                 o.reflection.xyz = max(cloudColorB.xyz * _LightColor0.xyz * cloudColorB.w * refraction, 0);
@@ -281,6 +286,7 @@
                 o.reflection.w = diffusePower < -0.001 ? 0 : cloudColorB.w;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
+                if(o.depth > 1 || o.depth <= 0) discard;
                 return o;
         
             }
@@ -316,13 +322,14 @@
                 float4 cloudPosA;
                 float4 cloudColorB;
                 float4 cloudPosB;
-                getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
+                getColorFromSphere(pos,eye,normal,tangent,radius,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosA.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosA.xyz + i.worldSpaceZeroPoint);
                 o.reflection.xyz = max(cloudColorA.xyz * cloudColorA.w * luminescen, 0);
                 o.reflection.w = 0;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
+                if(o.depth > 1 || o.depth <= 0) discard;
                 return o;
         
             }
@@ -358,13 +365,14 @@
                 float4 cloudPosA;
                 float4 cloudColorB;
                 float4 cloudPosB;
-                getColorFromSphere(pos,eye,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
+                getColorFromSphere(pos,eye,normal,tangent,radius,cloudColorA,cloudPosA,cloudColorB,cloudPosB);
                 if(cloudPosB.w == 0) discard;
                 float4 clipSpacePos = UnityWorldToClipPos(cloudPosB.xyz + i.worldSpaceZeroPoint);
                 o.reflection.xyz = max(cloudColorB.xyz * cloudColorB.w * luminescen, 0);
                 o.reflection.w = 0;
                 o.depthTexel = clipSpacePos.z / clipSpacePos.w;
                 o.depth = o.depthTexel;
+                if(o.depth > 1 || o.depth <= 0) discard;
                 return o;
         
             }
