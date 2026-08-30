@@ -521,7 +521,7 @@ float4 IngSunLight(float2 ad)
     for(int i = 0; i < ingLightCount; i++)
     {
         float ratioI = (float(i) + 0.5) / ingLightCount;
-        float sizeFactor = (i + 1) * (i + 1) - i * i;
+        float sizeFactor = 2 * i + 1;
         float2 sumAng;
         sincos(ratioI * sunPerspective,sumAng.x,sumAng.y);
         for(int j = 0; j < ingLightCount; j++)

@@ -1,7 +1,6 @@
 *.lnk
-**/BUILD/
-**/BUILD.*/
-**/BUILD_*/
+**/BUILD*/
+**/BUILD*.*
 **/obj/
 **/Temp/
 # **/AB_Pack/

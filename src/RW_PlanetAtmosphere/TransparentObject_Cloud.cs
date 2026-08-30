@@ -21,7 +21,7 @@ namespace RW_PlanetAtmosphere
         public float opacityType        = 0;
         //public float playRange          = 0.015625f;
         //public float flowDir            = 0;
-        public float radius             = 63.76393f;
+        public float radius             = 63.76393f * PlanetAtmosphereRenderer.scale;
         public float diffusePower       = 16;
         public Vector3 normal           = Vector3.up;
         public Vector3 tangent          = Vector3.right;
